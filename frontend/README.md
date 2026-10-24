@@ -110,7 +110,6 @@ The client streams NDJSON progress events (real stage names) and receives the an
 | --- | --- |
 | `POST /api/advice` | `{ query, language: "en" \| "zh", max_cases: 1–3, constraints?, clarifications? }`. Returns JSON, or NDJSON progress plus result with `Accept: application/x-ndjson`. |
 | `GET /api/cases/:id` | An approved case with its claims, passages and sources |
-| `POST /api/mcp` | Remote MCP server (Streamable HTTP, stateless) with the read-only tools `get_historical_advice` and `get_historical_case`, for ChatGPT. Setup: [skills/chatgpt/README.md](../skills/chatgpt/README.md) |
 | `GET /api/health` | Mode, corpus version, whether the OpenRouter key is configured (never the key itself), models and versions |
 
 Response `status` is one of `ready`, `needs_clarification`, `insufficient_evidence` or `partial`. Each response carries `request_id`, `versions` (corpus, rubric, pipeline, weights, Jev model, LLM model), the `validation` report and warnings. Shared types are in [src/lib/contracts/advice.ts](src/lib/contracts/advice.ts).

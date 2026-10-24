@@ -18,7 +18,7 @@ export default function CasePage({ params }: PageProps<"/cases/[id]">) {
   return (
     <div className="flex min-h-full flex-col">
       <SiteHeader />
-      <main className="mx-auto w-full max-w-5xl flex-1 px-5 pt-10 pb-24 sm:px-8">
+      <main className="mx-auto w-full max-w-6xl flex-1 px-5 pt-10 pb-24 sm:px-8">
         <BackLink />
         <Suspense fallback={<StorySkeleton />}>{params.then(({ id }) => <Story id={decodeURIComponent(id)} />)}</Suspense>
       </main>

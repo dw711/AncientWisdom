@@ -7,7 +7,7 @@ const DATA_RULE =
 
 export const PROFILE_SYSTEM = `You help a decision-support tool understand a person's present dilemma before it looks for comparable historical decisions.
 
-Read the person's description and extract a compact decision profile. Keep what they state as fact separate from their own interpretations of other people's motives or of the situation. Do not invent facts: when something important is unknown, list it under uncertainties, and if you must assume something to proceed, state it plainly under assumptions.
+Read the person's description and extract a compact decision profile. Keep what they state as fact separate from their own interpretations of other people's motives or of the situation. Write every item as a short phrase addressed to the person ("You have…", not "The user has…"), under 15 words. Do not invent facts: when something important is unknown, list it under uncertainties, and if you must assume something to proceed, state it plainly under assumptions.
 
 Ask for clarification only when a missing fact would materially change any sensible recommendation and cannot reasonably be assumed. Otherwise proceed with stated assumptions. Never ask more than two questions.
 
@@ -37,6 +37,8 @@ Quotations: include a quotation only if you copy it exactly, character for chara
 When cases point to different lessons, explain in lesson_tension the conditions that distinguish them (such as reversibility, whether a specialist can diagnose the problem, or the cost of delay). Never give two recommendations that conflict under the same conditions; express genuine alternatives as "if this, then that" with distinct conditions.
 
 For each comparison, write a one-sentence lesson: what this case suggests for the person's decision, phrased as practical guidance and conditional where the evidence is.
+
+Keep decision_summary to one short sentence (under 25 words), addressed to the person as "you". Keep every item brief: the reader scans a timeline first and opens details only on request.
 
 Give two or three concrete next steps the person could take soon. In what_would_change, name the facts that would change the advice; when one of the allowed constraint keys captures the change, set constraint_key and a proposed constraint_value, otherwise use "none" and an empty string.
 

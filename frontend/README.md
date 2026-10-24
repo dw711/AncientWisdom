@@ -92,13 +92,17 @@ The client streams NDJSON progress events (real stage names) and receives the an
 
 ## Results timeline and story pages
 
-- **Timeline:** the historical comparisons section opens with a horizontal timeline of the cases in the answer.
-  - Points are in date order and evenly spaced, with the gap between them labelled, because a proportional scale would crush 1962 and 1969 next to 480 BCE.
-  - Hovering or focusing a point shows what they did, what happened, and the lesson. The lesson comes from the writer for this decision, or the case's own lesson in preview mode.
-- **Story pages:** selecting a point, or "Read the full story", opens `/cases/[id]`.
-  - The page shows the situation, the choice, what they did, what happened, the lesson or pattern, the limits of the comparison, and every claim with its exact passages and sources.
-  - It is rendered on the server from the same repository as the API.
-  - "Back to your results" restores the previous analysis from memory. Nothing is stored, so a reload starts fresh.
+- **After you submit:** the question collapses to one line ("Edit question" reopens the form), and the results show only one large left-to-right timeline. Points are the historical moments in date order, ending with **Today · Your decision**.
+  - Points are evenly spaced with the gap between them labelled, because a proportional scale would crush 1962 and 1969 next to 480 BCE.
+  - On phones the timeline scrolls sideways.
+- **Hover or focus** a point for a quick summary: what they did, what happened, and the lesson.
+- **Select a historical point** to open its details below the timeline:
+  - what they did, what happened, and the lesson for you;
+  - how it resembles your decision and where it differs;
+  - the analogy-fit breakdown;
+  - the sourced points (folded), sources and passages, and a link to the full story.
+- **Select Your decision** for the advice: the recommendation, next steps, and what would change it, with re-run buttons. "How we read your decision" and "How this answer was checked" are folded.
+- **Story pages** at `/cases/[id]` give a case's full story: the situation, the choice, what they did, what happened, the lesson or pattern, the limits of the comparison, and every claim with its exact passages and sources. "Back to your results" restores the analysis from memory; nothing is stored.
 
 ## API
 

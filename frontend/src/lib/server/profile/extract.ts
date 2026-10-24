@@ -129,7 +129,9 @@ export async function extractProfile(req: AdviceRequest, llm: LlmClient, deadlin
           why_it_matters: "Historical comparisons work on the structure of a decision, so the options need to be clear.",
         },
       ];
-    } else if (draft.clarification.needed && draft.clarification.questions.length) {
+    } else if (draft.clarification.needed && draft.clarification.questions.length && profile.options.length < 2) {
+      // Models flag clarification eagerly. When the choice and at least two options
+      // are clear, advice can be conditional on stated assumptions instead.
       clarification = draft.clarification.questions.slice(0, 2).map((q, i) => ({ id: `q_${i + 1}`, question: q.question, why_it_matters: q.why_it_matters }));
     }
   }

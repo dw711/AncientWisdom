@@ -29,6 +29,8 @@ export function HistoricalFigureApp() {
   const [contextOpen, setContextOpen] = useState(saved?.contextOpen ?? false);
   const [phase, setPhase] = useState<Phase>(saved?.response ? { kind: "result", response: saved.response } : { kind: "idle" });
   const [formError, setFormError] = useState<string | null>(null);
+  // Once there is a result, the question collapses to one line so the timeline leads.
+  const [editing, setEditing] = useState(false);
   const [changedLabel, setChangedLabel] = useState<string | null>(saved?.changedLabel ?? null);
   const [drawer, setDrawer] = useState<{ card: CaseCard; claimId: string | null; refs: Record<string, number> | null } | null>(null);
   const [health, setHealth] = useState<HealthResponse | null>(null);
@@ -73,6 +75,7 @@ export function HistoricalFigureApp() {
         clarifications: opts.clarifications ?? [],
       };
       setChangedLabel(opts.changed ?? null);
+      setEditing(false);
       setPhase({ kind: "loading", entries: [] });
       requestAnimationFrame(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
 
@@ -106,6 +109,7 @@ export function HistoricalFigureApp() {
   };
 
   const editContext = () => {
+    setEditing(true);
     setContextOpen(true);
     requestAnimationFrame(() => formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
   };
@@ -119,6 +123,7 @@ export function HistoricalFigureApp() {
 
   const busy = phase.kind === "loading";
   const response = phase.kind === "result" ? phase.response : null;
+  const compact = phase.kind !== "idle" && !editing;
 
   return (
     <div className="flex min-h-full flex-col">
@@ -135,47 +140,63 @@ export function HistoricalFigureApp() {
         ) : null}
       </SiteHeader>
 
-      <main className="mx-auto w-full max-w-5xl flex-1 px-5 pb-24 sm:px-8">
-        <section className="grid gap-10 pt-12 pb-10 sm:pt-16 lg:grid-cols-[1fr_minmax(0,34rem)] lg:gap-14">
-          <div className="lg:pt-2">
-            <h1 className="font-serif text-[2.35rem] leading-[1.08] tracking-tight text-ink sm:text-[3.1rem]">What can history teach your next decision?</h1>
-            <p className="mt-5 max-w-md text-[1.05rem] leading-relaxed text-ink-soft">
-              Describe a choice you are facing. Historical Figure finds sourced decisions from the past with a similar structure, shows what they share with yours and where
-              they differ, and suggests what to do next, along with what would change that advice.
-            </p>
-            <p className="mt-6 max-w-md border-l-2 border-bronze/50 pl-4 text-sm leading-relaxed text-muted">
-              Historical comparisons have limits. Circumstances differ, sources disagree, and a past outcome does not predict yours. Treat the advice as one input to your own
-              judgement.
-            </p>
-          </div>
-          <div ref={formRef} className="scroll-mt-6">
-            <DilemmaForm
-              query={query}
-              onQueryChange={(q) => {
-                setQuery(q);
-                if (formError) setFormError(null);
-              }}
-              context={context}
-              onContextChange={setContext}
-              contextOpen={contextOpen}
-              onContextOpenChange={setContextOpen}
-              onSubmit={() => void run()}
-              onCancel={cancel}
-              onPreset={(q) => {
-                setQuery(q);
-                setContext(EMPTY_CONTEXT);
-                setFormError(null);
-              }}
-              busy={busy}
-              error={formError}
-            />
-          </div>
-        </section>
+      <main className="mx-auto w-full max-w-6xl flex-1 px-5 pb-24 sm:px-8">
+        {compact ? (
+          <section className="flex flex-col gap-4 border-b border-rule-soft pt-8 pb-5 sm:flex-row sm:items-end sm:justify-between">
+            <div className="min-w-0">
+              <p className="text-[0.68rem] font-semibold tracking-[0.14em] text-muted uppercase">Your question</p>
+              <p className="mt-1 line-clamp-2 max-w-3xl font-serif text-lg leading-snug text-ink">{query}</p>
+            </div>
+            <Button variant="secondary" className="shrink-0 self-start sm:self-auto" disabled={busy} onClick={() => setEditing(true)}>
+              Edit question
+            </Button>
+          </section>
+        ) : (
+          <section className="grid gap-10 pt-12 pb-10 sm:pt-16 lg:grid-cols-[1fr_minmax(0,34rem)] lg:gap-14">
+            <div className="lg:pt-2">
+              <h1 className="font-serif text-[2.35rem] leading-[1.08] tracking-tight text-ink sm:text-[3.1rem]">What can history teach your next decision?</h1>
+              <p className="mt-5 max-w-md text-[1.05rem] leading-relaxed text-ink-soft">
+                Describe a choice you are facing. Historical Figure finds sourced decisions from the past with a similar structure, shows what they share with yours and where
+                they differ, and suggests what to do next, along with what would change that advice.
+              </p>
+              <p className="mt-6 max-w-md border-l-2 border-bronze/50 pl-4 text-sm leading-relaxed text-muted">
+                Historical comparisons have limits. Circumstances differ, sources disagree, and a past outcome does not predict yours. Treat the advice as one input to your own
+                judgement.
+              </p>
+            </div>
+            <div ref={formRef} className="scroll-mt-6">
+              <DilemmaForm
+                query={query}
+                onQueryChange={(q) => {
+                  setQuery(q);
+                  if (formError) setFormError(null);
+                }}
+                context={context}
+                onContextChange={setContext}
+                contextOpen={contextOpen}
+                onContextOpenChange={setContextOpen}
+                onSubmit={() => void run()}
+                onCancel={cancel}
+                onPreset={(q) => {
+                  setQuery(q);
+                  setContext(EMPTY_CONTEXT);
+                  setFormError(null);
+                }}
+                busy={busy}
+                error={formError}
+              />
+            </div>
+          </section>
+        )}
 
-        <div ref={resultsRef} id="results" className="mx-auto max-w-3xl scroll-mt-6">
-          {phase.kind === "loading" ? <ProgressPanel entries={phase.entries} waitingFor={null} /> : null}
+        <div ref={resultsRef} id="results" className="scroll-mt-6 pt-8">
+          {phase.kind === "loading" ? (
+            <div className="mx-auto max-w-3xl">
+              <ProgressPanel entries={phase.entries} waitingFor={null} />
+            </div>
+          ) : null}
           {phase.kind === "error" ? (
-            <div role="alert" className="animate-rise rounded-lg border border-burgundy/30 bg-burgundy-wash/50 px-6 py-5">
+            <div role="alert" className="mx-auto max-w-3xl animate-rise rounded-lg border border-burgundy/30 bg-burgundy-wash/50 px-6 py-5">
               <p className="font-serif text-lg text-ink">{phase.error.code === "rate_limited" ? "Please wait a moment" : "The analysis could not be completed"}</p>
               <p className="mt-1 leading-relaxed text-ink-soft">{phase.error.message}</p>
               {phase.error.details?.length ? (

@@ -220,6 +220,13 @@ describe("live pipeline (mocked providers)", () => {
     expect(second.status).not.toBe("needs_clarification");
   });
 
+  it("does not ask for clarification when the choice and its options are already clear", async () => {
+    const eager = { ...PROFILE, clarification: { needed: true, questions: [{ question: "What are the exact terms?", why_it_matters: "Terms matter." }] } };
+    const llm = new FakeLlm({ profile: eager, writer: (_c, req) => writerDraft(casesInPrompt(req.prompt)) });
+    const r = await runLivePipeline(request({ query: HACKATHON }), { repo: repo(), jev: new FakeJev(goodScorer), llm, config: liveConfig() }, opts);
+    expect(r.status).toBe("ready");
+  });
+
   it("stops when the client cancels", async () => {
     const ac = new AbortController();
     ac.abort();

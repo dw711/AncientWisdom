@@ -1,11 +1,21 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
-import type { AdviceResponse, ConstraintKey, NeedsClarificationResponse, InsufficientEvidenceResponse } from "@/lib/contracts/advice";
+import { useState } from "react";
+import type {
+  AdviceResponse,
+  AnalogyRating,
+  CaseCard,
+  Comparison,
+  ConstraintKey,
+  InsufficientEvidenceResponse,
+  NeedsClarificationResponse,
+  PartialResponse,
+  ReadyResponse,
+} from "@/lib/contracts/advice";
 import { BulletList, Button, Label, SectionHeading, Tag } from "../ui";
-import { CaseTimeline, type TimelineItem } from "./case-timeline";
-import { CaseOnlyCard, ComparisonCard, type OpenSources } from "./comparison-card";
-import { ChangeSection, DecisionSection, NextStepsSection, RecommendationSection, SourceConflicts, ValidationFooter } from "./sections";
+import { AdviceDetail } from "./advice-detail";
+import { CaseDetail, type OpenSources } from "./case-detail";
+import { DecisionTimeline, type TimelineNode } from "./decision-timeline";
 
 interface Props {
   response: AdviceResponse;
@@ -17,119 +27,77 @@ interface Props {
   onClarify: (answers: { question: string; answer: string }[]) => void;
 }
 
-function Banner({ tone, title, children }: { tone: "sample" | "partial" | "changed"; title: string; children?: ReactNode }) {
-  const styles = {
-    sample: "border-bronze/30 bg-bronze-wash/70 text-ink",
-    partial: "border-amber/30 bg-amber-wash text-ink",
-    changed: "border-moss/25 bg-moss-wash text-ink",
-  }[tone];
-  return (
-    <div role="status" className={`animate-rise rounded-lg border px-5 py-4 ${styles}`}>
-      <p className="font-medium">{title}</p>
-      {children ? <div className="mt-1 text-sm leading-relaxed text-ink-soft">{children}</div> : null}
-    </div>
-  );
-}
-
 export function ResultsView(p: Props) {
   const r = p.response;
+  const [selected, setSelected] = useState<string | null>(null);
 
   if (r.status === "needs_clarification") return <ClarificationPanel response={r} onSubmit={p.onClarify} busy={p.busy} />;
   if (r.status === "insufficient_evidence") return <InsufficientPanel response={r} onEditContext={p.onEditContext} />;
 
   const partial = r.status === "partial" ? r : null;
-  const recommendation = r.recommendation;
-  const comparisons = r.comparisons;
-  const hasCases = comparisons.length > 0 || Boolean(partial?.rated_cases.length) || Boolean(partial?.unranked_cases.length);
-  const timeline: TimelineItem[] = [
-    ...comparisons.map((c) => ({ card: c.case, role: c.role, lesson: c.lesson || null })),
-    ...(r.challenging ? [{ card: r.challenging.case, role: "challenging" as const, lesson: r.challenging.lesson || null }] : []),
-    ...(partial?.rated_cases.map((c) => ({ card: c.case, role: c.role, lesson: null })) ?? []),
-    ...(partial?.unranked_cases.map((card) => ({ card, role: "unrated" as const, lesson: null })) ?? []),
+
+  // Every case in the answer, in date order, followed by the person's own decision.
+  type Entry = { card: CaseCard; role: "supporting" | "challenging" | "unrated"; comparison: Comparison | null; rating: AnalogyRating | null; note?: string };
+  const entries: Entry[] = [
+    ...r.comparisons.map((c) => ({ card: c.case, role: c.role, comparison: c, rating: c.rating })),
+    ...(r.challenging ? [{ card: r.challenging.case, role: "challenging" as const, comparison: r.challenging, rating: r.challenging.rating }] : []),
+    ...(partial?.rated_cases.map((c) => ({ card: c.case, role: c.role, comparison: null, rating: c.rating, note: "Rated by Jev. The written comparison is unavailable for this result." })) ?? []),
+    ...(partial?.unranked_cases.map((card) => ({
+      card,
+      role: "unrated" as const,
+      comparison: null,
+      rating: null,
+      note: partial.preview ? "Shares wording with your description. Not assessed for fit." : "Not rated: the analogy assessment was unavailable.",
+    })) ?? []),
+  ].sort((a, b) => (a.card.year_start ?? Infinity) - (b.card.year_start ?? Infinity));
+
+  const nodes: TimelineNode[] = [
+    ...entries.map((e) => ({ kind: "case" as const, key: e.card.case_id, card: e.card, role: e.role, lesson: e.comparison?.lesson || null, fit: e.rating?.analogy_fit ?? null })),
+    { kind: "today" as const, key: "today" as const, hint: r.recommendation ? "Advice and next steps" : "What we found" },
   ];
+  const chosen = entries.find((e) => e.card.case_id === selected);
 
   return (
-    <div className="space-y-14">
-      <div className="space-y-3">
-        {p.changedLabel ? (
-          <Banner tone="changed" title={`Fresh analysis with your change: ${p.changedLabel}`}>
-            The decision profile, case ranking and advice were all recomputed from the updated inputs.
-          </Banner>
-        ) : null}
-        {r.sample ? (
-          <Banner tone="sample" title="Sample analysis">
-            This example was prepared in advance from the reviewed collection, and its fit ratings are illustrative. Your own descriptions are analysed in live mode.
-          </Banner>
-        ) : null}
-        {partial ? (
-          <Banner tone="partial" title={partial.preview ? "Preview mode" : "Partial result"}>
-            <p>{partial.message}</p>
-            {!partial.preview && partial.missing.length ? (
-              <ul className="mt-2 list-disc space-y-0.5 pl-5">
-                {partial.missing.map((m, i) => (
-                  <li key={i}>{m.reason}</li>
-                ))}
-              </ul>
-            ) : null}
-          </Banner>
-        ) : null}
-      </div>
-
-      <DecisionSection summary={r.decision_summary} profile={r.profile} onEditContext={p.onEditContext} />
-
-      {recommendation ? <RecommendationSection recommendation={recommendation} alternatives={r.alternatives} tension={r.lesson_tension} /> : null}
-
-      {hasCases ? (
-        <section aria-labelledby="sec-cases" className="space-y-6">
-          <SectionHeading
-            id="sec-cases"
-            numeral="III"
-            title="Historical comparisons"
-            aside={comparisons.length ? `${comparisons.length} ${comparisons.length === 1 ? "case" : "cases"} · fit is a rubric rating, not a probability of success` : null}
+    <div className={selected ? "space-y-6" : "flex min-h-[58vh] flex-col justify-center space-y-6 pb-10"}>
+      <StatusLine response={r} changedLabel={p.changedLabel} />
+      <DecisionTimeline nodes={nodes} selected={selected} onSelect={setSelected}>
+        {selected === "today" ? (
+          <AdviceDetail response={r} busy={p.busy} onApplyChange={p.onApplyChange} onEditContext={p.onEditContext} onClose={() => setSelected(null)} />
+        ) : chosen ? (
+          <CaseDetail
+            key={chosen.card.case_id}
+            card={chosen.card}
+            comparison={chosen.comparison}
+            rating={chosen.rating}
+            role={chosen.role}
+            note={chosen.note}
+            passages={r.passages}
+            sources={r.sources}
+            onOpen={p.onOpenSources}
+            onClose={() => setSelected(null)}
           />
-          <CaseTimeline items={timeline} />
-          <SourceConflicts conflicts={r.source_conflicts} />
-          {comparisons.map((c) => (
-            <ComparisonCard key={c.case.case_id} comparison={c} onOpen={p.onOpenSources} passages={r.passages} sources={r.sources} />
-          ))}
-          {partial?.rated_cases
-            .filter((c) => c.role === "supporting")
-            .map((c) => (
-              <CaseOnlyCard key={c.case.case_id} card={c.case} rating={c.rating} onOpen={p.onOpenSources} note="Rated by Jev. The written comparison is unavailable for this result." />
-            ))}
-          {partial?.unranked_cases.map((c) => (
-            <CaseOnlyCard
-              key={c.case_id}
-              card={c}
-              rating={null}
-              onOpen={p.onOpenSources}
-              note={partial.preview ? "Shares wording with your description. Not assessed for fit." : "Not rated: the analogy assessment was unavailable."}
-            />
-          ))}
-        </section>
-      ) : null}
-
-      {!partial?.preview && (comparisons.length || partial?.rated_cases.length) ? (
-        <section aria-labelledby="sec-challenge" className="space-y-5">
-          <SectionHeading id="sec-challenge" numeral="IV" title="A challenging case" />
-          {r.challenging ? (
-            <ComparisonCard comparison={r.challenging} onOpen={p.onOpenSources} passages={r.passages} sources={r.sources} />
-          ) : partial?.rated_cases.find((c) => c.role === "challenging") ? (
-            partial.rated_cases
-              .filter((c) => c.role === "challenging")
-              .map((c) => <CaseOnlyCard key={c.case.case_id} card={c.case} rating={c.rating} onOpen={p.onOpenSources} note="Selected as a challenging case. The written comparison is unavailable." />)
-          ) : (
-            <p className="rounded-md border border-dashed border-rule px-4 py-4 leading-relaxed text-ink-soft">{r.challenging_note ?? "No sufficiently relevant challenging case was found."}</p>
-          )}
-        </section>
-      ) : null}
-
-      <NextStepsSection steps={r.next_steps} />
-
-      <ChangeSection items={r.what_would_change} uncertainties={r.uncertainties} onApply={p.onApplyChange} onEditContext={p.onEditContext} busy={p.busy} />
-
-      <ValidationFooter validation={r.validation} versions={r.versions} requestId={r.request_id} sample={r.sample} warnings={r.warnings} />
+        ) : null}
+      </DecisionTimeline>
     </div>
+  );
+}
+
+/** One quiet line above the timeline, so the timeline stays the first thing seen. */
+function StatusLine({ response: r, changedLabel }: { response: ReadyResponse | PartialResponse; changedLabel: string | null }) {
+  const items: { text: string; tone: string }[] = [];
+  if (changedLabel) items.push({ text: `Fresh analysis with your change: ${changedLabel}`, tone: "text-moss" });
+  if (r.sample) items.push({ text: "Sample analysis prepared in advance; fit ratings are illustrative", tone: "text-bronze" });
+  if (r.status === "partial") items.push({ text: r.preview ? "Preview mode: cases share wording with your description and are not assessed for fit" : "Partial result: see Your decision for what is missing", tone: "text-amber" });
+  if (!items.length) return null;
+  return (
+    <p role="status" className="text-center text-xs font-medium tracking-wide">
+      {items.map((i, n) => (
+        <span key={i.text} className={i.tone}>
+          {n ? " · " : ""}
+          {i.text}
+        </span>
+      ))}
+    </p>
   );
 }
 

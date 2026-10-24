@@ -1,0 +1,342 @@
+[
+ {
+  "case_id": "CASE_APOLLO13_TRIAGE",
+  "event_id": "EVT_APOLLO13",
+  "version": 1,
+  "title": "Apollo 13: rationing a lifeboat built for less",
+  "display_date": "April 1970",
+  "decision_question": "After an explosion crippled the main spacecraft, what should keep running, and what should be switched off, so the crew could get home on a vehicle built for a shorter, smaller mission?",
+  "context_summary": {
+   "text": "An oxygen tank explosion cost the command module its normal supply of electricity, light and water, about 200,000 miles from Earth. The lunar module could serve as a lifeboat, but it was built for a 45-hour lifetime and two people; it now had to keep three people alive for about four days.",
+   "claim_ids": [
+    "CLM_A13_001",
+    "CLM_A13_003",
+    "CLM_A13_004",
+    "CLM_A13_005"
+   ]
+  },
+  "pre_decision": {
+   "situation": "A sudden failure removed the main system's supply of power and water far from any resupply. A backup vehicle was available but had been sized for a shorter mission with fewer people. Consumables could not be replenished before the end of the journey, and the final critical step (re-entry in the main vehicle) still had to be possible at the end.",
+   "available_information": [
+    "Warning lights showed two of three fuel cells lost and oxygen depleting.",
+    "The backup vehicle's rated lifetime was about half of what the return would require.",
+    "Battery capacity, water and carbon dioxide removal were all known to be limited."
+   ],
+   "actors": [
+    "Spacecraft crew",
+    "Flight controllers and flight directors on the ground"
+   ],
+   "goals": [
+    "Return the crew safely",
+    "Keep the main vehicle usable for the final re-entry"
+   ],
+   "options": [
+    "Keep systems running as designed and hope the supplies last",
+    "Shut down everything not needed for survival and the final step, and ration supplies",
+    "Improvise new procedures and equipment fixes, checking them before use"
+   ],
+   "options_are_editorial": true,
+   "incentives": [
+    "Every unit of power, water and oxygen used early was unavailable later",
+    "Lives depended on getting the trade-offs right"
+   ],
+   "constraints": [
+    "Fixed, non-renewable consumables",
+    "Backup equipment incompatible in places (square versus round carbon dioxide canisters)",
+    "No resupply before the end of the journey"
+   ],
+   "time_pressure": "Minutes to move into the backup vehicle; then several days of endurance with no chance to restock.",
+   "reversibility": "Low: resources consumed could not be recovered."
+  },
+  "chosen_action": {
+   "text": "The crew used the lunar module as a lifeboat. Noncritical systems were turned off and energy use cut to one-fifth, water was rationed to one-fifth of normal intake, an improvised adapter let the command module's carbon dioxide canisters work in the lunar module, and new procedures were tested in the simulator before being sent to the crew.",
+   "claim_ids": [
+    "CLM_A13_006",
+    "CLM_A13_007",
+    "CLM_A13_008",
+    "CLM_A13_009"
+   ]
+  },
+  "outcome": {
+   "text": "The crew splashed down in the Pacific near Samoa, with about 20 percent of lunar module power and 9 percent of water left. The cost was severe discomfort: the cabin fell to 38°F, and one battery problem nearly left too little power to return.",
+   "claim_ids": [
+    "CLM_A13_007",
+    "CLM_A13_008",
+    "CLM_A13_010",
+    "CLM_A13_011",
+    "CLM_A13_013"
+   ],
+   "uncertainty": "Margins at the end were thin; the account is NASA's own institutional summary."
+  },
+  "mechanism_tags": [
+   "resource_triage",
+   "preserve_core_capability",
+   "finite_resources",
+   "improvisation_under_constraint",
+   "time_pressure",
+   "expert_support"
+  ],
+  "event_cluster": "apollo_programme",
+  "interpretation_disputes": [],
+  "dispute_note": "No competing account is stored for this case. The claims rest on one institutional source (NASA).",
+  "analogy_limits": [
+   "Professional flight controllers with simulators and practised procedures.",
+   "Physical supplies with hard limits; most modern projects can obtain more resources.",
+   "Lives were at stake, so severe discomfort was an acceptable cost.",
+   "A single, centralised command structure made the decisions."
+  ],
+  "lesson": {
+   "text": "When resources cannot be replenished before a fixed end point, the team protected only what the final critical step required, switched off everything else, and checked new procedures before relying on them.",
+   "conditions": [
+    "Resources are finite and cannot be replenished in time.",
+    "The capability needed for the final step can be clearly identified.",
+    "Changes can be checked before they are relied on."
+   ]
+  },
+  "search_text": {
+   "situation": "sudden failure far from help; backup sized for less; ration power and water; keep what the final step needs; improvise and test fixes",
+   "mechanism": "resource triage under fixed limits; preserve the core capability; shut down noncritical work; improvise under constraint with checking"
+  },
+  "review": {
+   "status": "approved",
+   "reviewed_by": "Historical Figure team (seed fixture)",
+   "reviewed_at": "2026-10-24",
+   "method": "Claims checked by hand against verbatim passages extracted from the source page.",
+   "notes": "Options are an editorial framing for comparison, not a documented list of options considered at the time."
+  }
+ },
+ {
+  "case_id": "CASE_APOLLO11_ALARMS",
+  "event_id": "EVT_APOLLO11",
+  "version": 1,
+  "title": "Apollo 11: continuing a landing through unfamiliar alarms",
+  "display_date": "July 1969",
+  "decision_question": "When the guidance computer raised alarms the crew did not recognise during the first lunar landing attempt, should the landing continue or be abandoned?",
+  "context_summary": {
+   "text": "During the descent of an experimental lunar module, only the fourth ever flown, the computer flashed alarms the crew did not recognise, while the trajectory still looked good. The fuel margin was itself uncertain by about 20 seconds, and an abort would be ordered if it ran too low.",
+   "claim_ids": [
+    "CLM_A11_001",
+    "CLM_A11_002",
+    "CLM_A11_005"
+   ]
+  },
+  "pre_decision": {
+   "situation": "Partway through an irreversible-feeling, time-critical manoeuvre with a novel system, warnings appeared that the operators did not recognise. Other indicators looked normal. A specialist who knew the system well was available in real time, and an abort option still existed.",
+   "available_information": [
+    "The alarm codes were unfamiliar to the crew.",
+    "The trajectory and other data looked good.",
+    "Fuel remaining could only be estimated to within about 20 seconds."
+   ],
+   "actors": [
+    "Two-person landing crew",
+    "Flight director and controllers",
+    "A software specialist who knew the computer best"
+   ],
+   "goals": [
+    "Land safely on the first attempt",
+    "Avoid an unnecessary abort",
+    "Avoid a crash or a landing on dangerous ground"
+   ],
+   "options": [
+    "Abort the landing because of the alarms",
+    "Continue the landing while the specialist diagnoses the alarms",
+    "Continue, but take manual control if the automated approach looked unsafe"
+   ],
+   "options_are_editorial": true,
+   "incentives": [
+    "A first landing carried great weight",
+    "Aborting would forgo the landing; continuing wrongly risked the crew"
+   ],
+   "constraints": [
+    "Seconds to decide",
+    "Limited, uncertain fuel",
+    "Novel hardware with little flight experience"
+   ],
+   "time_pressure": "Seconds: the decision had to be made during the descent.",
+   "reversibility": "Partial: an abort remained possible during the descent but fuel limited how long that stayed true."
+  },
+  "chosen_action": {
+   "text": "After the specialist diagnosed the alarm within seconds and recommended continuing, Houston declared it was GO on the alarm. Later, seeing the computer was steering towards a boulder field, Armstrong took manual control and flew beyond it.",
+   "claim_ids": [
+    "CLM_A11_003",
+    "CLM_A11_004",
+    "CLM_A11_006"
+   ]
+  },
+  "outcome": {
+   "text": "The lunar module touched down about forty seconds after a sixty-second fuel warning. Later analysis put the remaining fuel at about 45 seconds, the smallest margin of any Apollo landing, and fuel gauging was improved for the next mission.",
+   "claim_ids": [
+    "CLM_A11_007",
+    "CLM_A11_008"
+   ],
+   "uncertainty": "The landing succeeded with the thinnest fuel margin of the programme; the summary is an edited secondary account."
+  },
+  "mechanism_tags": [
+   "warning_signals",
+   "expert_diagnosis",
+   "abort_option",
+   "time_pressure",
+   "proceed_or_stop",
+   "novel_system"
+  ],
+  "event_cluster": "apollo_programme",
+  "interpretation_disputes": [],
+  "dispute_note": "No competing account is stored for this case. The claims rest on one edited secondary source.",
+  "analogy_limits": [
+   "The person who knew the system best was available in real time.",
+   "The software had been designed to keep handling high-priority tasks under overload.",
+   "The crew had trained for many hours in simulators.",
+   "An abort remained possible, so continuing did not close off the safe option."
+  ],
+  "lesson": {
+   "text": "An unfamiliar warning did not automatically mean stopping. Continuing was defensible because the specialist diagnosed the alarm within seconds, the system was built to protect its most important work, and an abort option remained available.",
+   "conditions": [
+    "Someone with deep knowledge of the system can diagnose the warning quickly.",
+    "Core functions stay protected while the warning persists.",
+    "A fallback or abort option remains available."
+   ]
+  },
+  "search_text": {
+   "situation": "unfamiliar warnings during a time-critical step with a novel system; other signals normal; specialist available; abort still possible; uncertain margin",
+   "mechanism": "proceed or stop under warning signals; rapid expert diagnosis; keep an abort option; protect high-priority functions"
+  },
+  "review": {
+   "status": "approved",
+   "reviewed_by": "Historical Figure team (seed fixture)",
+   "reviewed_at": "2026-10-24",
+   "method": "Claims checked by hand against verbatim passages extracted from the source page.",
+   "notes": "Options are an editorial framing for comparison, not a documented list of options considered at the time."
+  }
+ },
+ {
+  "case_id": "CASE_CHALLENGER_LAUNCH",
+  "event_id": "EVT_CHALLENGER_51L",
+  "version": 1,
+  "title": "Challenger: the launch decision on a cold morning",
+  "display_date": "January 1986",
+  "decision_question": "With engineers worried that predicted temperatures were below any previous launch, should Space Shuttle mission 51-L launch as scheduled or be delayed?",
+  "context_summary": {
+   "text": "On the eve of launch, Thiokol engineers presented concerns about O-ring temperatures and initially recommended not launching below 53 degrees, the lowest temperature of any previous launch, because their data went no lower. Mr. Mulloy later testified that he challenged their interpretation of the data and may have voiced the worry that such a limit could mean no launch until the following April. Rockwell separately lacked time to resolve concerns about ice on the pad.",
+   "claim_ids": [
+    "CLM_CH_001",
+    "CLM_CH_002",
+    "CLM_CH_003",
+    "CLM_CH_004",
+    "CLM_CH_009"
+   ]
+  },
+  "pre_decision": {
+   "situation": "A scheduled, high-profile launch faced conditions outside previous experience. The engineers closest to a critical component objected that they had no data for those conditions. Managers questioned the reasoning, and a new restriction could have delayed the programme for months. The step, once taken, could not be undone.",
+   "available_information": [
+    "No previous launch had flown at the predicted temperatures.",
+    "Engineers had data down to 53 degrees and no further.",
+    "A contractor had unresolved concerns about ice on the pad."
+   ],
+   "actors": [
+    "Contractor engineers",
+    "Contractor managers",
+    "Agency programme managers",
+    "A second contractor (Rockwell)"
+   ],
+   "goals": [
+    "Launch on schedule",
+    "Avoid unsafe conditions",
+    "Maintain the programme's reputation and flight rate"
+   ],
+   "options": [
+    "Launch as scheduled",
+    "Delay until conditions were within previous experience",
+    "Escalate the concerns to more senior decision makers before deciding"
+   ],
+   "options_are_editorial": true,
+   "incentives": [
+    "Schedule pressure on a busy programme",
+    "Contractor managers deciding on a customer's challenge to their engineers"
+   ],
+   "constraints": [
+    "Conditions outside test and flight experience",
+    "An evening teleconference before a morning launch",
+    "An irreversible step once launched"
+   ],
+   "time_pressure": "Hours: the recommendation was debated the evening before a morning launch.",
+   "reversibility": "None once launched."
+  },
+  "chosen_action": {
+   "text": "After Mr. Mason said a management decision was needed and asked Bob Lund, Thiokol's Vice President of Engineering, to put on his 'management hat', Thiokol moved from recommending against the launch to recommending it. The launch went ahead on 28 January 1986.",
+   "claim_ids": [
+    "CLM_CH_002",
+    "CLM_CH_005",
+    "CLM_CH_006",
+    "CLM_CH_011"
+   ]
+  },
+  "outcome": {
+   "text": "The Presidential Commission investigating the accident concluded that the decision to launch was flawed: decision makers had not been told of the O-ring history, the contractor's initial recommendation, or the engineers' continuing opposition. It found that NASA appeared to require proof that launching was unsafe, rather than proof that it was safe.",
+   "claim_ids": [
+    "CLM_CH_008",
+    "CLM_CH_010",
+    "CLM_CH_011",
+    "CLM_CH_012"
+   ],
+   "uncertainty": "This record stores the Commission's findings on the decision process only; the technical cause is covered elsewhere in the report and is not reproduced here."
+  },
+  "mechanism_tags": [
+   "schedule_pressure",
+   "warning_signals",
+   "burden_of_proof",
+   "operating_outside_experience",
+   "proceed_or_stop",
+   "management_vs_engineering",
+   "irreversible_commitment"
+  ],
+  "event_cluster": "space_shuttle_programme",
+  "interpretation_disputes": [
+   {
+    "dispute_id": "DSP_CH_001",
+    "summary": "Witnesses disagreed about whether Thiokol's early concerns amounted to a recommendation to delay.",
+    "positions": [
+     {
+      "attribution": "Dr. Lovingood",
+      "position": "It came across to him as saying delay.",
+      "claim_ids": [
+       "CLM_CH_013"
+      ]
+     },
+     {
+      "attribution": "Mr. Reinartz",
+      "position": "He saw questions needing review, not a recommendation to delay.",
+      "claim_ids": [
+       "CLM_CH_014"
+      ]
+     }
+    ]
+   }
+  ],
+  "dispute_note": null,
+  "analogy_limits": [
+   "A large organisation with formal contractor and agency relationships.",
+   "Safety-critical hardware with lives at stake.",
+   "The technical concern was specific, physical and backed by test data.",
+   "The Commission's findings were made after the accident, with hindsight."
+  ],
+  "lesson": {
+   "text": "When engineers lacked data for the conditions ahead and the burden of proof shifted to proving danger rather than safety, schedule pressure prevailed over unresolved concerns. The Commission judged the decision process flawed.",
+   "conditions": [
+    "Conditions fall outside previous experience or test data.",
+    "The people closest to the technical risk object.",
+    "Delay is costly but still possible."
+   ]
+  },
+  "search_text": {
+   "situation": "scheduled high-profile launch; conditions outside experience; engineers object; managers challenge; delay costly; irreversible once started",
+   "mechanism": "schedule pressure versus unresolved warnings; burden of proof inverted; management overrides engineering; irreversible commitment"
+  },
+  "review": {
+   "status": "approved",
+   "reviewed_by": "Historical Figure team (seed fixture)",
+   "reviewed_at": "2026-10-24",
+   "method": "Claims checked by hand against verbatim passages extracted from the source page, with speaker attribution verified in context.",
+   "notes": "Options are an editorial framing for comparison, not a documented list of options considered at the time."
+  }
+ }
+]

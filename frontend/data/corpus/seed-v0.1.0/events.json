@@ -1,0 +1,26 @@
+[
+  {
+    "event_id": "EVT_APOLLO13",
+    "title": "Apollo 13",
+    "date": { "start": "1970-04-11", "end": "1970-04-17", "precision": "day", "display": "11–17 April 1970" },
+    "geography": "Cislunar space; Mission Control, Houston",
+    "participants": ["Apollo 13 crew", "NASA flight controllers"],
+    "date_claim_ids": ["CLM_A13_016"]
+  },
+  {
+    "event_id": "EVT_APOLLO11",
+    "title": "Apollo 11",
+    "date": { "start": "1969-07-16", "end": "1969-07-24", "precision": "day", "display": "16–24 July 1969" },
+    "geography": "Lunar descent; Mission Control, Houston",
+    "participants": ["Apollo 11 crew", "NASA flight controllers"],
+    "date_claim_ids": ["CLM_A11_009"]
+  },
+  {
+    "event_id": "EVT_CHALLENGER_51L",
+    "title": "Space Shuttle mission 51-L (Challenger)",
+    "date": { "start": "1986-01-27", "end": "1986-01-28", "precision": "day", "display": "27–28 January 1986" },
+    "geography": "Kennedy Space Center; Marshall Space Flight Center; Morton Thiokol, Utah",
+    "participants": ["NASA managers", "Morton Thiokol engineers and managers", "Rockwell"],
+    "date_claim_ids": ["CLM_CH_001", "CLM_CH_011"]
+  }
+]

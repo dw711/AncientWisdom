@@ -1,0 +1,129 @@
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #f6f1e7;
+  --color-paper-deep: #efe7d8;
+  --color-card: #fbf8f2;
+  --color-ink: #1d1a16;
+  --color-ink-soft: #453f37;
+  --color-muted: #776d61;
+  --color-rule: #dcd1bf;
+  --color-rule-soft: #e8dfd0;
+  --color-burgundy: #7b2d26;
+  --color-burgundy-deep: #5e211b;
+  --color-burgundy-wash: #f3e4df;
+  --color-bronze: #946535;
+  --color-bronze-wash: #f2e8d8;
+  --color-moss: #4e6545;
+  --color-moss-wash: #e7ecdf;
+  --color-amber: #8a5b12;
+  --color-amber-wash: #f6ebd3;
+
+  --font-serif: var(--font-newsreader), "Iowan Old Style", Georgia, serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-cjk: "Songti SC", "STSong", "Noto Serif SC", "Source Han Serif SC", serif;
+
+  --animate-rise: rise 420ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-breathe: breathe 1.6s ease-in-out infinite;
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes breathe {
+    0%,
+    100% {
+      opacity: 0.35;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+}
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  background: var(--color-paper);
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv11";
+}
+
+::selection {
+  background: var(--color-burgundy-wash);
+  color: var(--color-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-burgundy);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Native dialog used for the source drawer. */
+dialog.drawer {
+  margin: 0;
+  max-width: 100vw;
+  max-height: 100dvh;
+  height: 100dvh;
+  width: min(36rem, 100vw);
+  margin-left: auto;
+  border: 0;
+  border-left: 1px solid var(--color-rule);
+  padding: 0;
+  background: var(--color-card);
+  color: var(--color-ink);
+}
+dialog.drawer::backdrop {
+  background: rgb(29 26 22 / 0.28);
+}
+dialog.drawer[open] {
+  animation: drawer-in 260ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+@keyframes drawer-in {
+  from {
+    transform: translateX(24px);
+    opacity: 0;
+  }
+}
+@media (max-width: 640px) {
+  dialog.drawer {
+    width: 100vw;
+    height: 92dvh;
+    max-height: 92dvh;
+    margin-top: auto;
+    border-left: 0;
+    border-top: 1px solid var(--color-rule);
+    border-radius: 14px 14px 0 0;
+  }
+  @keyframes drawer-in {
+    from {
+      transform: translateY(24px);
+      opacity: 0;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}

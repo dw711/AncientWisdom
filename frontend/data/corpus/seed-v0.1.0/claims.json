@@ -1,0 +1,511 @@
+[
+ {
+  "claim_id": "CLM_A13_001",
+  "case_id": "CASE_APOLLO13_TRIAGE",
+  "statement": "Oxygen tank No. 2 blew up, causing tank No. 1 to fail; the command module lost its normal supply of electricity, light and water about 200,000 miles from Earth.",
+  "type": "observation",
+  "phase": "pre_decision",
+  "attribution": null,
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_A13_EXPLOSION"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_A13_002",
+  "case_id": "CASE_APOLLO13_TRIAGE",
+  "statement": "Warning lights showed the loss of two of the three fuel cells, the spacecraft’s prime source of electricity, and the oxygen in the second tank appeared to be depleting rapidly.",
+  "type": "observation",
+  "phase": "pre_decision",
+  "attribution": null,
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_A13_FUEL_CELLS"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_A13_003",
+  "case_id": "CASE_APOLLO13_TRIAGE",
+  "statement": "About an hour after the explosion, Mission Control told the crew it was starting to think about using the lunar module as a lifeboat.",
+  "type": "observation",
+  "phase": "pre_decision",
+  "attribution": null,
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_A13_LIFEBOAT"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_A13_004",
+  "case_id": "CASE_APOLLO13_TRIAGE",
+  "statement": "The lunar module was built for a 45-hour lifetime and needed to be stretched to 90 hours; the first concern was whether there were enough consumables to get home.",
+  "type": "observation",
+  "phase": "pre_decision",
+  "attribution": null,
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_A13_LM_LIFETIME"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_A13_005",
+  "case_id": "CASE_APOLLO13_TRIAGE",
+  "statement": "The lunar module was designed to support two men for two days but was being asked to care for three men for about four days.",
+  "type": "observation",
+  "phase": "pre_decision",
+  "attribution": null,
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_A13_CO2"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_A13_006",
+  "case_id": "CASE_APOLLO13_TRIAGE",
+  "statement": "Completely new procedures had to be written and tested in the simulator before being passed up to the crew.",
+  "type": "observation",
+  "phase": "decision",
+  "attribution": null,
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_A13_PROCEDURES"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_A13_007",
+  "case_id": "CASE_APOLLO13_TRIAGE",
+  "statement": "All noncritical systems were turned off and energy consumption was reduced to one-fifth; 20 percent of the lunar module’s electrical power remained when it was jettisoned.",
+  "type": "observation",
+  "phase": "decision",
+  "attribution": null,
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_A13_POWER"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_A13_008",
+  "case_id": "CASE_APOLLO13_TRIAGE",
+  "statement": "The crew cut water to six ounces each per day, one-fifth of normal intake, and finished with 28.2 pounds of water, about 9 percent of the total.",
+  "type": "observation",
+  "phase": "decision",
+  "attribution": null,
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_A13_WATER"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_A13_009",
+  "case_id": "CASE_APOLLO13_TRIAGE",
+  "statement": "The command module’s square carbon dioxide canisters did not fit the lunar module’s round openings; Mission Control devised a way to attach them using plastic bags, cardboard and tape.",
+  "type": "observation",
+  "phase": "decision",
+  "attribution": null,
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_A13_CO2"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_A13_010",
+  "case_id": "CASE_APOLLO13_TRIAGE",
+  "statement": "With the electrical systems turned off, the cabin temperature dropped to 38 degrees Fahrenheit and sleep was almost impossible.",
+  "type": "outcome",
+  "phase": "outcome",
+  "attribution": null,
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_A13_COLD"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_A13_011",
+  "case_id": "CASE_APOLLO13_TRIAGE",
+  "statement": "One command module battery vented and momentarily dropped off the line; had it failed, there would have been insufficient power to return to Earth.",
+  "type": "outcome",
+  "phase": "outcome",
+  "attribution": null,
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_A13_POWER"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_A13_012",
+  "case_id": "CASE_APOLLO13_TRIAGE",
+  "statement": "Flight controllers wrote the procedures for powering the command module back up in three days instead of the usual three months.",
+  "type": "outcome",
+  "phase": "outcome",
+  "attribution": null,
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_A13_POWERUP"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_A13_013",
+  "case_id": "CASE_APOLLO13_TRIAGE",
+  "statement": "The crew left the lunar module Aquarius and splashed down in the Pacific Ocean near Samoa.",
+  "type": "outcome",
+  "phase": "outcome",
+  "attribution": null,
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_A13_SPLASHDOWN"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_A13_014",
+  "case_id": "CASE_APOLLO13_TRIAGE",
+  "statement": "NASA describes the aborted mission as a “successful failure” because of the experience gained in rescuing the crew.",
+  "type": "interpretation",
+  "phase": "outcome",
+  "attribution": "NASA",
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_A13_SUCCESSFUL_FAILURE"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_A13_015",
+  "case_id": "CASE_APOLLO13_TRIAGE",
+  "statement": "The Accident Review Board found that the heaters’ thermostatic switches had not been modified when the permitted heater voltage was raised from 28 to 65 volts DC; NASA’s account adds that other warning signs during testing went unheeded.",
+  "type": "observation",
+  "phase": "outcome",
+  "attribution": "Apollo 13 Accident Review Board, as summarised by NASA",
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_A13_CAUSE"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_A13_016",
+  "case_id": "CASE_APOLLO13_TRIAGE",
+  "statement": "Apollo 13 launched on 11 April 1970 and landed in the Pacific Ocean on 17 April 1970.",
+  "type": "observation",
+  "phase": "outcome",
+  "attribution": null,
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_A13_DATES",
+   "PSG_A13_LANDING_DATE"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_A11_001",
+  "case_id": "CASE_APOLLO11_ALARMS",
+  "statement": "The lunar module was an experimental craft; the one Armstrong and Aldrin landed was only the fourth that had ever been flown.",
+  "type": "observation",
+  "phase": "pre_decision",
+  "attribution": null,
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_A11_EXPERIMENTAL"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_A11_002",
+  "case_id": "CASE_APOLLO11_ALARMS",
+  "statement": "During the descent the computer flashed a “1202” and later a “1201” alarm that the crew did not recognise, although the trajectory looked good.",
+  "type": "observation",
+  "phase": "pre_decision",
+  "attribution": null,
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_A11_ALARMS"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_A11_003",
+  "case_id": "CASE_APOLLO11_ALARMS",
+  "statement": "Engineer Steven Bales, the person who knew the computer best, needed only a few seconds to diagnose the problem and recommend that the landing continue; Houston radioed that it was GO on the alarm.",
+  "type": "observation",
+  "phase": "decision",
+  "attribution": null,
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_A11_ALARMS"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_A11_004",
+  "case_id": "CASE_APOLLO11_ALARMS",
+  "statement": "Parts of the computer memory were being overloaded with extraneous data from the rendezvous radar, and the computer had been programmed so that it could continue to handle high-priority tasks.",
+  "type": "observation",
+  "phase": "decision",
+  "attribution": null,
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_A11_ALARMS"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_A11_005",
+  "case_id": "CASE_APOLLO11_ALARMS",
+  "statement": "The fuel remaining was uncertain by about 20 seconds; if they got too low, Flight Director Gene Kranz would have to order an abort.",
+  "type": "observation",
+  "phase": "pre_decision",
+  "attribution": null,
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_A11_FUEL_UNCERTAINTY"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_A11_006",
+  "case_id": "CASE_APOLLO11_ALARMS",
+  "statement": "Finding the computer was taking the lunar module into a boulder field, Armstrong switched to manual control and flew about 1,100 feet west beyond the craters and boulders.",
+  "type": "observation",
+  "phase": "decision",
+  "attribution": null,
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_A11_BOULDERS",
+   "PSG_A11_MANUAL"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_A11_007",
+  "case_id": "CASE_APOLLO11_ALARMS",
+  "statement": "The lunar module touched down about forty seconds after a sixty-second fuel warning.",
+  "type": "outcome",
+  "phase": "outcome",
+  "attribution": null,
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_A11_TOUCHDOWN"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_A11_008",
+  "case_id": "CASE_APOLLO11_ALARMS",
+  "statement": "Post-mission analysis indicated about 45 seconds of fuel remained, the smallest margin of all the Apollo landings, and fuel gauging was improved for Apollo 12.",
+  "type": "outcome",
+  "phase": "outcome",
+  "attribution": null,
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_A11_MARGIN"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_A11_009",
+  "case_id": "CASE_APOLLO11_ALARMS",
+  "statement": "Apollo 11 launched on 16 July 1969 and splashed down on 24 July 1969.",
+  "type": "observation",
+  "phase": "outcome",
+  "attribution": null,
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_A11_DATES"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_CH_001",
+  "case_id": "CASE_CHALLENGER_LAUNCH",
+  "statement": "A teleconference involving Thiokol engineering personnel in Utah took place on the evening of 27 January 1986.",
+  "type": "observation",
+  "phase": "pre_decision",
+  "attribution": "Testimony of Mr. Hardy, reproduced by the Commission",
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_CH_TELECON_DATE"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_CH_002",
+  "case_id": "CASE_CHALLENGER_LAUNCH",
+  "statement": "Mr. Mulloy testified that Thiokol engineering initially recommended that 51-L not be launched if O-ring temperatures predicted at launch were lower than any previous launch, which was 53 degrees.",
+  "type": "observation",
+  "phase": "pre_decision",
+  "attribution": "Testimony of Mr. Mulloy, reproduced by the Commission",
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_CH_LUND_INITIAL"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_CH_003",
+  "case_id": "CASE_CHALLENGER_LAUNCH",
+  "statement": "Mr. Boisjoly testified that the engineering conclusion was that they should not fly outside their data base, which was 53 degrees.",
+  "type": "observation",
+  "phase": "pre_decision",
+  "attribution": "Testimony of Mr. Boisjoly, reproduced by the Commission",
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_CH_DATABASE"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_CH_004",
+  "case_id": "CASE_CHALLENGER_LAUNCH",
+  "statement": "Mr. Mulloy testified that he may have expressed the thought that a new 53-degree launch criterion, introduced on the eve of launch, might mean they could not launch until the following April.",
+  "type": "observation",
+  "phase": "pre_decision",
+  "attribution": "Testimony of Mr. Mulloy, reproduced by the Commission",
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_CH_MULLOY_APRIL"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_CH_005",
+  "case_id": "CASE_CHALLENGER_LAUNCH",
+  "statement": "Mr. Boisjoly testified that Mr. Mason said they had to make a management decision and asked Bob Lund to take off his engineering hat and put on his management hat.",
+  "type": "observation",
+  "phase": "decision",
+  "attribution": "Testimony of Mr. Boisjoly, reproduced by the Commission",
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_CH_MANAGEMENT_HAT"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_CH_006",
+  "case_id": "CASE_CHALLENGER_LAUNCH",
+  "statement": "The morning after the teleconference, Judson Lovingood, Deputy Manager of Marshall's Shuttle Projects Office, told Deputy Director Jack Lee that Thiokol had at first recommended not launching and then, after the Wasatch conference, recommended launching.",
+  "type": "observation",
+  "phase": "decision",
+  "attribution": "Commission chronology",
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_CH_REVERSAL"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_CH_007",
+  "case_id": "CASE_CHALLENGER_LAUNCH",
+  "statement": "Mr. Boisjoly testified that he felt management was under a lot of pressure to launch, and that the engineers were put in the position of proving that it was not safe to do so.",
+  "type": "interpretation",
+  "phase": "pre_decision",
+  "attribution": "Testimony of Mr. Boisjoly, reproduced by the Commission",
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_CH_PRESSURE"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_CH_008",
+  "case_id": "CASE_CHALLENGER_LAUNCH",
+  "statement": "The Commission found that NASA appeared to be requiring a contractor to prove that it was not safe to launch, rather than proving it was safe.",
+  "type": "interpretation",
+  "phase": "outcome",
+  "attribution": "Presidential Commission",
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_CH_BURDEN"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_CH_009",
+  "case_id": "CASE_CHALLENGER_LAUNCH",
+  "statement": "Rockwell did not feel it had sufficient time to research and resolve the problem of ice on the launch pad.",
+  "type": "observation",
+  "phase": "pre_decision",
+  "attribution": "Presidential Commission",
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_CH_ICE"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_CH_010",
+  "case_id": "CASE_CHALLENGER_LAUNCH",
+  "statement": "The Commission concluded that the decision to launch was flawed: the decision makers were unaware of the recent history of O-ring problems, of the contractor’s initial written recommendation against launching below 53 degrees Fahrenheit, and of the engineers’ continuing opposition.",
+  "type": "interpretation",
+  "phase": "outcome",
+  "attribution": "Presidential Commission",
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_CH_FLAWED"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_CH_011",
+  "case_id": "CASE_CHALLENGER_LAUNCH",
+  "statement": "The Commission judged it highly unlikely that the decision makers would have decided to launch 51-L on 28 January 1986 if they had known all of the facts.",
+  "type": "interpretation",
+  "phase": "outcome",
+  "attribution": "Presidential Commission",
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_CH_FLAWED"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_CH_012",
+  "case_id": "CASE_CHALLENGER_LAUNCH",
+  "statement": "The Commission identified failures in communication, a conflict between engineering data and management judgments, and a management structure that let internal flight-safety problems bypass key Shuttle managers.",
+  "type": "interpretation",
+  "phase": "outcome",
+  "attribution": "Presidential Commission",
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_CH_PROCESS"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_CH_013",
+  "case_id": "CASE_CHALLENGER_LAUNCH",
+  "statement": "Dr. Lovingood testified that after the first afternoon conference, Thiokol’s position came across to him as saying delay.",
+  "type": "interpretation",
+  "phase": "pre_decision",
+  "attribution": "Testimony of Dr. Lovingood, reproduced by the Commission",
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_CH_DELAY_PERCEPTION"
+  ],
+  "contradicting_passage_ids": []
+ },
+ {
+  "claim_id": "CLM_CH_014",
+  "case_id": "CASE_CHALLENGER_LAUNCH",
+  "statement": "Mr. Reinartz testified that he did not perceive Thiokol’s concerns as a recommendation to delay, but as questions and issues that required review.",
+  "type": "interpretation",
+  "phase": "pre_decision",
+  "attribution": "Testimony of Mr. Reinartz, reproduced by the Commission",
+  "support_status": "supported",
+  "supporting_passage_ids": [
+   "PSG_CH_DELAY_PERCEPTION"
+  ],
+  "contradicting_passage_ids": []
+ }
+]

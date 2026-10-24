@@ -1,0 +1,70 @@
+[
+  {
+    "source_id": "SRC_NASA_A13",
+    "title": "Apollo 13: Mission Details",
+    "institution": "NASA",
+    "author": null,
+    "url": "https://www.nasa.gov/missions/apollo/apollo-13-mission-details/",
+    "archived_url": "https://web.archive.org/web/20261006091749/https://www.nasa.gov/missions/apollo/apollo-13-mission-details/",
+    "publication_date": "2023-07-26",
+    "publication_date_display": "Last updated 26 July 2023",
+    "retrieved_at": "2026-10-24",
+    "retrieval_note": "Read from the Internet Archive snapshot of 6 October 2026 because nasa.gov was unreachable on the retrieval date.",
+    "rights": {
+      "status": "public_domain",
+      "note": "NASA material is generally not subject to copyright in the United States."
+    },
+    "source_type": "official_secondary"
+  },
+  {
+    "source_id": "SRC_NASA_A11_MISSION",
+    "title": "Apollo 11",
+    "institution": "NASA",
+    "author": null,
+    "url": "https://www.nasa.gov/mission/apollo-11/",
+    "archived_url": "https://web.archive.org/web/20261016013534/https://www.nasa.gov/mission/apollo-11/",
+    "publication_date": null,
+    "publication_date_display": null,
+    "retrieved_at": "2026-10-24",
+    "retrieval_note": "Read from the Internet Archive snapshot of 16 October 2026 because nasa.gov was unreachable on the retrieval date. Used only for mission dates.",
+    "rights": {
+      "status": "public_domain",
+      "note": "NASA material is generally not subject to copyright in the United States."
+    },
+    "source_type": "official_secondary"
+  },
+  {
+    "source_id": "SRC_ALSJ_A11",
+    "title": "Apollo 11 Lunar Surface Journal: Mission Summary (The First Lunar Landing)",
+    "institution": "Apollo Lunar Surface Journal, hosted by NASA",
+    "author": "Edited by Eric M. Jones and Ken Glover",
+    "url": "https://www.nasa.gov/wp-content/uploads/static/history/alsj/a11/a11.summary.html",
+    "archived_url": "https://web.archive.org/web/20261009203043/https://www.nasa.gov/wp-content/uploads/static/history/alsj/a11/a11.summary.html",
+    "publication_date": "2015-06-11",
+    "publication_date_display": "Last revised 11 June 2015",
+    "retrieved_at": "2026-10-24",
+    "retrieval_note": "Read from the Internet Archive snapshot of 9 October 2026 because nasa.gov was unreachable on the retrieval date.",
+    "rights": {
+      "status": "copyright_excerpt",
+      "note": "Copyright © 1995 Eric M. Jones. Short excerpts are quoted for commentary; read the full text at the source."
+    },
+    "source_type": "secondary"
+  },
+  {
+    "source_id": "SRC_ROGERS_V1_CH5",
+    "title": "Report of the Presidential Commission on the Space Shuttle Challenger Accident, Volume 1, Chapter V: The Contributing Cause of the Accident",
+    "institution": "Presidential Commission on the Space Shuttle Challenger Accident (published online by the NASA History Office)",
+    "author": null,
+    "url": "https://history.nasa.gov/rogersrep/v1ch5.htm",
+    "archived_url": "https://web.archive.org/web/20230506174838/https://history.nasa.gov/rogersrep/v1ch5.htm",
+    "publication_date": "1986-06",
+    "publication_date_display": "June 1986",
+    "retrieved_at": "2026-10-24",
+    "retrieval_note": "Read from the Internet Archive snapshot of 6 May 2023 because history.nasa.gov was unreachable on the retrieval date.",
+    "rights": {
+      "status": "public_domain",
+      "note": "United States Government work."
+    },
+    "source_type": "primary"
+  }
+]

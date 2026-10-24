@@ -1,0 +1,12 @@
+{
+  "corpus_version": "seed-v0.1.0",
+  "created_at": "2026-10-24",
+  "description": "Minimal seed fixture so the application runs end to end. It is not the production corpus: the team's database will replace it behind the CaseRepository interface.",
+  "review": {
+    "method": "Each passage was extracted programmatically from the fetched source page using start/end anchors, so excerpts are verbatim. Claims were written against those passages and checked by hand on 2026-10-24.",
+    "limitations": [
+      "nasa.gov refused connections on 2026-10-24, so NASA pages were read from Internet Archive snapshots of the same URLs (noted per source).",
+      "Each case currently rests on one institutional account; independent corroboration has not been added."
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+# Never upload local secrets or build output with the source.
+.env
+.env.*
+!.env.example
+.next
+node_modules
+coverage
+tests
+*.tsbuildinfo
+.DS_Store

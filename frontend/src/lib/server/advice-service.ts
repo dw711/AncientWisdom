@@ -1,5 +1,5 @@
 import "server-only";
-import { AdviceRequestSchema, type AdviceResponse, type ApiError, type ErrorCode, type ProgressStage } from "@/lib/contracts/advice";
+import { AdviceRequestSchema, type AdviceResponse, type ApiError, type ErrorCode, type EvidenceResponse, type ProgressStage } from "@/lib/contracts/advice";
 import { loadConfig } from "@/lib/server/config";
 import { CorpusError, getCaseRepository } from "@/lib/server/corpus";
 import { runDemoPipeline } from "@/lib/server/pipeline/demo";
@@ -10,7 +10,7 @@ import { createJevClient } from "@/lib/server/providers/jev";
 
 export interface ServiceResult {
   httpStatus: number;
-  body: AdviceResponse | ApiError;
+  body: AdviceResponse | EvidenceResponse | ApiError;
 }
 
 export interface ServiceOptions {
@@ -23,6 +23,22 @@ const error = (requestId: string, httpStatus: number, code: ErrorCode, message: 
   httpStatus,
   body: { request_id: requestId, error: { code, message, ...(details ? { details } : {}) } },
 });
+
+/** Shared error mapping for pipeline failures (also used by the evidence service). */
+export function mapServiceError(requestId: string, err: unknown, signal?: AbortSignal): ServiceResult {
+  if (err instanceof CorpusError) {
+    console.error(JSON.stringify({ request_id: requestId, event: "corpus_error", message: err.message, issues: err.issues }));
+    return error(requestId, 503, "corpus_unavailable", "The historical collection could not be loaded.");
+  }
+  if (err instanceof CancelledError || signal?.aborted) {
+    return error(requestId, 499, "cancelled", "The request was cancelled.");
+  }
+  if (err instanceof DeadlineExceededError) {
+    return error(requestId, 504, "deadline_exceeded", "The analysis took too long and was stopped. Please try again.");
+  }
+  console.error(JSON.stringify({ request_id: requestId, event: "internal_error", message: err instanceof Error ? err.message : String(err) }));
+  return error(requestId, 500, "internal_error", "Something went wrong while preparing the analysis.");
+}
 
 /**
  * Transport-independent entry point for advice. HTTP handlers (and later an
@@ -62,17 +78,7 @@ export async function getAdvice(input: unknown, opts: ServiceOptions): Promise<S
       }
     }
   } catch (err) {
-    if (err instanceof CorpusError) {
-      console.error(JSON.stringify({ request_id: opts.requestId, event: "corpus_error", message: err.message, issues: err.issues }));
-      result = error(opts.requestId, 503, "corpus_unavailable", "The historical collection could not be loaded.");
-    } else if (err instanceof CancelledError || opts.signal?.aborted) {
-      result = error(opts.requestId, 499, "cancelled", "The request was cancelled.");
-    } else if (err instanceof DeadlineExceededError) {
-      result = error(opts.requestId, 504, "deadline_exceeded", "The analysis took too long and was stopped. Please try again.");
-    } else {
-      console.error(JSON.stringify({ request_id: opts.requestId, event: "internal_error", message: err instanceof Error ? err.message : String(err) }));
-      result = error(opts.requestId, 500, "internal_error", "Something went wrong while preparing the analysis.");
-    }
+    result = mapServiceError(opts.requestId, err, opts.signal);
   }
 
   // Log identifiers, versions and timings only, never the dilemma text.

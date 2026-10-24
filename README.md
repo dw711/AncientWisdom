@@ -9,7 +9,7 @@ Historical Figure helps people think through a present decision using sourced hi
 | [`backend/`](backend) | Database guide and the CSV import job. |
 | [`data/`](data) | Researched case, evidence and pairing data imported into the database. |
 | [`docs/`](docs) | System design. |
-| [`skills/`](skills) | Assistant integrations: the Claude Code skill (`.claude/skills/historical-figure/`), the ChatGPT package, and the MCP stdio server in [`mcp/`](mcp). See [skills/README.md](skills/README.md). |
+| [`skills/`](skills) | Assistant integrations: skill packages for claude.ai and ChatGPT, backed by the remote MCP endpoint (`/api/mcp` in the frontend app). See [skills/README.md](skills/README.md). |
 
 Quick start:
 

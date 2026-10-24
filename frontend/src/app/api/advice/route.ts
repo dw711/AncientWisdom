@@ -1,5 +1,5 @@
 import type { NextRequest } from "next/server";
-import type { AdviceStreamEvent, ApiError } from "@/lib/contracts/advice";
+import type { AdviceResponse, AdviceStreamEvent, ApiError } from "@/lib/contracts/advice";
 import { getAdvice } from "@/lib/server/advice-service";
 import { loadConfig } from "@/lib/server/config";
 import { rateLimit } from "@/lib/server/rate-limit";
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
         onProgress: (stage, message) => send({ type: "progress", stage, message }),
       });
       if ("error" in result.body) send({ type: "error", http_status: result.httpStatus, error: result.body });
-      else send({ type: "result", http_status: result.httpStatus, response: result.body });
+      else send({ type: "result", http_status: result.httpStatus, response: result.body as AdviceResponse });
       try {
         controller.close();
       } catch {

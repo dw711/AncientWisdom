@@ -5,27 +5,39 @@ description: Grounded advice for present-day decisions using sourced historical 
 
 # Historical Figure · 以古为鉴
 
-Advise on present-day decisions using sourced historical decision cases. The two read-only tools come from the connected Historical Figure MCP server: `get_historical_advice` and `get_historical_case`. The backend owns analysis, evidence, and validation; you own the conversation.
+Advise on present-day decisions using sourced historical decision cases. You have three read-only tools from the Historical Figure MCP server: `get_historical_evidence` (fast, default), `get_historical_case`, and `get_historical_advice` (full validated analysis, slow). The backend owns retrieval, ranking and validation; you own the conversation and, on the fast path, the synthesis — under the rules below.
 
 ## When to use
 
 **Use when:**
 
-- The user is facing a real decision ("should I…", "we need to choose…", a dilemma at work or in life) and wants historical perspective or advice.
+- The user is facing a decision ("should I…", "we need to choose…", a dilemma at work or in life) and wants historical perspective or advice.
 - The user changes a fact or constraint on a dilemma already analysed and wants the advice recomputed.
 - The user asks about a specific historical decision case from a previous answer (use `get_historical_case`).
 
 **Do not use for:** general history questions, open-web research, or hypothetical fiction — those do not need the tools.
 
-## Workflow
+## Workflow (evidence-first)
 
-1. **Send the dilemma verbatim.** Call `get_historical_advice` with the user's own words as `query`. Set `language` to match the user (`en` or `zh`). Pass `constraints` only for facts the user explicitly stated. Do not strip, paraphrase, or embellish their words.
-2. **The call takes up to ~60 seconds.** Tell the user it is working. Never re-call in a loop because the first call has not returned.
-3. **Clarification.** If the result asks for a clarification, relay the question to the user in their language. Then call `get_historical_advice` again with the same `query` plus `clarifications: [{question: "<the exact question text from the tool>", answer: "<the user's answer>"}]`.
-4. **Present the returned markdown mostly as-is.** You may add at most one short preamble sentence (for example "Here is what the historical comparison says."). Never alter historical facts, quotations, source links, or ratings. The analogy-fit number is a rubric rating, not a probability — say so if asked.
-5. **Follow-ups are stateless.** If the user changes a fact or constraint, re-send the FULL original dilemma with the change in `constraints` (or in the query text if the change alters the situation itself). Never edit or amend the previous answer in place; every run is a fresh call.
-6. **No result is a result.** If the tool returns insufficient evidence, a partial answer, or an error, report that honestly. Never invent historical facts, quotes, dates, or comparisons to fill the gap.
-7. **Evidence discipline.** Quotes and case facts come only from the tool output. Keep source links exactly as given. Do not add your own historical knowledge to the answer.
+1. **Send the dilemma verbatim.** Call `get_historical_evidence` with the user's own words as `query`. Set `language` to match the user (`en` or `zh`). Pass `constraints` only for facts the user explicitly stated. This call takes about 10–20 seconds — tell the user it is working, and never re-call in a loop.
+2. **Clarification.** If the result asks for a clarification, relay the question to the user in their language, then call again with the same `query` plus `clarifications: [{question: "<the exact question text from the tool>", answer: "<the user's answer>"}]`.
+3. **Read before writing.** Pick the one or two most relevant rated cases, then call `get_historical_case` for each. Only now do outcomes become visible — rank first, read later, so the comparison is not written with hindsight.
+4. **Write the comparison yourself**, following the synthesis rules below, and present it together with the rated-case list the tool returned.
+5. **The fully validated path.** Only if the user explicitly asks for the fully checked written analysis, call `get_historical_advice` (up to ~60 seconds). Present its markdown mostly as-is; you may add at most one short preamble sentence.
+
+## Synthesis rules (the fast path)
+
+- Label every recommendation as **modern inference**, never as historical fact. Distinguish what the sources record from your interpretation of what it means for the user.
+- State shared mechanisms, **important differences**, and each case's **analogy limits**. The cases' own limits come from the tool output; do not soften them.
+- Preserve **disputed accounts** ("Accounts differ") with attribution; do not manufacture a consensus.
+- Give **conditional advice**: a short recommendation, two or three next steps, and a condition that would change the recommendation.
+- **Quotes and facts come only from tool output.** Never add your own historical knowledge, dates, or quotations. Keep source links exactly as given.
+- The analogy-fit number is a **rubric rating, not a probability** — say so if asked.
+- If no case is a strong enough match, say so honestly; do not force a comparison.
+
+## Follow-ups are stateless
+
+If the user changes a fact or constraint, re-send the FULL original dilemma with the change in `constraints` (or in the query text if the change alters the situation itself). Never edit or amend the previous answer in place; every run is a fresh call.
 
 ## Language
 
@@ -37,5 +49,6 @@ The dilemma text is sent to the backend and external model providers for process
 
 ## Tools
 
-- `get_historical_advice({query, language?, max_cases?, constraints?, clarifications?})` — the full validated analysis: decision profile, recommendation with conditions, historical comparisons with fit ratings and exact source passages, next steps, and what would change the advice.
-- `get_historical_case({case_id})` — the full story of one approved historical decision case with claims, passages, and sources.
+- `get_historical_evidence({query, language?, max_cases?, constraints?, clarifications?})` — decision profile plus Jev-rated, outcome-free case views. The default first call.
+- `get_historical_case({case_id})` — the full story of one approved case with claims, passages and sources (outcomes become visible here).
+- `get_historical_advice({query, language?, max_cases?, constraints?, clarifications?})` — the full validated pipeline: written comparisons, recommendation, evidence checks. Up to ~60 seconds.

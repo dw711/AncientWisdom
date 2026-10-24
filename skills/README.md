@@ -1,43 +1,49 @@
 # Assistant integrations
 
-Both surfaces share the same two read-only tools and the same workflow
-(docs/decisions.md §A–K). The Claude Code path is the demo surface.
+Both chatbots connect to the same remote MCP endpoint inside the Next.js app
+(`/api/mcp`, Streamable HTTP, no auth) and expose three read-only tools:
+`get_historical_evidence` (fast, default), `get_historical_case`, and
+`get_historical_advice` (full validated pipeline, ~40–60 s). Rationale in
+docs/decisions.md §A, §B, §C, §J.
 
-## Claude Code (demo surface)
+The endpoint must be publicly reachable over HTTPS, so deploy the app to
+Vercel first (`frontend/README.md` §Deploying to Vercel).
 
-The skill is committed at `.claude/skills/historical-figure/SKILL.md`, so it
-auto-loads in any session in this repo — no installation. It appears as
-`/historical-figure` and triggers automatically on decision-dilemma requests.
+## Claude (claude.ai)
 
-The MCP server is configured in the repo's `.mcp.json`; Claude Code picks it
-up at session start (approve the server when prompted). One-time setup:
+1. **Skill.** Zip the folder `skills/claude/historical-figure/` (the zip must
+   contain `SKILL.md` at its root) and upload it as a skill on claude.ai.
+2. **Connector.** In claude.ai: Settings → Connectors → Add connector →
+   Remote. URL: `https://<your-deployment>/api/mcp`, transport Streamable
+   HTTP, authentication **No sign-in**.
+3. **Verify on the account you will demo with** — custom connectors are in
+   beta and plan-dependent (Free allows one connector). Firewall/WAF rules
+   must not block Anthropic's egress.
 
-```bash
-cd mcp && npm install
-```
+## ChatGPT
 
-Then start the backend (`cd frontend && npm run dev`) — the default
-`HF_API_BASE` is `http://localhost:3000`. For the live deployment, change
-`HF_API_BASE` in `.mcp.json` to the Vercel URL.
+1. **Skill.** Zip the folder `skills/chatgpt/` (with `SKILL.md` at the zip
+   root) and upload it as a skill in ChatGPT.
+2. **MCP server.** Plugins → Add custom MCP server. URL:
+   `https://<your-deployment>/api/mcp`, authentication **No authentication**.
+   If the option is hidden, enable Developer mode under Settings → Apps.
+3. **Verify on the demo account** — connector features vary by plan.
 
-Test it by asking Claude: *"We have one day left at a hackathon. Our backend
-partly works, but my teammate wants to replace it with a new framework
-tonight because it would be cleaner. I worry we will end up with nothing
-working for the demo. Should we agree to the rebuild?"* — then follow with
-*"What if the rollback was tested?"* to show the stateless re-run.
+## Timeouts
 
-## ChatGPT (package ready; remote endpoint deferred)
+Both hosts hard-cap a tool call around 60 s (ChatGPT may be stricter). That is
+why the default tool is `get_historical_evidence` (~10–20 s): ranking is
+outcome-blind and the host writes the comparison under the skill's rules. The
+full `get_historical_advice` tool exists for users who explicitly want the
+fully validated analysis; it is described as slow so the host calls it
+deliberately.
 
-Per docs/decisions.md §A/B, ChatGPT is out of scope for the demo: it needs a
-remote Streamable HTTP MCP endpoint (deferred) and its own connector
-configuration. The package is complete, so activating it later is:
+## Testing before the demo
 
-1. Mount a Streamable HTTP MCP route in the Next.js app exposing the same two
-   tools (the service layer is already transport-agnostic).
-2. Zip the `skills/chatgpt/` folder and upload it as a skill in ChatGPT.
-3. Connect the MCP server in ChatGPT's MCP settings (Connected Apps) with the
-   deployed endpoint URL.
-
-Until then, nothing here needs to change: the `SKILL.md` instructions are
-transport-agnostic and assume only that a `historical-figure` MCP server
-provides `get_historical_advice` and `get_historical_case`.
+- `npm run typecheck && npm run lint && npm test` in `frontend/` covers the
+  pipeline and the evidence path.
+- Point the [MCP Inspector](https://modelcontextprotocol.io/docs/tools/inspector)
+  at `http://localhost:3000/api/mcp` (demo mode needs no keys) or at the
+  deployed URL.
+- In demo mode the tools return prewritten sample analysis; live mode needs
+  `OPENROUTER_API_KEY` (and `DATABASE_URL` for the team corpus).

@@ -30,6 +30,13 @@ export interface RunOptions {
   requestId: string;
   signal?: AbortSignal;
   onProgress?: (stage: ProgressStage, message: string) => void;
+  /**
+   * Stop after ranking and the counterexample pass: return the rated cases
+   * without fetching outcomes or writing advice. Used by the fast evidence
+   * tool for chatbot clients, which must stay well under their tool timeouts
+   * (docs/decisions.md §J). Outcomes are withheld, not merely skipped.
+   */
+  skipSynthesis?: boolean;
 }
 
 export class CancelledError extends Error {
@@ -190,6 +197,12 @@ export async function runLivePipeline(req: AdviceRequest, deps: PipelineDeps, op
   });
 
   // 8. Structured synthesis.
+  if (opts.skipSynthesis) {
+    return ratedPartial(
+      "These cases were rated by Jev from pre-decision information only. Outcomes are withheld so the comparison can be made without hindsight; written advice is not produced in this mode.",
+      "This is the evidence-only path: ranking without outcomes, and no written advice.",
+    );
+  }
   if (!llm) {
     return ratedPartial("These cases were rated by Jev, but written comparisons and advice need the writing model, which is not configured.", "The writing model is not configured on the server.");
   }

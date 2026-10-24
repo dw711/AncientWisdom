@@ -4,32 +4,36 @@ Resolved 24 October 2026, before the skills/MCP build. Supersedes any open
 question in `historical_figure_system_design.md`. Where a decision was already
 made by the shipped code, that is noted.
 
-## A. Assistant surface: Claude Code, local stdio
+**Revised 24 October 2026 (same day):** A, B and J below were changed after
+the first commit, when the demo surface moved from Claude Code to the claude.ai
+chatbot. The revised text replaces the original; the original reasoning is
+preserved where it still holds.
 
-**Decision:** Claude Code only. ChatGPT and claude.ai are out for the demo.
+## A. Assistant surface: the claude.ai chatbot (changed from Claude Code)
 
-**Reason:** a remote connector (claude.ai) requires OAuth to hold any
-credential, a public URL, and connector review — three failure modes we cannot
-afford before judging. Claude Code spawns a local stdio server: no auth, no
-public dependency, works offline. The website is the judge-facing product; the
-assistant integration only has to prove F11 ("one assistant integration").
-Keep the tool definitions transport-agnostic so a remote adapter can reuse
-them later (design §8: "retain adapters for the next integration").
+**Decision (revised):** the claude.ai chatbot is the demo surface. The
+ChatGPT package stays ready in parallel (`skills/chatgpt/`), per the user's
+call. Claude Code support was dropped: the skill at `.claude/skills/`, the
+`.mcp.json` config and the stdio server were deleted.
 
-## B. MCP transport and hosting: thin local stdio wrapper over the one backend
+**Reason for the change:** demo preference — the chatbot is the surface the
+user wants to show. Custom remote connectors on claude.ai are in beta and
+plan-dependent (Free allows one), and no-auth connectors are supported
+("No sign-in" mode), so the original fear of OAuth was overstated. **Check
+the connector UI on the actual demo account before relying on it.**
 
-**Decision:** a small Node script (`mcp/index.mjs`, `@modelcontextprotocol/sdk`
-StdioServerTransport) that Claude Code spawns locally and which calls the
-existing HTTP API. No second service, no separate process hosting.
+## B. MCP transport and hosting: remote Streamable HTTP route inside the one
+backend (changed from a local stdio wrapper)
 
-**Reason:** the plan's FastAPI / Render / Fly / Railway / Supabase / Neon
-questions are moot — the build already decided the stack: one Next.js app on
-Vercel, Tiger Cloud PostgreSQL (pgvector 0.8.7 installed). Mounting MCP inside
-that app as a second deployment would break the "one backend deployment" rule
-(NFR Maintainability). The stdio wrapper is a *client* of the same API, so all
-validation, corpus access, and synthesis stay in one place. Tools:
-`get_historical_advice`, `get_historical_case` (read-only, per design §8.2).
-The wrapper points at the Vercel URL in the demo, or `localhost:3000` in dev.
+**Decision (revised):** `frontend/src/app/api/mcp/route.ts` in the Next.js
+app, built with Vercel's `mcp-handler` (v2, stateless — plain Vercel
+functions work). Tools call the existing service layer directly (`getEvidence`,
+`getCaseDetail`, `getAdvice`) — no HTTP hop, one backend deployment.
+Chatbots connect to `https://<deployment>/api/mcp`.
+
+**Reason:** chatbots connect to public URLs, not local processes. The
+FastAPI / Render / Supabase questions remain moot — the stack stays one
+Next.js app on Vercel and Tiger Cloud PostgreSQL.
 
 ## C. Connector auth: none for the demo
 
@@ -38,11 +42,11 @@ The wrapper points at the Vercel URL in the demo, or `localhost:3000` in dev.
 Deployment Protection if the URL spreads.
 
 **Reason:** a browser cannot hold a secret, so the website's public API must
-stay open anyway; a token held only by the stdio wrapper would protect nothing.
+stay open anyway; a token held only by one client would protect nothing.
 Each live answer costs ~$0.025 and is rate-limited, so exposure is bounded.
-A shared bearer token (env var + one middleware check, carried in the wrapper's
-MCP config) is the first post-demo hardening, matching design §8.1's
-"server-side integration credential" — but not this weekend.
+Post-demo hardening matching design §8.1's "server-side integration
+credential": wrap the MCP route with `withMcpAuth` (bearer tokens, shipped in
+`mcp-handler`) — but not this weekend.
 
 ## D. Writer LLM: keep `google/gemini-3.8-flash` (already decided in code)
 
@@ -119,15 +123,25 @@ for synthesis and may introduce new errors"). The canonical answer already
 exists server-side; rendering it to markdown once (a small shared module,
 reusable by future adapters) protects the evidence chain.
 
-## J. Tool latency: accept ~40 s; do not expose evidence-only
+## J. Tool latency: evidence-first (changed from "accept ~40 s")
 
-**Decision:** one slow, honest tool call. No `evidence_only` MCP tool.
+**Decision (revised):** the chatbot tool set is evidence-first:
+`get_historical_evidence` is the default call — decision profile plus
+Jev-rated, OUTCOME-FREE case views, ~10–20 s. The host then reads the one or
+two selected cases with `get_historical_case` (outcomes visible only here,
+after ranking) and writes the comparison itself under the skill's rules.
+The full `get_historical_advice` tool remains, but is described as slow and
+is used only when the user explicitly wants the fully validated analysis.
 
-**Reason:** validation is the product claim; an evidence-only path would put
-the host in charge of synthesis and drop the canonical-answer guarantee. The
-demo presenter narrates while the tool runs (Claude Code visibly shows the call
-in flight). MCP progress notifications are a possible later enhancement — not
-this weekend.
+**Reason:** claude.ai hard-caps a tool call at ~60 s (progress notifications
+do not reset it) and ChatGPT's ceiling is reported around 60 s or less; the
+measured 40 s full pipeline — plus Vercel cold start and possible repairs —
+leaves no safe margin. The evidence path keeps ranking outcome-blind: the
+pipeline stops after the counterexample pass (`skipSynthesis`), and the
+service strips every post-decision field, so a host cannot write with
+hindsight. The design doc's warning that evidence-only retrieval makes the
+host responsible for synthesis is accepted deliberately, and mitigated by
+the synthesis rules baked into both skills (§I still protects the full path).
 
 ## K. Feedback via MCP: no
 

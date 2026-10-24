@@ -1,0 +1,43 @@
+{
+  "dilemma": "My parents expect me to take the graduate job. I've been offered a year on a research expedition instead.",
+  "shape": ["Duty vs curiosity", "Family pressure", "Reversible within ~2 years", "One option has a deadline"],
+  "neitherReflection": "Neither life is yours, which is the point. What you measured them by is what you value.",
+  "paths": [
+    {
+      "id": "A",
+      "label": "Take the voyage",
+      "kicker": "You go",
+      "figure": "Charles Darwin",
+      "age": 22,
+      "year": 1831,
+      "color": "#E2401C",
+      "fit": { "stakes": 88, "familyPressure": 92, "reversibility": 61, "timing": 74 },
+      "reflection": "You value the story you'll get to tell over the approval you'd get now, and you're betting the door back stays open.",
+      "events": [
+        { "date": "Aug 1831", "title": "The offer", "body": "Invited, aged 22, to sail as naturalist on HMS Beagle. His father calls it a waste of time.", "type": "observation", "sources": ["https://en.wikipedia.org/wiki/Second_voyage_of_HMS_Beagle"] },
+        { "date": "Dec 1831", "title": "He goes", "body": "His uncle Josiah Wedgwood talks his father round. The Beagle leaves Plymouth.", "type": "observation", "sources": ["https://en.wikipedia.org/wiki/Second_voyage_of_HMS_Beagle", "https://en.wikipedia.org/wiki/Josiah_Wedgwood_II"] },
+        { "date": "1835", "title": "Galápagos", "body": "Notes that mockingbirds differ from island to island.", "type": "observation", "sources": ["https://en.wikipedia.org/wiki/Gal%C3%A1pagos_mockingbird"] },
+        { "date": "1836", "title": "Home, known", "body": "Returns after five years, already known among naturalists.", "type": "interpretation", "sources": ["https://en.wikipedia.org/wiki/Charles_Darwin"] },
+        { "date": "1859", "title": "The book", "body": "Publishes On the Origin of Species, 28 years after saying yes.", "type": "observation", "sources": ["https://en.wikipedia.org/wiki/On_the_Origin_of_Species"] }
+      ]
+    },
+    {
+      "id": "B",
+      "label": "Keep the job",
+      "kicker": "You stay",
+      "figure": "Anthony Trollope",
+      "age": 19,
+      "year": 1834,
+      "color": "#1E3A5F",
+      "fit": { "stakes": 70, "familyPressure": 48, "reversibility": 83, "timing": 66 },
+      "reflection": "You value compounding: a steady base you can build the interesting thing on, on your own schedule.",
+      "events": [
+        { "date": "1834", "title": "The steady job", "body": "Becomes a junior clerk at the General Post Office, aged 19.", "type": "observation", "sources": ["https://en.wikipedia.org/wiki/Anthony_Trollope"] },
+        { "date": "1847", "title": "Writes before work", "body": "Publishes his first novel while keeping the day job.", "type": "observation", "sources": ["https://en.wikipedia.org/wiki/The_Macdermots_of_Ballycloran"] },
+        { "date": "1852", "title": "Pillar boxes", "body": "Trials Britain's first roadside post boxes, in Jersey.", "type": "observation", "sources": ["https://en.wikipedia.org/wiki/Pillar_box"] },
+        { "date": "1857", "title": "Barchester Towers", "body": "His breakout novel. Still at the Post Office.", "type": "observation", "sources": ["https://en.wikipedia.org/wiki/Barchester_Towers"] },
+        { "date": "1867", "title": "Leaves on his terms", "body": "Resigns after 33 years, now a famous novelist.", "type": "interpretation", "sources": ["https://en.wikipedia.org/wiki/Anthony_Trollope"] }
+      ]
+    }
+  ]
+}

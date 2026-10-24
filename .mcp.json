@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "historical-figure": {
+      "command": "node",
+      "args": ["mcp/index.mjs"],
+      "env": {
+        "HF_API_BASE": "http://localhost:3000"
+      }
+    }
+  }
+}

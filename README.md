@@ -2,6 +2,8 @@
 
 Historical Figure helps people think through a present decision using sourced historical decision cases. It is an OxHack 2026 project.
 
+**Try the deployed version:** https://ancient-wisdom-kappa.vercel.app/
+
 | Folder | What it holds |
 | --- | --- |
 | [`frontend/`](frontend) | The website and its API: a Next.js app with the advice pipeline (Jev ranking, LLM synthesis, validation), story pages and Vercel configuration. Start with [frontend/README.md](frontend/README.md). |

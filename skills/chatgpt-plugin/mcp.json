@@ -1,0 +1,9 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "historical-figure": {
+      "type": "streamable-http",
+      "url": "https://historical-figure-delta.vercel.app/api/mcp"
+    }
+  }
+}

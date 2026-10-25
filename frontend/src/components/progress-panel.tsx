@@ -8,27 +8,33 @@ export interface ProgressEntry {
   message: string;
 }
 
-/** Shows the stages the server actually reports, in order. No invented percentages. */
+/**
+ * The stages the server actually reports, drawn as stops on a line that
+ * grows toward the fork. No invented percentages.
+ */
 export function ProgressPanel({ entries, waitingFor }: { entries: ProgressEntry[]; waitingFor: string | null }) {
   return (
-    <div className="animate-rise rounded-lg border border-rule bg-card px-6 py-5" aria-live="polite" aria-busy="true">
-      <p className="font-serif text-lg text-ink">Working through the record</p>
-      <ol className="mt-3 space-y-2 text-sm">
+    <div className="animate-rise py-6" aria-live="polite" aria-busy="true">
+      <p className="label text-muted">Walking the record</p>
+      <p className="mt-2 font-serif text-[2rem] leading-tight text-ink italic">Finding the paths others took…</p>
+      <ol className="relative mt-8 space-y-4 border-l border-ink pl-6">
         {entries.map((e, i) => {
           const current = i === entries.length - 1;
           return (
-            <li key={`${e.stage}-${i}`} className={cx("flex items-start gap-3", current ? "text-ink" : "text-muted")}>
-              <span aria-hidden="true" className={cx("mt-1.5 inline-block size-2 shrink-0 rounded-full", current ? "animate-breathe bg-burgundy" : "bg-moss/70")} />
-              <span>
-                {e.message}
-                {current ? <span className="sr-only"> (in progress)</span> : <span className="sr-only"> (done)</span>}
-              </span>
+            <li key={`${e.stage}-${i}`} className={cx("relative animate-rise text-[15px]", current ? "text-ink" : "text-muted")}>
+              <span
+                aria-hidden="true"
+                className={cx("absolute top-[0.4em] -left-[31px] size-[11px] rounded-full border-2 border-ink", current ? "animate-breathe bg-burgundy" : "bg-paper")}
+              />
+              <span className="label mr-3 text-muted">{String(i + 1).padStart(2, "0")}</span>
+              {e.message}
+              {current ? <span className="sr-only"> (in progress)</span> : <span className="sr-only"> (done)</span>}
             </li>
           );
         })}
         {!entries.length ? <li className="text-muted">{waitingFor ?? "Sending your description"}</li> : null}
       </ol>
-      <p className="mt-4 text-xs text-muted">The answer appears only once every claim in it has been checked.</p>
+      <p className="label mt-8 text-muted">The answer appears only once every claim in it has been checked.</p>
     </div>
   );
 }

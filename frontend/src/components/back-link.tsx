@@ -14,8 +14,8 @@ export function BackLink() {
     () => false,
   );
   return (
-    <Link href={hasResults ? "/#results" : "/"} className="text-sm font-medium text-burgundy underline decoration-burgundy/30 underline-offset-4 hover:decoration-burgundy">
-      ← {hasResults ? "Back to your results" : "Back to Historical Figure"}
+    <Link href={hasResults ? "/#results" : "/"} className="label text-ink underline decoration-ink/30 underline-offset-4 hover:decoration-ink">
+      ← {hasResults ? "Back to your results" : "Back to the start"}
     </Link>
   );
 }

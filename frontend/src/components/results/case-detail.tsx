@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useId, useState, type ReactNode } from "react";
 import type { AnalogyRating, CaseCard, Comparison, PassageView, SourceView } from "@/lib/contracts/advice";
 import { brief, claimNumbers } from "@/lib/case-refs";
-import { BulletList, Button, cx } from "../ui";
+import { BulletList, Button } from "../ui";
 import { FitBreakdown, FitRatingButton } from "./fit-rating";
 
 export type OpenSources = (card: CaseCard, claimId?: string, refs?: Record<string, number>) => void;
@@ -12,15 +12,9 @@ export type OpenSources = (card: CaseCard, claimId?: string, refs?: Record<strin
 function ClaimRefs({ ids, card, onOpen, refs }: { ids: string[]; card: CaseCard; onOpen: OpenSources; refs: Record<string, number> }) {
   if (!ids.length) return null;
   return (
-    <span className="ml-0.5 inline-flex flex-wrap gap-0.5 align-super text-[0.7rem] leading-none">
+    <span className="ml-0.5 inline-flex flex-wrap gap-0.5 align-super font-mono text-[0.68rem] leading-none">
       {ids.map((id) => (
-        <button
-          key={id}
-          type="button"
-          onClick={() => onOpen(card, id, refs)}
-          className="rounded-sm px-0.5 font-medium text-burgundy/80 hover:bg-burgundy-wash hover:text-burgundy"
-          aria-label={`Show source passage ${refs[id] ?? ""}`}
-        >
+        <button key={id} type="button" onClick={() => onOpen(card, id, refs)} className="px-0.5 text-muted hover:bg-ink hover:text-paper" aria-label={`Show source passage ${refs[id] ?? ""}`}>
           [{refs[id] ?? "?"}]
         </button>
       ))}
@@ -28,18 +22,20 @@ function ClaimRefs({ ids, card, onOpen, refs }: { ids: string[]; card: CaseCard;
   );
 }
 
-function Block({ label, tone, children }: { label: string; tone?: "lesson"; children: ReactNode }) {
+function Block({ label, children, color }: { label: string; children: ReactNode; color?: string }) {
   return (
-    <div className={cx(tone === "lesson" && "rounded-lg bg-burgundy-wash/40 px-4 py-3 md:-my-3")}>
-      <p className={cx("mb-1.5 text-[0.68rem] font-semibold tracking-[0.14em] uppercase", tone === "lesson" ? "text-burgundy" : "text-muted")}>{label}</p>
-      <div className={cx("leading-relaxed", tone === "lesson" ? "font-serif text-[1.12rem] text-ink" : "text-ink-soft")}>{children}</div>
+    <div className="border-t border-ink/15 pt-3">
+      <p className="label mb-2" style={{ color: color ?? "var(--color-muted)" }}>
+        {label}
+      </p>
+      <div className="leading-relaxed text-ink-soft">{children}</div>
     </div>
   );
 }
 
 export function StoryLink({ caseId }: { caseId: string }) {
   return (
-    <Link href={`/cases/${encodeURIComponent(caseId)}`} className="text-sm font-medium text-burgundy underline decoration-burgundy/30 underline-offset-4 hover:decoration-burgundy">
+    <Link href={`/cases/${encodeURIComponent(caseId)}`} className="label text-ink underline decoration-ink/30 underline-offset-4 hover:decoration-ink">
       Read the full story →
     </Link>
   );
@@ -48,8 +44,8 @@ export function StoryLink({ caseId }: { caseId: string }) {
 const ROLE_LABEL = { supporting: "Supports the advice", challenging: "Challenges the advice", unrated: "Related case" } as const;
 
 /**
- * Details for one historical moment, shown under the timeline. Works for a
- * full comparison or, when the analysis was partial, for the case alone.
+ * One historical path in full. Works for a full comparison or, when the
+ * analysis was partial, for the case alone.
  */
 export function CaseDetail({
   card,
@@ -57,6 +53,7 @@ export function CaseDetail({
   rating,
   role,
   note,
+  color = "#14120F",
   passages,
   sources,
   onOpen,
@@ -67,10 +64,11 @@ export function CaseDetail({
   rating: AnalogyRating | null;
   role: "supporting" | "challenging" | "unrated";
   note?: string;
+  color?: string;
   passages: PassageView[];
   sources: SourceView[];
   onOpen: OpenSources;
-  onClose: () => void;
+  onClose?: () => void;
 }) {
   const [fitOpen, setFitOpen] = useState(false);
   const fitId = useId();
@@ -78,37 +76,34 @@ export function CaseDetail({
   const lesson = comparison?.lesson || card.lesson.text || card.pattern;
 
   return (
-    <article className="relative animate-rise rounded-xl border border-rule bg-card p-6 shadow-[0_18px_48px_-28px_rgb(29_26_22/0.35)] sm:p-8" aria-label={card.title}>
-      <button
-        type="button"
-        onClick={onClose}
-        className="absolute top-3 right-3 rounded-md px-2 py-1 text-2xl leading-none text-muted hover:bg-paper-deep hover:text-ink sm:top-5 sm:right-5"
-        aria-label="Close details"
-      >
-        ×
-      </button>
-      <div className="flex flex-col gap-3 pr-8 sm:flex-row sm:items-start sm:justify-between sm:gap-6 sm:pr-12">
+    <article className="relative border border-ink/15 bg-card p-6 sm:p-8" style={{ boxShadow: `inset 4px 0 0 ${color}` }} aria-label={card.title}>
+      {onClose ? (
+        <button type="button" onClick={onClose} className="absolute top-3 right-3 px-2 py-1 text-2xl leading-none text-muted hover:text-ink" aria-label="Close details">
+          ×
+        </button>
+      ) : null}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-8">
         <div className="min-w-0">
-          <p className="text-xs font-semibold tracking-[0.14em] text-bronze uppercase">
+          <p className="label" style={{ color }}>
             {card.date_detail} · {ROLE_LABEL[role]}
           </p>
-          <h3 className="mt-1.5 font-serif text-[clamp(1.5rem,2.6vw,2.1rem)] leading-tight text-ink">{card.title}</h3>
-          <p className="mt-2 max-w-2xl text-[0.95rem] leading-relaxed text-muted italic">{card.decision_question}</p>
+          <h3 className="mt-2 font-serif text-[clamp(1.6rem,2.8vw,2.3rem)] leading-tight text-ink">{card.title}</h3>
+          <p className="mt-3 max-w-2xl font-serif text-[1.1rem] leading-relaxed text-ink-soft italic">“{card.decision_question}”</p>
         </div>
         {rating ? (
-          <div className="-ml-2 shrink-0 self-start sm:ml-0">
-            <FitRatingButton rating={rating} open={fitOpen} onToggle={() => setFitOpen(!fitOpen)} controls={fitId} />
+          <div className="shrink-0">
+            <FitRatingButton rating={rating} open={fitOpen} onToggle={() => setFitOpen(!fitOpen)} controls={fitId} color={color} />
           </div>
         ) : null}
       </div>
       {rating && fitOpen ? (
-        <div className="mt-4">
-          <FitBreakdown rating={rating} id={fitId} />
+        <div className="mt-5">
+          <FitBreakdown rating={rating} id={fitId} color={color} />
         </div>
       ) : null}
-      {note ? <p className="mt-3 text-xs font-medium text-amber">{note}</p> : null}
+      {note ? <p className="label mt-4 text-amber">{note}</p> : null}
 
-      <div className="mt-7 grid gap-6 md:grid-cols-3">
+      <div className="mt-8 grid gap-6 md:grid-cols-3">
         <Block label="What they did">
           {brief(card.chosen_action.text, 280)}
           <ClaimRefs ids={card.chosen_action.claim_ids} card={card} onOpen={onOpen} refs={refs} />
@@ -118,8 +113,8 @@ export function CaseDetail({
           <ClaimRefs ids={card.outcome.claim_ids} card={card} onOpen={onOpen} refs={refs} />
         </Block>
         {lesson ? (
-          <Block label={comparison?.lesson ? "The lesson for you" : "The lesson"} tone="lesson">
-            {lesson}
+          <Block label={comparison?.lesson ? "The lesson for you" : "The lesson"} color={color}>
+            <p className="font-serif text-[1.15rem] text-ink italic">{lesson}</p>
           </Block>
         ) : (
           <Block label="Before the decision">{brief(card.context.text, 280)}</Block>
@@ -127,7 +122,7 @@ export function CaseDetail({
       </div>
 
       {comparison ? (
-        <div className="mt-7 grid gap-6 border-t border-rule-soft pt-6 md:grid-cols-2">
+        <div className="mt-6 grid gap-6 md:grid-cols-2">
           <Block label="Why it resembles your decision">
             <p className="text-ink">{comparison.shared_mechanism}</p>
             {comparison.applies_when ? <p className="mt-2 text-sm">Holds when {comparison.applies_when.charAt(0).toLowerCase() + comparison.applies_when.slice(1)}</p> : null}
@@ -139,8 +134,8 @@ export function CaseDetail({
       ) : null}
 
       {comparison && (comparison.historical_points.length || comparison.quotes.length) ? (
-        <details className="group mt-6 border-t border-rule-soft pt-4">
-          <summary className="cursor-pointer list-none text-sm font-medium text-ink-soft hover:text-ink">
+        <details className="group mt-6 border-t border-ink/15 pt-4">
+          <summary className="label cursor-pointer list-none text-ink-soft hover:text-ink">
             <span className="mr-1 inline-block transition-transform group-open:rotate-90">›</span> From the record ({comparison.historical_points.length} sourced{" "}
             {comparison.historical_points.length === 1 ? "point" : "points"})
           </summary>
@@ -149,23 +144,23 @@ export function CaseDetail({
               <li key={i} className="text-[0.95rem] leading-relaxed text-ink-soft">
                 {p.text}
                 <ClaimRefs ids={p.claim_ids} card={card} onOpen={onOpen} refs={refs} />
-                {p.support === "supported" ? <span className="ml-1.5 text-[0.7rem] text-moss">✓ checked against passage</span> : null}
+                {p.support === "supported" ? <span className="ml-1.5 font-mono text-[0.68rem] text-moss">✓ checked against passage</span> : null}
               </li>
             ))}
           </ul>
           {comparison.quotes.map((q) => {
             const source = sources.find((s) => s.source_id === passages.find((p) => p.passage_id === q.passage_id)?.source_id);
             return (
-              <figure key={q.passage_id + q.text} className="mt-4 border-l-2 border-burgundy/40 pl-4">
+              <figure key={q.passage_id + q.text} className="mt-4 border-l-2 pl-4" style={{ borderColor: color }}>
                 <blockquote className="font-serif text-[1.05rem] leading-relaxed text-ink italic">“{q.text}”</blockquote>
-                {source ? <figcaption className="mt-1 text-xs text-muted">{source.title}</figcaption> : null}
+                {source ? <figcaption className="label mt-1 text-muted">{source.title}</figcaption> : null}
               </figure>
             );
           })}
         </details>
       ) : null}
 
-      <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
+      <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
         <StoryLink caseId={card.case_id} />
         <Button variant="secondary" onClick={() => onOpen(card, undefined, refs)}>
           Sources and passages

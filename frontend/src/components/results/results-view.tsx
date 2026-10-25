@@ -1,21 +1,17 @@
 "use client";
 
-import { useState } from "react";
-import type {
-  AdviceResponse,
-  AnalogyRating,
-  CaseCard,
-  Comparison,
-  ConstraintKey,
-  InsufficientEvidenceResponse,
-  NeedsClarificationResponse,
-  PartialResponse,
-  ReadyResponse,
-} from "@/lib/contracts/advice";
+import { useCallback, useMemo, useRef, useState } from "react";
+import type { AdviceResponse, ConstraintKey, InsufficientEvidenceResponse, NeedsClarificationResponse, PartialResponse, ReadyResponse } from "@/lib/contracts/advice";
 import { BulletList, Button, Label, SectionHeading, Tag } from "../ui";
 import { AdviceDetail } from "./advice-detail";
 import { CaseDetail, type OpenSources } from "./case-detail";
-import { DecisionTimeline, type TimelineNode } from "./decision-timeline";
+import { ForkStage, type StageApi } from "../fork/fork-stage";
+import { ForkStack } from "../fork/fork-stack";
+import { YearIndex } from "../fork/year-index";
+import { collectEntries, toPaths, type Focus } from "../fork/model";
+import { useMedia } from "../fork/use-media";
+
+const WRAP = "mx-auto w-full max-w-[1440px] px-4 md:px-12";
 
 interface Props {
   response: AdviceResponse;
@@ -29,60 +25,179 @@ interface Props {
 
 export function ResultsView(p: Props) {
   const r = p.response;
-  const [selected, setSelected] = useState<string | null>(null);
-
   if (r.status === "needs_clarification") return <ClarificationPanel response={r} onSubmit={p.onClarify} busy={p.busy} />;
   if (r.status === "insufficient_evidence") return <InsufficientPanel response={r} onEditContext={p.onEditContext} />;
+  return <ForkResults {...p} response={r} />;
+}
 
-  const partial = r.status === "partial" ? r : null;
+/**
+ * Ready and partial results as a fork: one branch per historical case, drawn
+ * on scroll, then each case in full, then your decision in the ink section.
+ */
+function ForkResults(p: Props & { response: ReadyResponse | PartialResponse }) {
+  const r = p.response;
+  const wide = useMedia("(min-width: 1024px) and (min-height: 620px)");
+  const paths = useMemo(() => toPaths(collectEntries(r), r.claims), [r]);
+  const [hover, setHover] = useState<Focus | null>(null);
+  const [handleT, setHandleT] = useState(0);
+  const [handleTouched, setHandleTouched] = useState(false);
+  const [revealed, setRevealed] = useState<number[]>([]);
+  const stage = useRef<StageApi | null>(null);
 
-  // Every case in the answer, in date order, followed by the person's own decision.
-  type Entry = { card: CaseCard; role: "supporting" | "challenging" | "unrated"; comparison: Comparison | null; rating: AnalogyRating | null; note?: string };
-  const entries: Entry[] = [
-    ...r.comparisons.map((c) => ({ card: c.case, role: c.role, comparison: c, rating: c.rating })),
-    ...(r.challenging ? [{ card: r.challenging.case, role: "challenging" as const, comparison: r.challenging, rating: r.challenging.rating }] : []),
-    ...(partial?.rated_cases.map((c) => ({ card: c.case, role: c.role, comparison: null, rating: c.rating, note: "Rated by Jev. The written comparison is unavailable for this result." })) ?? []),
-    ...(partial?.unranked_cases.map((card) => ({
-      card,
-      role: "unrated" as const,
-      comparison: null,
-      rating: null,
-      note: partial.preview ? "Shares wording with your description. Not assessed for fit." : "Not rated: the analogy assessment was unavailable.",
-    })) ?? []),
-  ].sort((a, b) => (a.card.year_start ?? Infinity) - (b.card.year_start ?? Infinity));
-
-  const nodes: TimelineNode[] = [
-    ...entries.map((e) => ({ kind: "case" as const, key: e.card.case_id, card: e.card, role: e.role, lesson: e.comparison?.lesson || null, fit: e.rating?.analogy_fit ?? null })),
-    { kind: "today" as const, key: "today" as const, hint: r.recommendation ? "Advice and next steps" : "What we found" },
-  ];
-  const chosen = entries.find((e) => e.card.case_id === selected);
+  const focus: Focus | null = hover ?? (handleTouched ? { source: "handle", t: handleT } : null);
+  const onHandle = useCallback((t: number) => {
+    setHandleTouched(true);
+    setHandleT(t);
+  }, []);
+  const showDetails = (id: string) => document.getElementById(`path-${id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const showToday = () => document.getElementById("your-decision")?.scrollIntoView({ behavior: "smooth", block: "start" });
 
   return (
-    <div className={selected ? "space-y-6" : "flex min-h-[58vh] flex-col justify-center space-y-6 pb-10"}>
-      <StatusLine response={r} changedLabel={p.changedLabel} />
-      <DecisionTimeline nodes={nodes} selected={selected} onSelect={setSelected}>
-        {selected === "today" ? (
-          <AdviceDetail response={r} busy={p.busy} onApplyChange={p.onApplyChange} onEditContext={p.onEditContext} onClose={() => setSelected(null)} />
-        ) : chosen ? (
-          <CaseDetail
-            key={chosen.card.case_id}
-            card={chosen.card}
-            comparison={chosen.comparison}
-            rating={chosen.rating}
-            role={chosen.role}
-            note={chosen.note}
-            passages={r.passages}
-            sources={r.sources}
-            onOpen={p.onOpenSources}
-            onClose={() => setSelected(null)}
+    <div>
+      <div className={WRAP}>
+        <StatusLine response={r} changedLabel={p.changedLabel} />
+      </div>
+      {paths.length ? (
+        <>
+          <YearIndex
+            paths={paths}
+            revealed={wide ? revealed : paths.map((x) => x.stops.length)}
+            focus={focus}
+            onHover={setHover}
+            onJump={(id) => (wide && stage.current ? stage.current.scrollTo(id) : showDetails(id))}
+            onToday={showToday}
           />
-        ) : null}
-      </DecisionTimeline>
+          {wide ? (
+            <div className={WRAP}>
+            <ForkStage
+              key={r.request_id}
+              paths={paths}
+              focus={focus}
+              handleT={handleT}
+              onHover={setHover}
+              onHandle={onHandle}
+              onReveal={setRevealed}
+              onOpenSources={p.onOpenSources}
+              onShowDetails={showDetails}
+              apiRef={stage}
+            />
+            </div>
+          ) : (
+            <div className={`${WRAP} pt-8`}>
+              <ForkStack paths={paths} focus={focus} handleT={handleT} onHover={setHover} onHandle={onHandle} onOpenSources={p.onOpenSources} onShowDetails={showDetails} />
+            </div>
+          )}
+
+          <section aria-labelledby="paths-title" className={`${WRAP} pt-16 pb-20`}>
+            <SectionHeading id="paths-title" numeral="II" title="Each path, in full" aside={`${paths.length} ${paths.length === 1 ? "case" : "cases"} from the record`} />
+            <div className="space-y-8">
+              {paths.map((x) => (
+                <div key={x.id} id={`path-${x.id}`} className="scroll-mt-28">
+                  <CaseDetail
+                    card={x.card}
+                    comparison={x.comparison}
+                    rating={x.rating}
+                    role={x.role}
+                    note={x.note}
+                    color={x.color}
+                    passages={r.passages}
+                    sources={r.sources}
+                    onOpen={p.onOpenSources}
+                  />
+                </div>
+              ))}
+            </div>
+          </section>
+        </>
+      ) : null}
+
+      <Ending response={r} paths={paths} busy={p.busy} onApplyChange={p.onApplyChange} onEditContext={p.onEditContext} />
     </div>
   );
 }
 
-/** One quiet line above the timeline, so the timeline stays the first thing seen. */
+/** The ink ending: which path is closest to yours, then the advice. */
+function Ending({
+  response: r,
+  paths,
+  busy,
+  onApplyChange,
+  onEditContext,
+}: {
+  response: ReadyResponse | PartialResponse;
+  paths: ReturnType<typeof toPaths>;
+  busy: boolean;
+  onApplyChange: Props["onApplyChange"];
+  onEditContext: () => void;
+}) {
+  const [choice, setChoice] = useState<string | null>(null);
+  const options = [
+    ...paths.map((x) => ({ id: x.id, label: `${x.short}’s`, color: x.color, reflection: x.lesson ?? x.card.decision_question })),
+    { id: "none", label: "None of them", color: "#F2EDE4", reflection: "Then weigh these comparisons lightly. Add context so the next search can look for a closer case." },
+  ];
+  const picked = options.find((o) => o.id === choice);
+  const question = "Whose path is closest to yours?".split(" ");
+
+  return (
+    <section id="your-decision" aria-labelledby="ending-title" className="scroll-mt-12 bg-ink text-paper">
+      <div className="mx-auto max-w-[1440px] px-4 py-20 md:px-12 md:py-28">
+        {paths.length ? (
+          <>
+            <p className="label mb-8 text-paper/60">Today · Your decision</p>
+            <h2 id="ending-title" className="max-w-[16ch] font-serif text-[44px] leading-[1.05] italic md:text-[76px]">
+              {question.join(" ")}
+            </h2>
+            <div role="group" aria-label="Choose the closest path" className="mt-10 flex flex-wrap gap-3">
+              {options.map((o) => (
+                <button
+                  key={o.id}
+                  type="button"
+                  aria-pressed={choice === o.id}
+                  onClick={() => setChoice(o.id)}
+                  className="label flex items-center gap-2 rounded-full border border-paper/70 px-6 py-3 transition-colors hover:bg-paper hover:text-ink aria-pressed:bg-paper aria-pressed:text-ink"
+                >
+                  <span aria-hidden="true" className="size-2 rounded-full" style={{ background: o.color }} />
+                  {o.label}
+                </button>
+              ))}
+            </div>
+            <p aria-live="polite" className="mt-8 min-h-[3.2em] max-w-[60ch] text-[18px] leading-relaxed text-paper/85">
+              {picked ? (
+                <span key={picked.id} className="inline-block animate-rise">
+                  {picked.reflection}
+                </span>
+              ) : null}
+            </p>
+          </>
+        ) : (
+          <h2 id="ending-title" className="font-serif text-[40px] italic">
+            Your decision
+          </h2>
+        )}
+
+        <div className="mt-12 border-t border-paper/20 pt-12">
+          <AdviceDetail response={r} busy={busy} onApplyChange={onApplyChange} onEditContext={onEditContext} />
+        </div>
+
+        {r.sources.length ? (
+          <p className="mt-14 border-t border-paper/15 pt-5 font-mono text-[11px] leading-relaxed text-paper/55">
+            <span className="label mr-2">Sources</span>
+            {r.sources.map((s, i) => (
+              <span key={s.source_id}>
+                <a href={s.url} target="_blank" rel="noopener noreferrer" className="underline decoration-paper/30 underline-offset-2 hover:text-paper">
+                  {s.title}
+                </a>
+                {i < r.sources.length - 1 ? " · " : ""}
+              </span>
+            ))}
+          </p>
+        ) : null}
+      </div>
+    </section>
+  );
+}
+
+/** One quiet mono line above the fork. */
 function StatusLine({ response: r, changedLabel }: { response: ReadyResponse | PartialResponse; changedLabel: string | null }) {
   const items: { text: string; tone: string }[] = [];
   if (changedLabel) items.push({ text: `Fresh analysis with your change: ${changedLabel}`, tone: "text-moss" });
@@ -90,7 +205,7 @@ function StatusLine({ response: r, changedLabel }: { response: ReadyResponse | P
   if (r.status === "partial") items.push({ text: r.preview ? "Preview mode: cases share wording with your description and are not assessed for fit" : "Partial result: see Your decision for what is missing", tone: "text-amber" });
   if (!items.length) return null;
   return (
-    <p role="status" className="text-center text-xs font-medium tracking-wide">
+    <p role="status" className="label pb-4">
       {items.map((i, n) => (
         <span key={i.text} className={i.tone}>
           {n ? " · " : ""}
@@ -105,18 +220,18 @@ function ClarificationPanel({ response, onSubmit, busy }: { response: NeedsClari
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const ready = response.questions.every((q) => (answers[q.id] ?? "").trim().length > 0);
   return (
-    <section aria-labelledby="sec-clarify" className="animate-rise space-y-6">
+    <section aria-labelledby="sec-clarify" className="mx-auto max-w-3xl px-4 animate-rise space-y-6 py-10">
       <SectionHeading id="sec-clarify" numeral="I" title="One thing first" />
       <p className="leading-relaxed text-ink-soft">
         {response.profile?.decision ? (
           <>
-            We understood your decision as: <span className="font-serif text-ink">{response.profile.decision}</span>.{" "}
+            We understood your decision as: <span className="font-serif text-ink italic">{response.profile.decision}</span>.{" "}
           </>
         ) : null}
-        Before comparing it with historical cases, we need one more detail, because it would change what is worth recommending.
+        Before walking any historical path, we need one more detail, because it would change what is worth recommending.
       </p>
       <form
-        className="space-y-5"
+        className="space-y-6"
         onSubmit={(e) => {
           e.preventDefault();
           if (ready) onSubmit(response.questions.map((q) => ({ question: q.question, answer: answers[q.id].trim() })));
@@ -124,14 +239,14 @@ function ClarificationPanel({ response, onSubmit, busy }: { response: NeedsClari
       >
         {response.questions.map((q) => (
           <label key={q.id} className="block">
-            <span className="block font-serif text-lg text-ink">{q.question}</span>
+            <span className="block font-serif text-[22px] text-ink italic">{q.question}</span>
             <span className="mt-1 block text-sm text-muted">{q.why_it_matters}</span>
             <textarea
               rows={2}
               maxLength={500}
               value={answers[q.id] ?? ""}
               onChange={(e) => setAnswers({ ...answers, [q.id]: e.target.value })}
-              className="mt-2 block w-full rounded-md border border-rule bg-card px-3 py-2.5 text-ink focus:border-burgundy/60 focus:outline-none"
+              className="mt-3 block w-full border border-ink/40 bg-transparent px-3 py-2.5 text-ink focus:border-ink focus:outline-none"
             />
           </label>
         ))}
@@ -145,18 +260,23 @@ function ClarificationPanel({ response, onSubmit, busy }: { response: NeedsClari
 
 function InsufficientPanel({ response, onEditContext }: { response: InsufficientEvidenceResponse; onEditContext: () => void }) {
   return (
-    <section aria-labelledby="sec-nomatch" className="animate-rise space-y-6">
-      <SectionHeading id="sec-nomatch" numeral="—" title={response.reason === "evidence_removed" ? "Not enough verified evidence" : "No close historical match"} />
-      <p className="font-serif text-[1.25rem] leading-relaxed text-ink">{response.message}</p>
+    <section aria-labelledby="sec-nomatch" className="mx-auto max-w-3xl px-4 animate-rise space-y-6 py-10">
+      <SectionHeading id="sec-nomatch" numeral="—" title={response.reason === "evidence_removed" ? "Not enough verified evidence" : "No path to draw"} />
+      <svg viewBox="0 0 400 40" className="h-10 w-full max-w-md" aria-hidden="true">
+        <path d="M0 20 H180" stroke="#14120F" strokeWidth="1.5" />
+        <circle cx="190" cy="20" r="8" fill="none" stroke="#14120F" strokeWidth="1.5" />
+        <path d="M198 20 H400" stroke="#14120F" strokeWidth="1.5" strokeDasharray="3 6" opacity=".4" />
+      </svg>
+      <p className="font-serif text-[1.4rem] leading-relaxed text-ink italic">{response.message}</p>
       <p className="leading-relaxed text-ink-soft">Rather than force a comparison, we are showing nothing. A weak analogy can mislead more than it helps.</p>
       {response.near_misses.length ? (
         <div>
           <Label>Closest cases considered</Label>
           <ul className="space-y-3">
             {response.near_misses.map((m) => (
-              <li key={m.case_id} className="rounded-md border border-rule-soft bg-card px-4 py-3">
+              <li key={m.case_id} className="border border-ink/15 px-4 py-3">
                 <div className="flex items-baseline justify-between gap-3">
-                  <p className="font-medium text-ink">{m.title}</p>
+                  <p className="font-serif text-lg text-ink">{m.title}</p>
                   {m.analogy_fit !== null ? <Tag>{m.analogy_fit}/100</Tag> : null}
                 </div>
                 <BulletList items={m.reasons} className="mt-1.5 text-sm text-ink-soft" />

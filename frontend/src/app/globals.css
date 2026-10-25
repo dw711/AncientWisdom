@@ -1,26 +1,29 @@
 @import "tailwindcss";
 
 @theme {
-  --color-paper: #f6f1e7;
-  --color-paper-deep: #efe7d8;
-  --color-card: #fbf8f2;
-  --color-ink: #1d1a16;
-  --color-ink-soft: #453f37;
-  --color-muted: #776d61;
-  --color-rule: #dcd1bf;
-  --color-rule-soft: #e8dfd0;
-  --color-burgundy: #7b2d26;
-  --color-burgundy-deep: #5e211b;
-  --color-burgundy-wash: #f3e4df;
-  --color-bronze: #946535;
-  --color-bronze-wash: #f2e8d8;
-  --color-moss: #4e6545;
-  --color-moss-wash: #e7ecdf;
+  /* The Fork: cream paper, ink, path red (A) and navy (B). Token names are
+     shared with the rest of the app so every screen picks up the palette. */
+  --color-paper: #f2ede4;
+  --color-paper-deep: #e8e1d4;
+  --color-card: #f7f3ec;
+  --color-ink: #14120f;
+  --color-ink-soft: #3b362f;
+  --color-muted: #6f675c;
+  --color-rule: #cbc2b2;
+  --color-rule-soft: #ddd5c7;
+  --color-burgundy: #e2401c;
+  --color-burgundy-deep: #b9300f;
+  --color-burgundy-wash: #f8e0d7;
+  --color-bronze: #1e3a5f;
+  --color-bronze-wash: #dde4ec;
+  --color-moss: #3f6b4e;
+  --color-moss-wash: #e1eadf;
   --color-amber: #8a5b12;
-  --color-amber-wash: #f6ebd3;
+  --color-amber-wash: #f4e8cf;
 
-  --font-serif: var(--font-newsreader), "Iowan Old Style", Georgia, serif;
+  --font-serif: var(--font-playfair), Georgia, serif;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex), ui-monospace, monospace;
   --font-cjk: "Songti SC", "STSong", "Noto Serif SC", "Source Han Serif SC", serif;
 
   --animate-rise: rise 420ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
@@ -62,15 +65,43 @@ body {
   font-feature-settings: "ss01", "cv11";
 }
 
+button {
+  text-transform: inherit;
+}
+
+/* 11px uppercase mono label used throughout */
+.label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.35;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+/* Odometer: each digit is a window over a 0–9 strip (see odometer.tsx). */
+.odo-digit {
+  display: inline-block;
+  height: 1.15em;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+.odo-strip {
+  display: flex;
+  flex-direction: column;
+}
+.odo-strip > span {
+  height: 1.15em;
+  line-height: 1.15em;
+}
+
 ::selection {
   background: var(--color-burgundy-wash);
   color: var(--color-ink);
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-burgundy);
+  outline: 2px solid var(--color-ink);
   outline-offset: 2px;
-  border-radius: 2px;
 }
 
 /* Native dialog used for the source drawer. */
@@ -107,7 +138,7 @@ dialog.drawer[open] {
     margin-top: auto;
     border-left: 0;
     border-top: 1px solid var(--color-rule);
-    border-radius: 14px 14px 0 0;
+    border-radius: 0;
   }
   @keyframes drawer-in {
     from {

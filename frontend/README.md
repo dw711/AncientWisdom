@@ -90,19 +90,20 @@ All of them are server-only; none use the `NEXT_PUBLIC_` prefix. See [.env.examp
 
 The client streams NDJSON progress events (real stage names) and receives the answer only after validation. A newer request aborts and supersedes an older one.
 
-## Results timeline and story pages
+## Results: The Fork
 
-- **After you submit:** the question collapses to one line ("Edit question" reopens the form), and the results show only one large left-to-right timeline. Points are the historical moments in date order, ending with **Today · Your decision**.
-  - Points are evenly spaced with the gap between them labelled, because a proportional scale would crush 1962 and 1969 next to 480 BCE.
-  - On phones the timeline scrolls sideways.
-- **Hover or focus** a point for a quick summary: what they did, what happened, and the lesson.
-- **Select a historical point** to open its details below the timeline:
-  - what they did, what happened, and the lesson for you;
-  - how it resembles your decision and where it differs;
-  - the analogy-fit breakdown;
-  - the sourced points (folded), sources and passages, and a link to the full story.
-- **Select Your decision** for the advice: the recommendation, next steps, and what would change it, with re-run buttons. "How we read your decision" and "How this answer was checked" are folded.
-- **Story pages** at `/cases/[id]` give a case's full story: the situation, the choice, what they did, what happened, the lesson or pattern, the limits of the comparison, and every claim with its exact passages and sources. "Back to your results" restores the analysis from memory; nothing is stored.
+The UI on this branch is "The Fork" (React + Tailwind + GSAP ScrollTrigger). The API, pipeline and response contract are unchanged; only the components in `src/components/` and the styles changed.
+
+- **After you submit**, your dilemma appears as a pull quote, and "The shape of it" lists the decision profile (options, stakes, reversibility, urgency, relationship).
+- **The fork:** the section pins while scrolling draws "You, now" to the fork, then one branch per historical case in the answer (supporting, challenging or related), in date order. Each branch has four stops: the situation, what they did, what happened and the lesson. Each stop pops in as its line reaches it, and the date rolls like an odometer.
+  - Hover or focus a stop: the other branches dim, except the same stage on each.
+  - A stage handle on the rail below can be dragged, or moved with the arrow keys, along every branch at once.
+  - Each stop's evidence chip opens the source drawer at that claim.
+- **Year index:** pinned under the top bar. It expands on hover; selecting a case jumps to it, and "Today" jumps to the advice.
+- **Each path, in full:** every case's details, fit breakdown, sourced points, quotes and story link.
+- **The ink ending:** "Whose path is closest to yours?", then the advice: the recommendation, next steps, what would change it (with re-run buttons), how we read your decision and how the answer was checked.
+- **Small screens** (under 1024px wide or 620px tall) get stacked vertical paths with a stage slider. `prefers-reduced-motion` turns off pinning and all scroll animation.
+- **Story pages** at `/cases/[id]` are unchanged in content and use the same palette.
 
 ## API
 

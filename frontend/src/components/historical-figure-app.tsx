@@ -131,10 +131,12 @@ export function HistoricalFigureApp() {
   const profile = response && "profile" in response ? response.profile : null;
   const shape = shapeOf(profile);
   const editions = response && (response.status === "ready" || response.status === "partial") ? toEditions(collectEntries(response)) : [];
+  const printed = response && (response.status === "ready" || response.status === "partial");
   const sections: NavSection[] = [
     { id: "letter", label: "Letter" },
+    ...(printed ? [{ id: "front", label: "Front page" }] : []),
     ...editions.map((e) => ({ id: `edition-${e.letter.toLowerCase()}`, label: `Edition ${e.letter}` })),
-    ...(response && (response.status === "ready" || response.status === "partial") ? [{ id: "editorial", label: "Editorial" }, { id: "verdict", label: "Verdict" }] : []),
+    ...(printed ? [{ id: "editorial", label: "Editorial" }, { id: "verdict", label: "Verdict" }] : []),
   ];
 
   return (
@@ -210,17 +212,16 @@ export function HistoricalFigureApp() {
             {compact ? (
               <Collage editions={editions} />
             ) : (
-              <div className="mt-6 space-y-3 text-[15px] leading-relaxed text-ink-soft">
-                <p>
-                  Write to us about a choice you are facing. We find sourced decisions from the past with a similar structure and print one edition for each: what
-                  happened, where it resembles yours and where it differs. Then the editorial says what we would do, and what would change our view.
-                </p>
-                <p className="border-l-2 border-burgundy pl-3 text-sm text-muted">
-                  Historical comparisons have limits. Circumstances differ, sources disagree, and a past outcome does not predict yours. Treat the advice as one input to
-                  your own judgement.
-                </p>
-              </div>
+              <p className="mt-6 text-[15px] leading-relaxed text-ink-soft">
+                Write to us about a choice you are facing. We find sourced decisions from the past with a similar structure and print one edition for each: what happened,
+                where it resembles yours and where it differs. Then the editorial says what we would do, and what would change our view.
+              </p>
             )}
+            {/* Stays beside the results too: that is when it matters most. */}
+            <p className="mt-6 border-l-2 border-burgundy pl-3 text-sm leading-relaxed text-muted">
+              Historical comparisons have limits. Circumstances differ, sources disagree, and a past outcome does not predict yours. Treat the advice as one input to your
+              own judgement.
+            </p>
           </aside>
         </section>
 

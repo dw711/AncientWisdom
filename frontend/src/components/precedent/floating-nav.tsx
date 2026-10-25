@@ -10,12 +10,14 @@ export interface NavSection {
 
 /**
  * Sits open at the top of the page; once the masthead scrolls away it docks
- * into a compact black pill naming the section being read.
+ * into a compact black pill naming the section being read. On phones the
+ * docked pill folds the sections into a menu.
  */
 export function FloatingNav({ sections }: { sections: NavSection[] }) {
   const [docked, setDocked] = useState(false);
   const [active, setActive] = useState<string | undefined>(sections[0]?.id);
   const [progress, setProgress] = useState(0);
+  const [menuOpen, setMenuOpen] = useState(false);
   const key = sections.map((s) => s.id).join("|");
 
   useEffect(() => {
@@ -25,7 +27,10 @@ export function FloatingNav({ sections }: { sections: NavSection[] }) {
         trigger: "#masthead",
         start: "bottom top+=40",
         end: () => `+=${document.documentElement.scrollHeight}`,
-        onToggle: (self) => setDocked(self.isActive),
+        onToggle: (self) => {
+          setDocked(self.isActive);
+          if (!self.isActive) setMenuOpen(false);
+        },
       }),
       ScrollTrigger.create({ start: 0, end: "max", onUpdate: (self) => setProgress(self.progress) }),
       ...ids
@@ -44,6 +49,13 @@ export function FloatingNav({ sections }: { sections: NavSection[] }) {
     return () => triggers.forEach((t) => t.kill());
   }, [key]);
 
+  useEffect(() => {
+    if (!menuOpen) return;
+    const close = (e: KeyboardEvent) => e.key === "Escape" && setMenuOpen(false);
+    window.addEventListener("keydown", close);
+    return () => window.removeEventListener("keydown", close);
+  }, [menuOpen]);
+
   const current = sections.find((s) => s.id === active);
   if (sections.length < 2) return null;
 
@@ -52,7 +64,10 @@ export function FloatingNav({ sections }: { sections: NavSection[] }) {
       aria-label="Sections"
       className={
         "label fixed top-3 left-1/2 z-50 -translate-x-1/2 transition-all duration-500 " +
-        (docked ? "rounded-full bg-ink px-2 py-1.5 text-paper shadow-[0_8px_24px_-8px_rgba(0,0,0,.45)]" : "border-y border-ink/30 bg-paper/90 px-2 py-1 text-ink")
+        (docked
+          ? "rounded-full bg-ink px-2 py-1.5 text-paper shadow-[0_8px_24px_-8px_rgba(0,0,0,.45)]"
+          : // Phones have no room for the open list; the masthead is in view anyway.
+            "border-y border-ink/30 bg-paper/90 px-2 py-1 text-ink max-sm:hidden")
       }
     >
       <div className="flex items-center gap-1">
@@ -71,6 +86,20 @@ export function FloatingNav({ sections }: { sections: NavSection[] }) {
             Now reading: {current.label}
           </span>
         ) : null}
+        {docked ? (
+          <button
+            type="button"
+            aria-expanded={menuOpen}
+            aria-controls="section-menu"
+            onClick={() => setMenuOpen((o) => !o)}
+            className="flex items-center gap-2 rounded-full border border-paper/30 px-3 py-1.5 whitespace-nowrap md:hidden"
+          >
+            {current?.label ?? "Sections"}
+            <span aria-hidden="true" className={"transition-transform " + (menuOpen ? "rotate-180" : "")}>
+              ⌄
+            </span>
+          </button>
+        ) : null}
         <ul className={"flex items-center " + (docked ? "max-md:hidden" : "max-sm:hidden")}>
           {sections.map((s) => (
             <li key={s.id}>
@@ -88,6 +117,23 @@ export function FloatingNav({ sections }: { sections: NavSection[] }) {
           ))}
         </ul>
       </div>
+      {docked && menuOpen ? (
+        <ul id="section-menu" className="absolute top-full right-0 mt-2 min-w-[12rem] overflow-hidden rounded-2xl bg-ink py-2 shadow-[0_8px_24px_-8px_rgba(0,0,0,.45)] md:hidden">
+          {sections.map((s) => (
+            <li key={s.id}>
+              <a
+                href={`#${s.id}`}
+                onClick={() => setMenuOpen(false)}
+                aria-current={active === s.id ? "location" : undefined}
+                className={"block px-4 py-2.5 " + (active === s.id ? "text-paper" : "text-paper/60 hover:text-paper")}
+              >
+                {active === s.id ? "● " : ""}
+                {s.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : null}
       {docked ? <span aria-hidden="true" className="absolute inset-x-5 -bottom-px h-[2px] origin-left bg-burgundy" style={{ transform: `scaleX(${progress})` }} /> : null}
     </nav>
   );

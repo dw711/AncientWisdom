@@ -85,8 +85,8 @@ export function EditionColumn({
           .timeline({ delay, scrollTrigger: { trigger: root.current, start: "top 78%" } })
           .fromTo("[data-bar]", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.6, ease: "power3.inOut" })
           .fromTo("[data-byline]", { opacity: 0 }, { opacity: 1, duration: 0.4 }, "-=0.15")
-          .fromTo("[data-story]", { clipPath: "inset(0 0 100% 0)", y: -6 }, { clipPath: "inset(0 0 0% 0)", y: 0, duration: 0.85, ease: "power2.inOut", stagger: 0.32 }, "-=0.1")
-          .fromTo("[data-press-rule]", { scaleX: 0 }, { scaleX: 1, transformOrigin: "0 50%", duration: 0.5, stagger: 0.32 }, "<0.3");
+          .fromTo("[data-story]", { clipPath: "inset(0 0 100% 0)", y: -6 }, { clipPath: "inset(0 0 0% 0)", y: 0, duration: 0.7, ease: "power2.inOut", stagger: 0.16 }, "-=0.1")
+          .fromTo("[data-press-rule]", { scaleX: 0 }, { scaleX: 1, transformOrigin: "0 50%", duration: 0.5, stagger: 0.16 }, "<0.2");
       });
     },
     { scope: root, dependencies: [e.id], revertOnUpdate: true },
@@ -149,7 +149,7 @@ export function EditionColumn({
       <ol>
         {stories.map((s, i) => (
           <li key={s.kicker}>
-            <article data-story tabIndex={0} aria-labelledby={`${e.id}-s${i}`} className="py-6 outline-offset-4">
+            <article data-story aria-labelledby={`${e.id}-s${i}`} className="py-6">
               <p className="label mb-2 flex flex-wrap gap-x-3 text-muted">
                 <span style={{ color: e.color }}>No. {String(i + 1).padStart(2, "0")}</span>
                 <span>{s.kicker}</span>

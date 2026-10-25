@@ -55,9 +55,9 @@ export function CaseEvidence({
     <div className="space-y-8">
       {card.disputes.length ? (
         <section>
-          <H className="mb-2 font-serif text-lg">Accounts differ</H>
+          <H className="label mb-2 text-ink">Accounts differ</H>
           {card.disputes.map((d) => (
-            <div key={d.dispute_id} className="rounded-md border border-amber/25 bg-amber-wash/60 p-4 text-sm">
+            <div key={d.dispute_id} className="border-l-2 border-amber bg-amber-wash/60 p-4 text-sm">
               <p className="mb-2 text-ink">{d.summary}</p>
               <ul className="space-y-1.5 text-ink-soft">
                 {d.positions.map((pos) => (
@@ -71,8 +71,8 @@ export function CaseEvidence({
         </section>
       ) : card.dispute_note ? (
         <section>
-          <H className="mb-2 font-serif text-lg">How the accounts compare</H>
-          <p className="rounded-md border border-amber/25 bg-amber-wash/60 p-4 text-sm leading-relaxed text-ink-soft">{card.dispute_note}</p>
+          <H className="label mb-2 text-ink">How the accounts compare</H>
+          <p className="border-l-2 border-amber bg-amber-wash/60 p-4 text-sm leading-relaxed text-ink-soft">{card.dispute_note}</p>
         </section>
       ) : null}
 
@@ -81,14 +81,14 @@ export function CaseEvidence({
         if (!inPhase.length) return null;
         return (
           <section key={phase}>
-            <H className="mb-3 font-serif text-lg">{PHASE_LABEL[phase]}</H>
+            <H className="label mb-3 text-ink">{PHASE_LABEL[phase]}</H>
             <ol className="space-y-5">
               {inPhase.map((claim) => (
                 <li
                   key={claim.claim_id}
                   id={`claim-${claim.claim_id}`}
                   tabIndex={-1}
-                  className={"-mx-3 scroll-mt-24 rounded-md p-3 transition-colors " + (focusClaimId === claim.claim_id ? "bg-burgundy-wash/70 ring-1 ring-burgundy/25" : "")}
+                  className={"-mx-3 scroll-mt-24 p-3 transition-colors " + (focusClaimId === claim.claim_id ? "bg-burgundy-wash/70 shadow-[inset_2px_0_0_var(--color-burgundy)]" : "")}
                 >
                   <div className="mb-1.5 flex flex-wrap items-center gap-2">
                     {refs?.[claim.claim_id] ? <span className="text-sm font-medium text-burgundy">[{refs[claim.claim_id]}]</span> : null}
@@ -102,8 +102,8 @@ export function CaseEvidence({
                     if (!passage) return null;
                     const source = sourceById.get(passage.source_id);
                     return (
-                      <figure key={pid} className="mt-3 border-l-2 border-bronze/50 pl-3">
-                        <blockquote className="font-serif text-[0.98rem] leading-relaxed text-ink-soft italic">{passage.text}</blockquote>
+                      <figure key={pid} className="mt-3 border-l-2 border-ink/40 pl-3">
+                        <blockquote className="text-[0.98rem] leading-relaxed text-ink-soft italic">{passage.text}</blockquote>
                         <figcaption className="mt-1.5 text-xs text-muted">
                           {source ? source.title : passage.source_id}
                           {passage.locator ? ` · ${passage.locator}` : ""}
@@ -120,10 +120,10 @@ export function CaseEvidence({
 
       {caseSources.length ? (
         <section>
-          <H className="mb-3 font-serif text-lg">Source records</H>
+          <H className="label mb-3 text-ink">Source records</H>
           <ul className="space-y-4">
             {caseSources.map((s) => (
-              <li key={s.source_id} className="rounded-md border border-rule-soft bg-paper/60 p-4 text-sm">
+              <li key={s.source_id} className="border border-ink/40 p-4 text-sm">
                 <p className="font-medium text-ink">{s.title}</p>
                 <p className="mt-0.5 text-ink-soft">{[s.institution, s.author, s.publication_date_display].filter(Boolean).join(" · ")}</p>
                 <p className="mt-2 text-xs text-muted">

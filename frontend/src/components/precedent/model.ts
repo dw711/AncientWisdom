@@ -27,8 +27,8 @@ export function collectEntries(r: ReadyResponse | PartialResponse): Entry[] {
   ].sort((a, b) => (a.card.year_start ?? Infinity) - (b.card.year_start ?? Infinity));
 }
 
-/** Edition colours follow the newsprint palette: red, black, then two quieter inks. */
-export const EDITION_COLORS = ["#C1272D", "#111111", "#6B5E4B", "#2F4A5C"];
+/** Edition colours follow the newsprint palette: red, then three quieter inks. Not black, which is the body text and rules. */
+export const EDITION_COLORS = ["#C1272D", "#2F4A5C", "#6B5E4B", "#4F5D2F"];
 
 export const ROLE_KICKER = { supporting: "Supports the advice", challenging: "Challenges the advice", unrated: "Related case" } as const;
 

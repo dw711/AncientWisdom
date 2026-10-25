@@ -66,7 +66,7 @@ export function Masthead({ size = "full" }: { size?: "full" | "compact" }) {
       </Link>
       <div className="h-px bg-ink" />
       <p className="label border-b border-ink py-2.5 text-center text-ink">
-        Two lives <span aria-hidden="true">·</span> One crossroads <span aria-hidden="true">·</span> Yours to read
+        Past decisions <span aria-hidden="true">·</span> Present dilemmas <span aria-hidden="true">·</span> Yours to weigh
       </p>
     </header>
   );

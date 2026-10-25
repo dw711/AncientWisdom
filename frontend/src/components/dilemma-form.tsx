@@ -126,6 +126,8 @@ export function DilemmaForm(p: Props) {
                 <select value={p.context.deadlineUnit} onChange={(e) => set("deadlineUnit", e.target.value as ContextForm["deadlineUnit"])} className={inputClass} aria-label="Unit">
                   <option value="hours">hours</option>
                   <option value="days">days</option>
+                  <option value="weeks">weeks</option>
+                  <option value="months">months</option>
                 </select>
               </div>
             </Field>

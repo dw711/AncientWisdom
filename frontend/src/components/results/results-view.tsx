@@ -5,6 +5,7 @@ import type { AdviceResponse, ConstraintKey, InsufficientEvidenceResponse, Needs
 import { BulletList, Button, Label, SectionHeading, Tag } from "../ui";
 import { AdviceDetail } from "./advice-detail";
 import { EditionColumn, type OpenSources } from "./edition-column";
+import { LeadStory } from "./lead-story";
 import { collectEntries, toEditions } from "../precedent/model";
 
 interface Props {
@@ -31,7 +32,7 @@ const GRID: Record<number, string> = {
   4: "md:grid-cols-2 md:[&>*:nth-child(odd)]:border-l-0",
 };
 
-/** Ready and partial results: one edition column per case, the editorial, then the verdict. */
+/** Ready and partial results: the lead story, one edition column per case, the editorial, then the verdict. */
 function FrontPage(p: Props & { response: ReadyResponse | PartialResponse }) {
   const r = p.response;
   const editions = useMemo(() => toEditions(collectEntries(r)), [r]);
@@ -42,6 +43,7 @@ function FrontPage(p: Props & { response: ReadyResponse | PartialResponse }) {
   return (
     <div>
       <StatusLine response={r} changedLabel={p.changedLabel} />
+      <LeadStory response={r} editions={editions} />
 
       {editions.length ? (
         <div className={`grid gap-y-14 py-10 ${GRID[n] ?? GRID[3]}`}>

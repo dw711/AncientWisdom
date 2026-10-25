@@ -80,8 +80,8 @@ export function SourceDrawer({ card, focusClaimId, refs, evidence, onClose }: Pr
         <div className="flex h-full flex-col">
           <header className="flex items-start justify-between gap-4 border-b border-rule px-6 pt-6 pb-4">
             <div>
-              <p className="text-[0.7rem] font-semibold tracking-[0.16em] text-bronze uppercase">Sources and passages</p>
-              <h2 id="drawer-title" className="mt-1 font-serif text-2xl leading-snug text-ink">
+              <p className="label text-burgundy">Sources and passages</p>
+              <h2 id="drawer-title" className="mt-1 font-display text-2xl leading-snug font-black tracking-[-0.02em] text-ink">
                 {card.title}
               </h2>
               <p className="mt-1 text-sm text-muted">{card.date_detail}</p>
@@ -89,7 +89,7 @@ export function SourceDrawer({ card, focusClaimId, refs, evidence, onClose }: Pr
             <button
               type="button"
               onClick={() => ref.current?.close()}
-              className="-mr-2 rounded-md px-2 py-1 text-2xl leading-none text-muted hover:bg-paper-deep hover:text-ink"
+              className="-mr-2 px-2 py-1 text-2xl leading-none text-muted hover:bg-ink hover:text-paper"
               aria-label="Close sources"
             >
               ×

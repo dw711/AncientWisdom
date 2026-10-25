@@ -136,6 +136,18 @@ describe("live pipeline (mocked providers)", () => {
     expect(r.rated_cases.length).toBeGreaterThan(0);
   });
 
+  it("skipSynthesis extracts the profile and ranks, but never calls the writer", async () => {
+    const llm = writerForPrompt();
+    const r = (await runLivePipeline(request({ query: HACKATHON }), { repo: repo(), jev: new FakeJev(goodScorer), llm, config: liveConfig() }, { ...opts, skipSynthesis: true })) as PartialResponse;
+    expect(r.status).toBe("partial");
+    expect(r.ranking_status).toBe("ok");
+    expect(r.rated_cases.length).toBeGreaterThan(0);
+    expect(r.recommendation).toBeNull();
+    expect(r.profile?.source).toBe("llm"); // profiling still uses the writer model
+    expect(llm.writerCalls).toBe(0); // but synthesis is skipped
+    expect(r.message).toContain("Outcomes are withheld");
+  });
+
   it("removes invalid evidence IDs and fabricated quotes, and the advice that depended on them", async () => {
     const bad = (ids: string[]): WriterOutput => {
       const d = writerDraft(ids);

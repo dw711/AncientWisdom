@@ -351,6 +351,49 @@ export interface PartialResponse extends ResponseBase {
 
 export type AdviceResponse = ReadyResponse | NeedsClarificationResponse | InsufficientEvidenceResponse | PartialResponse;
 
+/**
+ * Fast evidence path for chatbot clients (docs/decisions.md §J): rated,
+ * outcome-free case views. `pre_decision` is the exact block Jev ranked on;
+ * nothing here reveals what was chosen or how it turned out.
+ */
+export interface RatedEvidenceCase {
+  case_id: string;
+  title: string;
+  display_date: string;
+  decision_question: string;
+  pre_decision: {
+    situation: string;
+    available_information: string[];
+    actors: string[];
+    goals: string[];
+    options: string[];
+    options_are_editorial: boolean;
+    incentives: string[];
+    constraints: string[];
+    time_pressure: string;
+    reversibility: string;
+  };
+  mechanism_tags: string[];
+  analogy_limits: string[];
+  rating: AnalogyRating;
+  role: "supporting" | "challenging";
+}
+
+export interface EvidenceResponse {
+  kind: "evidence";
+  request_id: string;
+  mode: Mode;
+  sample: boolean;
+  versions: Versions;
+  profile: DecisionProfile | null;
+  warnings: string[];
+  timings_ms: Record<string, number>;
+  status: "ready";
+  message: string;
+  rated_cases: RatedEvidenceCase[];
+  challenging_note: string | null;
+}
+
 export type ErrorCode =
   | "invalid_request"
   | "payload_too_large"

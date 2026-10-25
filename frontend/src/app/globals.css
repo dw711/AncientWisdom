@@ -1,73 +1,41 @@
 @import "tailwindcss";
 
 /*
- * Palette. Raw values live on :root so dark mode can swap them; the theme
- * below points Tailwind's colour names at them. Light is "parchment", dark is "ink".
+ * Palette. Raw values live on :root and the theme below points Tailwind's
+ * colour names at them. Black and white, matching the earlier light interface;
+ * the seal is the only colour.
  */
 :root {
   color-scheme: light;
-  /* Black and white; the seal is the only colour. */
-  --c-paper: #f5f5f4;
-  --c-band: #ececeb;
-  --c-paper-deep: #e4e4e3;
+  --c-paper: #f8f8f8;
+  --c-band: #ebebeb;
+  --c-paper-deep: #e9e9e9;
   --c-card: #ffffff;
-  --c-ink: #111111;
-  --c-ink-soft: #424242;
-  --c-muted: #6a6a6a;
-  --c-rule: #d6d6d6;
-  --c-rule-soft: #e6e6e6;
-  --c-night: #111111;
-  --c-on-night: #f5f5f4;
-  --c-accent: #111111;
-  --c-accent-ink: #111111;
-  --c-accent-on-night: #f5f5f4;
+  --c-ink: #222222;
+  --c-ink-soft: #4d4d4d;
+  --c-muted: #707070;
+  --c-rule: #dedede;
+  --c-rule-soft: #ececec;
+  --c-night: #141414;
+  --c-on-night: #ffffff;
+  --c-accent: #222222;
+  --c-accent-ink: #222222;
+  --c-accent-on-night: #ffffff;
   --c-seal: #a50100;
-  --c-highlight: #dcdcdc;
-  --c-highlight-wash: #efefee;
-  --c-slate: #5c5c5c;
-  --c-danger: #a1271b;
-  --c-danger-soft: #f0a493;
-  --c-moss: #36603f;
-  --c-moss-wash: #e4ebe2;
-  --c-amber: #7a5517;
-  --c-amber-wash: #f1ebdf;
-  --grain-opacity: 0.06;
+  --c-highlight: #e2e2e2;
+  --c-highlight-wash: #f2f2f2;
+  --c-slate: #222222;
+  --c-danger: #b42318;
+  --c-danger-soft: #f6a091;
+  --c-moss: #2f6b3f;
+  --c-moss-wash: #e9f3ec;
+  --c-amber: #8a5a00;
+  --c-amber-wash: #fff6dc;
+  --grain-opacity: 0.03;
   --grain-blend: multiply;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: dark;
-    --c-paper: #0f0f0f;
-    --c-band: #141414;
-    --c-paper-deep: #222222;
-    --c-card: #171717;
-    --c-ink: #f0f0f0;
-    --c-ink-soft: #bdbdbd;
-    --c-muted: #8c8c8c;
-    --c-rule: #343434;
-    --c-rule-soft: #252525;
-    --c-night: #000000;
-    --c-on-night: #f5f5f4;
-    --c-accent: #f0f0f0;
-    --c-accent-ink: #f0f0f0;
-    --c-accent-on-night: #f5f5f4;
-    --c-seal: #c7301f;
-    --c-highlight: #3a3a3a;
-    --c-highlight-wash: #1f1f1f;
-    --c-slate: #a8a8a8;
-    --c-danger: #f09a8b;
-    --c-danger-soft: #f0a493;
-    --c-moss: #93c19c;
-    --c-moss-wash: #1a241b;
-    --c-amber: #dfb56a;
-    --c-amber-wash: #262014;
-    --grain-opacity: 0.07;
-    --grain-blend: screen;
-  }
-}
-
-/* On the dark panels the accent lifts so it keeps its contrast in both themes. */
+/* On the dark panels the accent turns white so it keeps its contrast. */
 .bg-night,
 [class*="bg-night/"] {
   --c-accent: var(--c-accent-on-night);

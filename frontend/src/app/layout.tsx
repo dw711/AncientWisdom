@@ -1,16 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Newsreader } from "next/font/google";
+import { Inter_Tight } from "next/font/google";
 import "./globals.css";
 
-const serif = Newsreader({
-  variable: "--font-newsreader",
+const sans = Inter_Tight({
+  variable: "--font-inter-tight",
   subsets: ["latin"],
   style: ["normal", "italic"],
-});
-
-const sans = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
@@ -19,12 +14,12 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f6f1e7",
+  themeColor: "#ebebeb",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en-GB" className={`${serif.variable} ${sans.variable} h-full antialiased`}>
+    <html lang="en-GB" className={`${sans.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

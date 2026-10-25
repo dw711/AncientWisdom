@@ -1,9 +1,9 @@
 import type { CaseCard, ClaimView, PassageView, SourceView } from "@/lib/contracts/advice";
-import { Tag } from "./ui";
+import { ArrowUpRight, Tag, cx } from "./ui";
 
-const TYPE_LABEL: Record<ClaimView["type"], { label: string; tone: "neutral" | "bronze" | "moss" }> = {
-  observation: { label: "Recorded fact", tone: "neutral" },
-  interpretation: { label: "Attributed interpretation", tone: "bronze" },
+const TYPE_LABEL: Record<ClaimView["type"], { label: string; tone: "outline" | "amber" | "moss" }> = {
+  observation: { label: "Recorded fact", tone: "outline" },
+  interpretation: { label: "Attributed interpretation", tone: "amber" },
   outcome: { label: "Outcome", tone: "moss" },
 };
 
@@ -22,7 +22,7 @@ const SOURCE_TYPE: Record<SourceView["source_type"], string> = {
   reference: "Reference work",
 };
 
-const link = "text-burgundy underline decoration-burgundy/30 underline-offset-4 hover:decoration-burgundy";
+const link = "inline-flex items-center gap-1 font-medium text-ink underline decoration-ink/25 decoration-[1.5px] underline-offset-4 hover:decoration-ink";
 
 /**
  * Disputes, claims with their exact passages, and source records for one
@@ -46,20 +46,21 @@ export function CaseEvidence({
   headingLevel?: "h2" | "h3";
 }) {
   const H = headingLevel;
+  const heading = "mb-2 text-lg font-semibold tracking-[-0.02em] text-ink";
   const passageById = new Map(passages.map((p) => [p.passage_id, p]));
   const sourceById = new Map(sources.map((s) => [s.source_id, s]));
   const caseSources = card.source_ids.map((id) => sourceById.get(id)).filter((s): s is SourceView => Boolean(s));
   const ordered = [...claims].sort((a, b) => (refs?.[a.claim_id] ?? 999) - (refs?.[b.claim_id] ?? 999));
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       {card.disputes.length ? (
         <section>
-          <H className="mb-2 font-serif text-lg">Accounts differ</H>
+          <H className={heading}>Accounts differ</H>
           {card.disputes.map((d) => (
-            <div key={d.dispute_id} className="rounded-md border border-amber/25 bg-amber-wash/60 p-4 text-sm">
-              <p className="mb-2 text-ink">{d.summary}</p>
-              <ul className="space-y-1.5 text-ink-soft">
+            <div key={d.dispute_id} className="mt-3 rounded-xl bg-amber-wash p-5 text-sm">
+              <p className="mb-2 font-medium text-ink">{d.summary}</p>
+              <ul className="space-y-1.5 font-light text-ink-soft">
                 {d.positions.map((pos) => (
                   <li key={pos.attribution}>
                     <span className="font-medium text-ink">{pos.attribution}:</span> {pos.position}
@@ -71,8 +72,8 @@ export function CaseEvidence({
         </section>
       ) : card.dispute_note ? (
         <section>
-          <H className="mb-2 font-serif text-lg">How the accounts compare</H>
-          <p className="rounded-md border border-amber/25 bg-amber-wash/60 p-4 text-sm leading-relaxed text-ink-soft">{card.dispute_note}</p>
+          <H className={heading}>How the accounts compare</H>
+          <p className="mt-3 rounded-xl bg-amber-wash p-5 text-sm leading-relaxed font-light text-ink-soft">{card.dispute_note}</p>
         </section>
       ) : null}
 
@@ -81,19 +82,19 @@ export function CaseEvidence({
         if (!inPhase.length) return null;
         return (
           <section key={phase}>
-            <H className="mb-3 font-serif text-lg">{PHASE_LABEL[phase]}</H>
-            <ol className="space-y-5">
+            <H className={heading}>{PHASE_LABEL[phase]}</H>
+            <ol>
               {inPhase.map((claim) => (
                 <li
                   key={claim.claim_id}
                   id={`claim-${claim.claim_id}`}
                   tabIndex={-1}
-                  className={"-mx-3 scroll-mt-24 rounded-md p-3 transition-colors " + (focusClaimId === claim.claim_id ? "bg-burgundy-wash/70 ring-1 ring-burgundy/25" : "")}
+                  className={cx("dots-b -mx-3 scroll-mt-24 rounded-lg px-3 py-5 transition-colors", focusClaimId === claim.claim_id && "bg-highlight-wash")}
                 >
-                  <div className="mb-1.5 flex flex-wrap items-center gap-2">
-                    {refs?.[claim.claim_id] ? <span className="text-sm font-medium text-burgundy">[{refs[claim.claim_id]}]</span> : null}
+                  <div className="mb-2 flex flex-wrap items-center gap-2">
+                    {refs?.[claim.claim_id] ? <span className="text-sm font-semibold text-ink tabular-nums">[{refs[claim.claim_id]}]</span> : null}
                     <Tag tone={TYPE_LABEL[claim.type].tone}>{TYPE_LABEL[claim.type].label}</Tag>
-                    <span className="font-mono text-[0.62rem] text-muted/80">{claim.claim_id}</span>
+                    <span className="font-mono text-[0.62rem] text-muted">{claim.claim_id}</span>
                   </div>
                   <p className="leading-relaxed text-ink">{claim.statement}</p>
                   {claim.attribution ? <p className="mt-1 text-xs text-muted">Attribution: {claim.attribution}</p> : null}
@@ -102,9 +103,9 @@ export function CaseEvidence({
                     if (!passage) return null;
                     const source = sourceById.get(passage.source_id);
                     return (
-                      <figure key={pid} className="mt-3 border-l-2 border-bronze/50 pl-3">
-                        <blockquote className="font-serif text-[0.98rem] leading-relaxed text-ink-soft italic">{passage.text}</blockquote>
-                        <figcaption className="mt-1.5 text-xs text-muted">
+                      <figure key={pid} className="mt-4 border-l-2 border-ink/80 pl-4">
+                        <blockquote className="leading-relaxed font-light text-ink-soft italic">{passage.text}</blockquote>
+                        <figcaption className="mt-2 text-xs text-muted">
                           {source ? source.title : passage.source_id}
                           {passage.locator ? ` · ${passage.locator}` : ""}
                         </figcaption>
@@ -120,25 +121,27 @@ export function CaseEvidence({
 
       {caseSources.length ? (
         <section>
-          <H className="mb-3 font-serif text-lg">Source records</H>
-          <ul className="space-y-4">
+          <H className={heading}>Source records</H>
+          <ul className="mt-3 space-y-3">
             {caseSources.map((s) => (
-              <li key={s.source_id} className="rounded-md border border-rule-soft bg-paper/60 p-4 text-sm">
-                <p className="font-medium text-ink">{s.title}</p>
-                <p className="mt-0.5 text-ink-soft">{[s.institution, s.author, s.publication_date_display].filter(Boolean).join(" · ")}</p>
+              <li key={s.source_id} className="rounded-xl border border-rule-soft bg-paper p-5 text-sm">
+                <p className="font-semibold text-ink">{s.title}</p>
+                <p className="mt-1 font-light text-ink-soft">{[s.institution, s.author, s.publication_date_display].filter(Boolean).join(" · ")}</p>
                 <p className="mt-2 text-xs text-muted">
                   {SOURCE_TYPE[s.source_type]}
                   {s.retrieved_at ? ` · Retrieved ${s.retrieved_at}` : ""}
                 </p>
                 {s.retrieval_note ? <p className="mt-1 text-xs text-muted">{s.retrieval_note}</p> : null}
                 {s.rights_note ? <p className="mt-1 text-xs text-muted">{s.rights_note}</p> : null}
-                <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1">
+                <div className="mt-4 flex flex-wrap gap-x-5 gap-y-1">
                   <a href={s.url} target="_blank" rel="noopener noreferrer" className={link}>
-                    Original source<span className="sr-only"> (opens in a new tab)</span> ↗
+                    Original source<span className="sr-only"> (opens in a new tab)</span>
+                    <ArrowUpRight />
                   </a>
                   {s.archived_url ? (
                     <a href={s.archived_url} target="_blank" rel="noopener noreferrer" className={link}>
-                      Archived copy<span className="sr-only"> (opens in a new tab)</span> ↗
+                      Archived copy<span className="sr-only"> (opens in a new tab)</span>
+                      <ArrowUpRight />
                     </a>
                   ) : null}
                 </div>

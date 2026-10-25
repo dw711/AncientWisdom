@@ -11,7 +11,7 @@ import { ProgressPanel, type ProgressEntry } from "./progress-panel";
 import { ResultsView } from "./results/results-view";
 import { SiteFooter, SiteHeader } from "./site-header";
 import { SourceDrawer } from "./source-drawer";
-import { Button } from "./ui";
+import { Button, CJK_FONT, Tag, cx } from "./ui";
 
 type Phase =
   | { kind: "idle" }
@@ -20,6 +20,24 @@ type Phase =
   | { kind: "error"; httpStatus: number; error: ApiError["error"]; requestId: string | null };
 
 const CJK = /[㐀-鿿]/;
+
+const STEPS = [
+  {
+    title: "Describe your decision",
+    text: "Say what the options are, who is involved and what makes it hard. Add a deadline, or whether the choice can be undone, if you know.",
+    row: ["Saved", "Nothing. Used for this answer only"],
+  },
+  {
+    title: "Find comparisons",
+    text: "Jev rates sourced historical decisions on how closely they resemble yours, before reading how they turned out. Weak matches are left out rather than forced.",
+    row: ["Rated on", "Structure, incentives, constraints, timing"],
+  },
+  {
+    title: "Get conditional advice",
+    text: "See what each case shares with yours, where it differs, what to do next, and what would change that advice.",
+    row: ["Checked", "Every quotation against its source"],
+  },
+] as const;
 
 export function HistoricalFigureApp() {
   // Restored when returning from a story page; empty on a fresh load.
@@ -38,7 +56,7 @@ export function HistoricalFigureApp() {
   const seq = useRef(0);
   const controller = useRef<AbortController | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
-  const formRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLElement>(null);
   const lastResponse = useRef<AdviceResponse | null>(saved?.response ?? null);
 
   // Keep the in-memory copy current so a story page can link back to these results.
@@ -108,9 +126,9 @@ export function HistoricalFigureApp() {
     controller.current?.abort();
   };
 
-  const editContext = () => {
+  const editQuestion = (withContext = false) => {
     setEditing(true);
-    setContextOpen(true);
+    if (withContext) setContextOpen(true);
     requestAnimationFrame(() => formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
   };
 
@@ -124,47 +142,73 @@ export function HistoricalFigureApp() {
   const busy = phase.kind === "loading";
   const response = phase.kind === "result" ? phase.response : null;
   const compact = phase.kind !== "idle" && !editing;
+  const showHero = phase.kind === "idle";
 
   return (
     <div className="flex min-h-full flex-col">
-      <SiteHeader>
-        {health ? (
-          <span
-            className={
-              "rounded-full border px-2.5 py-1 text-xs " + (health.mode === "live" ? "border-moss/30 bg-moss-wash text-moss" : "border-bronze/30 bg-bronze-wash text-bronze")
-            }
-            title={health.mode === "live" ? "Live analysis with Jev and a language model" : "Preview: prewritten sample analyses for the example dilemmas"}
-          >
-            {health.mode === "live" ? "Live" : "Preview mode"}
-          </span>
-        ) : null}
-      </SiteHeader>
+      <div className={cx(showHero && "bg-band")}>
+        <SiteHeader>
+          {health ? (
+            <span
+              className="inline-flex items-center gap-2 rounded-lg border border-ink/15 px-3 py-1.5 text-[0.8125rem] text-ink"
+              title={health.mode === "live" ? "Live analysis with Jev and a language model" : "Preview: prewritten sample analyses for the example dilemmas"}
+            >
+              <span aria-hidden="true" className={cx("size-1.5 rounded-full", health.mode === "live" ? "bg-moss" : "bg-amber")} />
+              {health.mode === "live" ? "Live" : "Preview mode"}
+            </span>
+          ) : null}
+        </SiteHeader>
 
-      <main className="mx-auto w-full max-w-6xl flex-1 px-5 pb-24 sm:px-8">
+        {showHero ? (
+          <section className="mx-auto max-w-[90rem] px-4 pt-6 pb-36 text-center sm:px-10 sm:pt-10 sm:pb-44">
+            <p className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm font-light text-ink-soft">
+              <span>Decision support</span>
+              <Tag>
+                <span style={CJK_FONT} lang="zh-Hans" className="tracking-[0.15em]">
+                  以古为鉴
+                </span>
+              </Tag>
+              <span>{health?.corpus ? `${health.corpus.approved_cases} sourced cases` : "Sourced history"}</span>
+            </p>
+            <h1 className="mt-6 text-[clamp(3rem,8.2vw,7.75rem)] leading-[0.9] font-semibold tracking-[-0.05em] text-ink uppercase">Historical Figure</h1>
+            <p className="mx-auto mt-6 max-w-xl text-[clamp(1.15rem,1.8vw,1.4rem)] leading-snug font-light text-ink">What can history teach your next decision?</p>
+          </section>
+        ) : null}
+      </div>
+
+      <main className="mx-auto w-full max-w-[90rem] flex-1 px-4 pb-32 sm:px-10">
         {compact ? (
-          <section className="flex flex-col gap-4 border-b border-rule-soft pt-8 pb-5 sm:flex-row sm:items-end sm:justify-between">
-            <div className="min-w-0">
-              <p className="text-[0.68rem] font-semibold tracking-[0.14em] text-muted uppercase">Your question</p>
-              <p className="mt-1 line-clamp-2 max-w-3xl font-serif text-lg leading-snug text-ink">{query}</p>
+          <section aria-label="Your question" className="mx-auto mt-2 flex max-w-4xl items-center gap-3 rounded-xl bg-paper-deep py-2 pr-2 pl-5">
+            <div className="min-w-0 flex-1 py-1">
+              <p className="text-xs text-muted">Your question</p>
+              <p className="truncate text-[0.95rem] text-ink">{query}</p>
             </div>
-            <Button variant="secondary" className="shrink-0 self-start sm:self-auto" disabled={busy} onClick={() => setEditing(true)}>
-              Edit question
+            <Button className="shrink-0" disabled={busy} onClick={() => editQuestion()}>
+              <span>
+                Edit<span className="hidden sm:inline"> question</span>
+              </span>
             </Button>
           </section>
         ) : (
-          <section className="grid gap-10 pt-12 pb-10 sm:pt-16 lg:grid-cols-[1fr_minmax(0,34rem)] lg:gap-14">
-            <div className="lg:pt-2">
-              <h1 className="font-serif text-[2.35rem] leading-[1.08] tracking-tight text-ink sm:text-[3.1rem]">What can history teach your next decision?</h1>
-              <p className="mt-5 max-w-md text-[1.05rem] leading-relaxed text-ink-soft">
-                Describe a choice you are facing. Historical Figure finds sourced decisions from the past with a similar structure, shows what they share with yours and where
-                they differ, and suggests what to do next, along with what would change that advice.
-              </p>
-              <p className="mt-6 max-w-md border-l-2 border-bronze/50 pl-4 text-sm leading-relaxed text-muted">
-                Historical comparisons have limits. Circumstances differ, sources disagree, and a past outcome does not predict yours. Treat the advice as one input to your own
-                judgement.
-              </p>
-            </div>
-            <div ref={formRef} className="scroll-mt-6">
+          <section
+            ref={formRef}
+            aria-labelledby="form-title"
+            className={cx(
+              "relative scroll-mt-4 rounded-[1.25rem] bg-night px-5 py-8 text-white [color-scheme:dark] sm:px-10 sm:py-12 lg:px-14 lg:py-14",
+              showHero ? "-mt-28 sm:-mt-32" : "mt-4",
+            )}
+          >
+            <div className="grid gap-10 lg:grid-cols-[minmax(0,22rem)_1fr] lg:gap-16">
+              <div>
+                <p className="text-sm font-light text-white/55">{showHero ? "Start here" : "Edit your question"}</p>
+                <h2 id="form-title" className="mt-3 text-[clamp(2rem,3.4vw,3rem)] leading-[1] font-semibold tracking-[-0.04em]">
+                  What are you deciding?
+                </h2>
+                <p className="mt-5 text-[0.95rem] leading-relaxed font-light text-white/65">
+                  Historical Figure finds sourced decisions from the past with a similar structure, shows what they share with yours and where they differ, and suggests what to
+                  do next, along with what would change that advice.
+                </p>
+              </div>
               <DilemmaForm
                 query={query}
                 onQueryChange={(q) => {
@@ -189,25 +233,55 @@ export function HistoricalFigureApp() {
           </section>
         )}
 
-        <div ref={resultsRef} id="results" className="scroll-mt-6 pt-8">
-          {phase.kind === "loading" ? (
-            <div className="mx-auto max-w-3xl">
-              <ProgressPanel entries={phase.entries} waitingFor={null} />
-            </div>
-          ) : null}
+        {showHero ? (
+          <section aria-labelledby="how" className="pt-24 sm:pt-36">
+            <p className="text-center text-sm font-light text-ink-soft">Three steps</p>
+            <h2 id="how" className="mt-4 text-center text-[clamp(2.6rem,7.4vw,7rem)] leading-[0.9] font-semibold tracking-[-0.05em] uppercase">
+              How it works
+            </h2>
+            <p className="mx-auto mt-6 max-w-lg text-center text-[1.1rem] leading-snug font-light text-ink">
+              Every comparison is built from sourced records, rated before outcomes are read, and checked before you see it.
+            </p>
+            <ol className="mt-14 grid gap-5 md:grid-cols-3">
+              {STEPS.map((s, i) => (
+                <li key={s.title} className="flex flex-col overflow-hidden rounded-2xl bg-card">
+                  <div className="p-7 sm:p-8">
+                    <p className="text-[2.75rem] leading-none font-semibold tracking-[-0.05em] tabular-nums">{String(i + 1).padStart(2, "0")}</p>
+                    <h3 className="mt-10 text-[1.45rem] leading-tight font-semibold tracking-[-0.03em]">{s.title}</h3>
+                    <p className="mt-3 leading-relaxed font-light text-ink-soft">{s.text}</p>
+                  </div>
+                  <dl className="mt-auto grid grid-cols-[6rem_1fr] gap-3 border-t border-rule-soft px-7 py-4 text-sm sm:px-8">
+                    <dt className="font-semibold">{s.row[0]}</dt>
+                    <dd className="font-light text-ink-soft">{s.row[1]}</dd>
+                  </dl>
+                </li>
+              ))}
+            </ol>
+            <p className="mx-auto mt-14 max-w-2xl text-center leading-relaxed font-light text-ink-soft">
+              Historical comparisons have limits. Circumstances differ, sources disagree, and a past outcome does not predict yours. Treat the advice as one input to your own
+              judgement.
+            </p>
+          </section>
+        ) : null}
+
+        <div ref={resultsRef} id="results" className="scroll-mt-4 pt-10">
+          {phase.kind === "loading" ? <ProgressPanel entries={phase.entries} waitingFor={null} /> : null}
           {phase.kind === "error" ? (
-            <div role="alert" className="mx-auto max-w-3xl animate-rise rounded-lg border border-burgundy/30 bg-burgundy-wash/50 px-6 py-5">
-              <p className="font-serif text-lg text-ink">{phase.error.code === "rate_limited" ? "Please wait a moment" : "The analysis could not be completed"}</p>
-              <p className="mt-1 leading-relaxed text-ink-soft">{phase.error.message}</p>
+            <div role="alert" className="mx-auto max-w-2xl animate-rise rounded-2xl bg-card p-7 sm:p-10">
+              <p className="text-sm font-light text-accent-ink">{phase.error.code === "rate_limited" ? "Too many requests" : "Something went wrong"}</p>
+              <p className="mt-2 text-[clamp(1.6rem,3vw,2.2rem)] leading-tight font-semibold tracking-[-0.035em] text-ink">
+                {phase.error.code === "rate_limited" ? "Please wait a moment" : "The analysis could not be completed"}
+              </p>
+              <p className="mt-3 leading-relaxed font-light text-ink-soft">{phase.error.message}</p>
               {phase.error.details?.length ? (
-                <ul className="mt-2 list-disc pl-5 text-sm text-ink-soft">
+                <ul className="mt-2 list-disc pl-5 text-sm font-light text-ink-soft">
                   {phase.error.details.map((d) => (
                     <li key={d}>{d}</li>
                   ))}
                 </ul>
               ) : null}
-              <p className="mt-2 text-sm text-muted">Your description and context are unchanged. No advice was produced.</p>
-              <div className="mt-4 flex flex-wrap items-center gap-3">
+              <p className="mt-3 text-sm text-muted">Your description and context are unchanged. No advice was produced.</p>
+              <div className="mt-6 flex flex-wrap items-center gap-4">
                 <Button onClick={() => void run()}>Try again</Button>
                 {phase.requestId ? <span className="font-mono text-[0.68rem] text-muted">{phase.requestId}</span> : null}
               </div>
@@ -221,7 +295,8 @@ export function HistoricalFigureApp() {
                 busy={busy}
                 onOpenSources={(card, claimId, refs) => setDrawer({ card, claimId: claimId ?? null, refs: refs ?? null })}
                 onApplyChange={applyChange}
-                onEditContext={editContext}
+                onEditContext={() => editQuestion(true)}
+                onEditQuestion={() => editQuestion()}
                 onClarify={(answers) => void run({ clarifications: answers })}
               />
             </div>

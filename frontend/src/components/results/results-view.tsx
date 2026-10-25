@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import type {
   AdviceResponse,
   AnalogyRating,
@@ -12,7 +12,8 @@ import type {
   PartialResponse,
   ReadyResponse,
 } from "@/lib/contracts/advice";
-import { BulletList, Button, Label, SectionHeading, Tag } from "../ui";
+import { Mark } from "../site-header";
+import { BulletList, Button, Label, Tag, cx } from "../ui";
 import { AdviceDetail } from "./advice-detail";
 import { CaseDetail, type OpenSources } from "./case-detail";
 import { DecisionTimeline, type TimelineNode } from "./decision-timeline";
@@ -24,12 +25,14 @@ interface Props {
   onOpenSources: OpenSources;
   onApplyChange: (key: ConstraintKey, value: string | number | boolean, label: string) => void;
   onEditContext: () => void;
+  onEditQuestion: () => void;
   onClarify: (answers: { question: string; answer: string }[]) => void;
 }
 
 export function ResultsView(p: Props) {
   const r = p.response;
   const [selected, setSelected] = useState<string | null>(null);
+  const root = useRef<HTMLDivElement>(null);
 
   if (r.status === "needs_clarification") return <ClarificationPanel response={r} onSubmit={p.onClarify} busy={p.busy} />;
   if (r.status === "insufficient_evidence") return <InsufficientPanel response={r} onEditContext={p.onEditContext} />;
@@ -57,10 +60,19 @@ export function ResultsView(p: Props) {
   ];
   const chosen = entries.find((e) => e.card.case_id === selected);
 
+  const showTimeline = () => {
+    setSelected(null);
+    root.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+  const showAdvice = () => {
+    setSelected("today");
+    requestAnimationFrame(() => root.current?.querySelector("[data-detail]")?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  };
+
   return (
-    <div className={selected ? "space-y-6" : "flex min-h-[58vh] flex-col justify-center space-y-6 pb-10"}>
+    <div ref={root} className={cx("scroll-mt-4", selected ? "space-y-8" : "flex min-h-[60vh] flex-col justify-center space-y-8 pb-10")}>
       <StatusLine response={r} changedLabel={p.changedLabel} />
-      <DecisionTimeline nodes={nodes} selected={selected} onSelect={setSelected}>
+      <DecisionTimeline nodes={nodes} selected={selected} onSelect={setSelected} panelTone={selected === "today" ? "dark" : "light"}>
         {selected === "today" ? (
           <AdviceDetail response={r} busy={p.busy} onApplyChange={p.onApplyChange} onEditContext={p.onEditContext} onClose={() => setSelected(null)} />
         ) : chosen ? (
@@ -78,7 +90,49 @@ export function ResultsView(p: Props) {
           />
         ) : null}
       </DecisionTimeline>
+
+      <nav aria-label="Results" className="pointer-events-none fixed inset-x-0 bottom-4 z-40 flex justify-center px-4">
+        <div className="pointer-events-auto flex items-center gap-1.5 rounded-xl bg-night/95 p-1.5 shadow-[0_18px_40px_-12px_rgb(0_0_0/0.5)] backdrop-blur">
+          <span className="hidden sm:contents">
+            <Mark size="lg" tone="glass" />
+          </span>
+          <ToolbarButton active={selected === null} onClick={showTimeline}>
+            Timeline
+          </ToolbarButton>
+          <ToolbarButton active={false} onClick={p.onEditQuestion} disabled={p.busy}>
+            Edit question
+          </ToolbarButton>
+          <button
+            type="button"
+            onClick={showAdvice}
+            aria-pressed={selected === "today"}
+            className={cx(
+              "h-10 rounded-lg border px-4 text-[0.8125rem] font-medium transition-colors",
+              selected === "today" ? "border-white bg-transparent text-white" : "border-transparent bg-white text-ink hover:bg-paper-deep",
+            )}
+          >
+            {r.recommendation ? "Your advice" : "Summary"}
+          </button>
+        </div>
+      </nav>
     </div>
+  );
+}
+
+function ToolbarButton({ active, onClick, disabled, children }: { active: boolean; onClick: () => void; disabled?: boolean; children: ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      aria-pressed={active}
+      className={cx(
+        "h-10 rounded-lg border px-3.5 text-[0.8125rem] transition-colors disabled:opacity-50",
+        active ? "border-white/80 text-white" : "border-white/10 bg-white/[0.06] text-white/70 enabled:hover:border-white/35 enabled:hover:text-white",
+      )}
+    >
+      {children}
+    </button>
   );
 }
 
@@ -86,11 +140,11 @@ export function ResultsView(p: Props) {
 function StatusLine({ response: r, changedLabel }: { response: ReadyResponse | PartialResponse; changedLabel: string | null }) {
   const items: { text: string; tone: string }[] = [];
   if (changedLabel) items.push({ text: `Fresh analysis with your change: ${changedLabel}`, tone: "text-moss" });
-  if (r.sample) items.push({ text: "Sample analysis prepared in advance; fit ratings are illustrative", tone: "text-bronze" });
+  if (r.sample) items.push({ text: "Sample analysis prepared in advance; fit ratings are illustrative", tone: "text-ink-soft" });
   if (r.status === "partial") items.push({ text: r.preview ? "Preview mode: cases share wording with your description and are not assessed for fit" : "Partial result: see Your decision for what is missing", tone: "text-amber" });
   if (!items.length) return null;
   return (
-    <p role="status" className="text-center text-xs font-medium tracking-wide">
+    <p role="status" className="text-center text-sm font-light">
       {items.map((i, n) => (
         <span key={i.text} className={i.tone}>
           {n ? " · " : ""}
@@ -101,22 +155,33 @@ function StatusLine({ response: r, changedLabel }: { response: ReadyResponse | P
   );
 }
 
+function PanelHeading({ eyebrow, title, id }: { eyebrow: string; title: string; id: string }) {
+  return (
+    <>
+      <p className="text-sm font-light text-ink-soft">{eyebrow}</p>
+      <h2 id={id} className="mt-3 text-[clamp(1.8rem,3.4vw,2.6rem)] leading-[1.05] font-semibold tracking-[-0.04em] text-ink">
+        {title}
+      </h2>
+    </>
+  );
+}
+
 function ClarificationPanel({ response, onSubmit, busy }: { response: NeedsClarificationResponse; onSubmit: Props["onClarify"]; busy: boolean }) {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const ready = response.questions.every((q) => (answers[q.id] ?? "").trim().length > 0);
   return (
-    <section aria-labelledby="sec-clarify" className="animate-rise space-y-6">
-      <SectionHeading id="sec-clarify" numeral="I" title="One thing first" />
-      <p className="leading-relaxed text-ink-soft">
+    <section aria-labelledby="sec-clarify" className="mx-auto max-w-3xl animate-rise rounded-2xl bg-card p-6 sm:p-10">
+      <PanelHeading eyebrow="One thing first" title="We need one more detail" id="sec-clarify" />
+      <p className="mt-4 leading-relaxed font-light text-ink-soft">
         {response.profile?.decision ? (
           <>
-            We understood your decision as: <span className="font-serif text-ink">{response.profile.decision}</span>.{" "}
+            We understood your decision as: <span className="font-medium text-ink">{response.profile.decision}</span>.{" "}
           </>
         ) : null}
         Before comparing it with historical cases, we need one more detail, because it would change what is worth recommending.
       </p>
       <form
-        className="space-y-5"
+        className="mt-8 space-y-6"
         onSubmit={(e) => {
           e.preventDefault();
           if (ready) onSubmit(response.questions.map((q) => ({ question: q.question, answer: answers[q.id].trim() })));
@@ -124,14 +189,14 @@ function ClarificationPanel({ response, onSubmit, busy }: { response: NeedsClari
       >
         {response.questions.map((q) => (
           <label key={q.id} className="block">
-            <span className="block font-serif text-lg text-ink">{q.question}</span>
-            <span className="mt-1 block text-sm text-muted">{q.why_it_matters}</span>
+            <span className="block text-lg font-medium tracking-[-0.015em] text-ink">{q.question}</span>
+            <span className="mt-1 block text-sm font-light text-muted">{q.why_it_matters}</span>
             <textarea
               rows={2}
               maxLength={500}
               value={answers[q.id] ?? ""}
               onChange={(e) => setAnswers({ ...answers, [q.id]: e.target.value })}
-              className="mt-2 block w-full rounded-md border border-rule bg-card px-3 py-2.5 text-ink focus:border-burgundy/60 focus:outline-none"
+              className="mt-3 block w-full rounded-xl border border-rule bg-paper px-4 py-3 text-ink focus:border-ink focus:outline-none"
             />
           </label>
         ))}
@@ -145,34 +210,34 @@ function ClarificationPanel({ response, onSubmit, busy }: { response: NeedsClari
 
 function InsufficientPanel({ response, onEditContext }: { response: InsufficientEvidenceResponse; onEditContext: () => void }) {
   return (
-    <section aria-labelledby="sec-nomatch" className="animate-rise space-y-6">
-      <SectionHeading id="sec-nomatch" numeral="—" title={response.reason === "evidence_removed" ? "Not enough verified evidence" : "No close historical match"} />
-      <p className="font-serif text-[1.25rem] leading-relaxed text-ink">{response.message}</p>
-      <p className="leading-relaxed text-ink-soft">Rather than force a comparison, we are showing nothing. A weak analogy can mislead more than it helps.</p>
+    <section aria-labelledby="sec-nomatch" className="mx-auto max-w-3xl animate-rise rounded-2xl bg-card p-6 sm:p-10">
+      <PanelHeading eyebrow="No comparison shown" title={response.reason === "evidence_removed" ? "Not enough verified evidence" : "No close historical match"} id="sec-nomatch" />
+      <p className="mt-5 text-[1.2rem] leading-relaxed font-light text-ink">{response.message}</p>
+      <p className="mt-3 leading-relaxed font-light text-ink-soft">Rather than force a comparison, we are showing nothing. A weak analogy can mislead more than it helps.</p>
       {response.near_misses.length ? (
-        <div>
+        <div className="mt-8">
           <Label>Closest cases considered</Label>
-          <ul className="space-y-3">
+          <ul>
             {response.near_misses.map((m) => (
-              <li key={m.case_id} className="rounded-md border border-rule-soft bg-card px-4 py-3">
+              <li key={m.case_id} className="dots-b py-4">
                 <div className="flex items-baseline justify-between gap-3">
                   <p className="font-medium text-ink">{m.title}</p>
                   {m.analogy_fit !== null ? <Tag>{m.analogy_fit}/100</Tag> : null}
                 </div>
-                <BulletList items={m.reasons} className="mt-1.5 text-sm text-ink-soft" />
+                <BulletList items={m.reasons} className="mt-2 text-sm font-light text-ink-soft" />
               </li>
             ))}
           </ul>
         </div>
       ) : null}
-      <div>
+      <div className="mt-8">
         <Label>What might help</Label>
-        <BulletList items={response.suggestions} className="text-ink-soft" />
+        <BulletList items={response.suggestions} className="font-light text-ink-soft" />
       </div>
-      <Button variant="secondary" onClick={onEditContext}>
+      <Button variant="secondary" className="mt-8" onClick={onEditContext}>
         Edit your description
       </Button>
-      <p className="font-mono text-[0.68rem] text-muted">
+      <p className="mt-6 font-mono text-[0.68rem] text-muted">
         {response.request_id} · corpus {response.versions.corpus} · {response.versions.rubric}
         {response.versions.jev_model ? ` · ${response.versions.jev_model}` : ""}
       </p>

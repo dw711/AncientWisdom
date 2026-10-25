@@ -4,7 +4,7 @@ import { useId, type FormEvent, type ReactNode } from "react";
 import { LIMITS } from "@/lib/contracts/advice";
 import { countStated, type ContextForm } from "@/lib/client/context-form";
 import { PRESETS } from "@/lib/demo/presets";
-import { Button, cx } from "./ui";
+import { ArrowRight, Button, PlusIcon, cx } from "./ui";
 
 const PLACEHOLDER =
   "For example: My co-founder wants to accept a large client who is asking for a discount we can barely afford. Turning them down could cost us months of runway; accepting could fix a price we can't sustain. What should we weigh?";
@@ -23,6 +23,7 @@ interface Props {
   error: string | null;
 }
 
+/** The question form. It sits on the black panel, so its controls are drawn for a dark background. */
 export function DilemmaForm(p: Props) {
   const ids = { query: useId(), help: useId(), err: useId(), ctx: useId() };
   const length = p.query.trim().length;
@@ -35,9 +36,9 @@ export function DilemmaForm(p: Props) {
   };
 
   return (
-    <form onSubmit={submit} noValidate className="space-y-5">
+    <form onSubmit={submit} noValidate className="space-y-7">
       <div>
-        <label htmlFor={ids.query} className="mb-2 block font-serif text-lg text-ink">
+        <label htmlFor={ids.query} className="mb-3 block text-sm font-medium text-white">
           Describe your dilemma
         </label>
         <textarea
@@ -48,69 +49,70 @@ export function DilemmaForm(p: Props) {
             if ((e.metaKey || e.ctrlKey) && e.key === "Enter") p.onSubmit();
           }}
           placeholder={PLACEHOLDER}
-          rows={7}
+          rows={6}
           maxLength={LIMITS.queryMax}
           aria-describedby={`${ids.help}${p.error ? ` ${ids.err}` : ""}`}
           aria-invalid={Boolean(p.error)}
           className={cx(
-            "block w-full resize-y rounded-md border bg-card px-4 py-3.5 text-[1.02rem] leading-relaxed text-ink shadow-[inset_0_1px_0_rgb(0_0_0/0.02)] placeholder:text-muted/75 focus:border-burgundy/60 focus:outline-none focus-visible:outline-none",
-            p.error ? "border-burgundy" : "border-rule",
+            "block w-full resize-y rounded-xl border bg-white/[0.05] px-5 py-4 text-[1.15rem] leading-relaxed font-light text-white transition-colors placeholder:text-white/35 focus:bg-white/[0.08] focus:outline-none focus-visible:outline-none sm:text-[1.25rem]",
+            p.error ? "border-accent" : "border-white/15 focus:border-white/60",
           )}
         />
-        <div className="mt-1.5 flex justify-between gap-4 text-xs text-muted">
+        <div className="mt-2 flex justify-between gap-4 text-xs text-white/55">
           <span id={ids.help}>Say what the options are, who is involved and what makes it hard.</span>
-          <span aria-hidden="true" className={cx(length > LIMITS.queryMax * 0.9 && "text-burgundy")}>
+          <span aria-hidden="true" className={cx("tabular-nums", length > LIMITS.queryMax * 0.9 && "text-accent")}>
             {length}/{LIMITS.queryMax}
           </span>
         </div>
         {p.error ? (
-          <p id={ids.err} role="alert" className="mt-2 text-sm text-burgundy">
+          <p id={ids.err} role="alert" className="mt-2 text-sm text-accent">
             {p.error}
           </p>
         ) : null}
       </div>
 
       <div>
-        <p className="mb-2 text-xs font-semibold tracking-[0.14em] text-muted uppercase">Or try an example</p>
+        <p className="mb-3 text-sm text-white/55">Or try an example</p>
         <div className="flex flex-wrap gap-2">
-          {PRESETS.map((preset) => (
-            <button
-              key={preset.id}
-              type="button"
-              disabled={p.busy}
-              onClick={() => p.onPreset(preset.query)}
-              aria-pressed={p.query.trim() === preset.query}
-              className={cx(
-                "rounded-full border px-3.5 py-1.5 text-sm transition-colors disabled:opacity-50",
-                p.query.trim() === preset.query ? "border-burgundy/50 bg-burgundy-wash text-burgundy" : "border-rule bg-card text-ink-soft hover:border-bronze/60 hover:text-ink",
-              )}
-            >
-              {preset.label}
-            </button>
-          ))}
+          {PRESETS.map((preset) => {
+            const on = p.query.trim() === preset.query;
+            return (
+              <button
+                key={preset.id}
+                type="button"
+                disabled={p.busy}
+                onClick={() => p.onPreset(preset.query)}
+                aria-pressed={on}
+                className={cx(
+                  "h-10 rounded-lg border px-3.5 text-[0.8125rem] transition-colors disabled:opacity-50",
+                  on ? "border-white bg-white text-ink" : "border-white/12 bg-white/[0.06] text-white/75 hover:border-white/40 hover:text-white",
+                )}
+              >
+                {preset.label}
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      <div className="rounded-md border border-rule-soft bg-paper-deep/40">
+      <div className="border-y border-white/12">
         <button
           type="button"
           aria-expanded={p.contextOpen}
           aria-controls={ids.ctx}
           onClick={() => p.onContextOpenChange(!p.contextOpen)}
-          className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-sm text-ink-soft hover:text-ink"
+          className="flex w-full items-center justify-between gap-3 py-4 text-left text-sm text-white/70 hover:text-white"
         >
           <span>
-            <span className="font-medium text-ink">Add context</span> <span className="text-muted">(optional) deadline, reversibility, fallback</span>
+            <span className="font-medium text-white">Add context</span> <span className="text-white/50">(optional) deadline, reversibility, fallback</span>
           </span>
-          <span className="flex items-center gap-2 text-xs text-muted">
-            {stated ? <span className="rounded-full bg-bronze-wash px-2 py-0.5 text-bronze">{stated} stated</span> : null}
-            <span aria-hidden="true" className={cx("transition-transform", p.contextOpen && "rotate-180")}>
-              ⌄
-            </span>
+          <span className="flex items-center gap-3 text-xs">
+            {stated ? <span className="rounded-[5px] bg-white px-1.5 py-[3px] leading-none font-medium text-ink">{stated} stated</span> : null}
+            <PlusIcon className={cx("transition-transform duration-300", p.contextOpen && "rotate-45")} />
           </span>
         </button>
         {p.contextOpen ? (
-          <div id={ids.ctx} className="grid gap-4 border-t border-rule-soft px-4 py-4 sm:grid-cols-2">
+          <div id={ids.ctx} className="grid gap-5 pt-1 pb-6 sm:grid-cols-2">
             <Field label="Time until you must decide" group>
               <div className="flex gap-2">
                 <input
@@ -173,36 +175,39 @@ export function DilemmaForm(p: Props) {
         ) : null}
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
-        <Button type="submit" disabled={p.busy}>
+      <div className="flex flex-wrap items-center gap-4">
+        <Button type="submit" variant="light" size="lg" disabled={p.busy}>
           {p.busy ? "Working…" : "Find historical comparisons"}
+          {p.busy ? null : <ArrowRight />}
         </Button>
         {p.busy ? (
-          <Button variant="secondary" onClick={p.onCancel}>
+          <Button variant="outline-light" size="lg" onClick={p.onCancel}>
             Cancel
           </Button>
         ) : (
-          <span className="text-xs text-muted">or press ⌘/Ctrl + Enter</span>
+          <span className="text-xs text-white/45">or press ⌘/Ctrl + Enter</span>
         )}
       </div>
     </form>
   );
 }
 
-const inputClass = "rounded-md border border-rule bg-card px-3 py-2 text-sm text-ink focus:border-burgundy/60 focus:outline-none";
+const inputClass = "h-10 rounded-lg border border-white/15 bg-white/[0.06] px-3 text-sm text-white placeholder:text-white/35 focus:border-white/60 focus:outline-none";
 
 function Field({ label, children, wide, group }: { label: string; children: ReactNode; wide?: boolean; group?: boolean }) {
+  const cls = cx("block text-sm [&_textarea]:h-auto [&_textarea]:py-2", wide && "sm:col-span-2");
+  const caption = <span className="mb-2 block text-white/70">{label}</span>;
   if (group) {
     return (
-      <div role="group" aria-label={label} className={cx("block text-sm", wide && "sm:col-span-2")}>
-        <span className="mb-1.5 block text-ink-soft">{label}</span>
+      <div role="group" aria-label={label} className={cls}>
+        {caption}
         {children}
       </div>
     );
   }
   return (
-    <label className={cx("block text-sm", wide && "sm:col-span-2")}>
-      <span className="mb-1.5 block text-ink-soft">{label}</span>
+    <label className={cls}>
+      {caption}
       {children}
     </label>
   );

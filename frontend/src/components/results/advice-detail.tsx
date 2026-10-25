@@ -1,8 +1,7 @@
 "use client";
 
-import type { ReactNode } from "react";
 import type { CheckState, ConstraintKey, PartialResponse, ReadyResponse } from "@/lib/contracts/advice";
-import { BulletList, Button, Label, Tag, cx } from "../ui";
+import { ArrowLabel, BulletList, Button, CloseButton, Disclosure, Label, Tag, cx } from "../ui";
 
 const CHECK_LABEL: Record<CheckState, string> = {
   passed: "passed",
@@ -16,21 +15,10 @@ const CHECK_LABEL: Record<CheckState, string> = {
 /** Lower-cases a leading capital unless the word is an acronym ("NASA"). */
 const lowerFirst = (s: string) => (/^[A-Z][a-z]/.test(s) ? s[0].toLowerCase() + s.slice(1) : s);
 
-function Disclosure({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <details className="group border-t border-rule-soft pt-4">
-      <summary className="cursor-pointer list-none text-sm font-medium text-ink-soft hover:text-ink">
-        <span className="mr-1 inline-block transition-transform group-open:rotate-90">›</span> {title}
-      </summary>
-      <div className="mt-4">{children}</div>
-    </details>
-  );
-}
-
 /**
  * The advice, shown when the person selects "Your decision" at the end of the
- * timeline. The recommendation leads; how we read the decision and how the
- * answer was checked are folded away.
+ * timeline. The recommendation leads on a dark band; how we read the decision
+ * and how the answer was checked are folded away.
  */
 export function AdviceDetail({
   response,
@@ -49,51 +37,58 @@ export function AdviceDetail({
   const partial = r.status === "partial" ? r : null;
   const p = r.profile;
   const stated = p ? [...new Set([...p.known_constraints, ...p.known_facts])] : [];
+  const unknown = p ? [...new Set([...p.uncertainties, ...r.uncertainties])].slice(0, 6) : [];
 
   return (
-    <article className="animate-rise rounded-xl border border-burgundy/25 bg-card p-6 shadow-[0_18px_48px_-28px_rgb(29_26_22/0.35)] sm:p-8" aria-label="Your decision">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-xs font-semibold tracking-[0.14em] text-burgundy uppercase">Today · Your decision</p>
-          <p className="mt-2 max-w-3xl font-serif text-[1.15rem] leading-relaxed text-ink-soft">{r.decision_summary ?? p?.decision}</p>
-        </div>
-        <button type="button" onClick={onClose} className="shrink-0 rounded-md px-2 py-1 text-2xl leading-none text-muted hover:bg-paper-deep hover:text-ink" aria-label="Close details">
-          ×
-        </button>
+    <article className="animate-rise rounded-2xl border border-rule-soft bg-card" aria-label="Your decision">
+      <div className="relative rounded-t-[15px] bg-night p-5 pb-8 text-white sm:p-10 sm:pb-12">
+        <CloseButton tone="dark" onClick={onClose} className="absolute top-4 right-4 sm:top-6 sm:right-6" />
+        <p className="flex items-center gap-2.5 text-sm font-light text-white/60">
+          <span aria-hidden="true" className="size-2 rotate-45 rounded-[1px] bg-accent" />
+          Today · Your decision
+        </p>
+        <p className="mt-3 max-w-3xl pr-12 text-[1.1rem] leading-relaxed font-light text-white/80">{r.decision_summary ?? p?.decision}</p>
+
+        {r.recommendation ? (
+          <div className="mt-8 sm:mt-10">
+            <div className="mb-4 flex flex-wrap items-center gap-3">
+              <p className="text-sm font-semibold">Recommendation</p>
+              <Tag tone="on-dark">Modern inference, not historical fact</Tag>
+            </div>
+            <p className="max-w-4xl text-[clamp(1.55rem,3vw,2.5rem)] leading-[1.1] font-semibold tracking-[-0.035em]">{r.recommendation.text}</p>
+            {r.recommendation.conditions.length ? (
+              <p className="mt-5 max-w-3xl leading-relaxed font-light text-white/70">
+                <span className="font-medium text-white">Applies if </span>
+                {r.recommendation.conditions.map((c) => lowerFirst(c.replace(/\.$/, ""))).join("; ")}.
+              </p>
+            ) : null}
+          </div>
+        ) : partial ? (
+          <div className="mt-8 max-w-3xl rounded-xl border border-white/15 bg-white/[0.06] px-5 py-4">
+            <p className="font-medium">{partial.preview ? "Preview mode" : "No advice this time"}</p>
+            <p className="mt-1 leading-relaxed font-light text-white/70">{partial.message}</p>
+          </div>
+        ) : null}
       </div>
 
-      {r.recommendation ? (
-        <div className="mt-7">
-          <div className="mb-3 flex flex-wrap items-center gap-3">
-            <p className="text-[0.68rem] font-semibold tracking-[0.14em] text-muted uppercase">Recommendation</p>
-            <Tag tone="bronze">Modern inference, not historical fact</Tag>
-          </div>
-          <p className="border-l-2 border-burgundy pl-5 font-serif text-[clamp(1.3rem,2.2vw,1.65rem)] leading-snug text-ink">{r.recommendation.text}</p>
-          {r.recommendation.conditions.length ? (
-            <p className="mt-3 pl-5 text-sm leading-relaxed text-ink-soft">
-              <span className="font-medium text-ink">Applies if </span>
-              {r.recommendation.conditions.map((c) => lowerFirst(c.replace(/\.$/, ""))).join("; ")}.
-            </p>
-          ) : null}
-        </div>
-      ) : partial ? (
-        <div className="mt-6 rounded-md border border-amber/30 bg-amber-wash px-4 py-3 text-sm text-ink">
-          <p className="font-medium">{partial.preview ? "Preview mode" : "No advice this time"}</p>
-          <p className="mt-1 leading-relaxed text-ink-soft">{partial.message}</p>
-        </div>
-      ) : null}
-
       {r.alternatives.length || r.lesson_tension ? (
-        <div className="mt-6 grid gap-3">
-          {r.alternatives.map((a, i) => (
-            <div key={i} className="rounded-md bg-paper-deep/60 px-4 py-3 text-[0.95rem]">
-              <span className="font-medium text-ink">{a.condition}: </span>
-              <span className="text-ink-soft">{a.action}</span>
-            </div>
-          ))}
+        <div className="px-5 py-6 sm:px-10 sm:py-8">
+          {r.alternatives.length ? (
+            <>
+              <Label>Alternatives</Label>
+              <ul>
+                {r.alternatives.map((a, i) => (
+                  <li key={i} className="dots-b grid gap-1 py-3.5 sm:grid-cols-[minmax(0,18rem)_1fr] sm:gap-6">
+                    <span className="font-medium text-ink">{a.condition}</span>
+                    <span className="leading-relaxed font-light text-ink-soft">{a.action}</span>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : null}
           {r.lesson_tension ? (
-            <p className="text-[0.95rem] leading-relaxed text-ink-soft">
-              <span className="font-medium text-ink">Where the cases disagree. </span>
+            <p className={cx("max-w-4xl leading-relaxed font-light text-ink-soft", r.alternatives.length > 0 && "mt-6")}>
+              <span className="font-semibold text-ink">Where the cases disagree. </span>
               {r.lesson_tension}
             </p>
           ) : null}
@@ -101,37 +96,37 @@ export function AdviceDetail({
       ) : null}
 
       {r.next_steps.length || r.what_would_change.length ? (
-        <div className="mt-8 grid gap-8 md:grid-cols-2">
+        <div className="grid border-t border-rule-soft md:grid-cols-2">
           {r.next_steps.length ? (
-            <div>
+            <div className="p-5 sm:p-10">
               <Label>Next steps</Label>
-              <ol className="space-y-3">
+              <ol>
                 {r.next_steps.map((s, i) => (
-                  <li key={i} className="flex gap-3">
-                    <span className="font-serif text-xl leading-none text-bronze">{i + 1}</span>
-                    <span className="leading-relaxed text-ink">{s.text}</span>
+                  <li key={i} className="dots-b flex gap-5 py-4">
+                    <span className="w-8 shrink-0 text-[1.35rem] leading-none font-semibold tracking-[-0.04em] tabular-nums">{String(i + 1).padStart(2, "0")}</span>
+                    <span className="leading-relaxed font-light text-ink">{s.text}</span>
                   </li>
                 ))}
               </ol>
             </div>
           ) : null}
           {r.what_would_change.length ? (
-            <div>
+            <div className="border-t border-rule-soft p-5 first:border-t-0 sm:p-10 md:border-t-0 md:border-l md:first:border-l-0">
               <Label>What would change the advice</Label>
-              <ul className="space-y-3">
+              <ul>
                 {r.what_would_change.map((c, i) => (
-                  <li key={i} className="rounded-md border border-rule-soft px-4 py-3">
-                    <p className="text-[0.95rem] font-medium text-ink">{c.condition}</p>
-                    <p className="mt-0.5 text-sm leading-relaxed text-ink-soft">{c.effect}</p>
+                  <li key={i} className="dots-b py-4">
+                    <p className="font-medium text-ink">{c.condition}</p>
+                    <p className="mt-1 text-[0.95rem] leading-relaxed font-light text-ink-soft">{c.effect}</p>
                     {c.suggested_update ? (
-                      <Button
-                        variant="quiet"
-                        className="mt-1 -ml-1.5 text-sm"
+                      <button
+                        type="button"
                         disabled={busy}
                         onClick={() => onApplyChange(c.suggested_update!.key, c.suggested_update!.value, c.suggested_update!.label)}
+                        className="mt-2 text-sm font-medium text-ink disabled:opacity-50"
                       >
-                        Re-run with this change
-                      </Button>
+                        <ArrowLabel>Re-run with this change</ArrowLabel>
+                      </button>
                     ) : null}
                   </li>
                 ))}
@@ -141,86 +136,84 @@ export function AdviceDetail({
         </div>
       ) : null}
 
-      <div className="mt-8 space-y-4">
-        {p ? (
-          <Disclosure title="How we read your decision">
-            <div className="grid gap-6 sm:grid-cols-2">
-              {p.options.length ? (
-                <div>
-                  <Label>Options</Label>
-                  <BulletList items={p.options} className="text-[0.95rem] text-ink-soft" />
-                </div>
-              ) : null}
-              {stated.length ? (
-                <div>
-                  <Label>What you told us</Label>
-                  <BulletList items={stated} className="text-[0.95rem] text-ink-soft" />
-                </div>
-              ) : null}
-              {p.assumptions.length ? (
-                <div>
-                  <Label>What we assumed</Label>
-                  <BulletList items={p.assumptions} className="text-[0.95rem] text-ink-soft" />
-                </div>
-              ) : null}
-              {[...p.uncertainties, ...r.uncertainties].length ? (
-                <div>
-                  <Label>Still unknown</Label>
-                  <BulletList items={[...new Set([...p.uncertainties, ...r.uncertainties])].slice(0, 6)} className="text-[0.95rem] text-ink-soft" />
-                </div>
-              ) : null}
-            </div>
-            <Button variant="quiet" className="mt-4 -ml-1.5" onClick={onEditContext}>
-              Correct an assumption or add context
-            </Button>
-          </Disclosure>
-        ) : null}
-
-        <Disclosure title="How this answer was checked">
-          {r.validation ? (
-            <dl className="grid gap-x-6 gap-y-1.5 text-sm sm:grid-cols-2">
-              {(
-                [
-                  ["Evidence IDs", r.validation.evidence_ids],
-                  ["Exact quotations", r.validation.quotations],
-                  ["Claim support (model check)", r.validation.claim_support],
-                  ["Consistency of advice", r.validation.consistency],
-                ] as [string, CheckState][]
-              ).map(([label, state]) => (
-                <div key={label} className="flex justify-between gap-3 border-b border-rule-soft/70 pb-1">
-                  <dt className="text-ink-soft">{label}</dt>
-                  <dd className={cx(state === "passed" || state === "repaired" || state === "not_applicable" ? "text-moss" : state === "skipped" ? "text-muted" : "text-amber")}>
-                    {CHECK_LABEL[state]}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          ) : (
-            <p className="text-sm text-ink-soft">No written advice was produced, so there was nothing to check.</p>
-          )}
-          {r.validation?.removed.length ? (
-            <ul className="mt-3 space-y-0.5 text-sm text-ink-soft">
-              {r.validation.removed.map((x, i) => (
-                <li key={i}>
-                  Removed: {x.item} <span className="text-muted">({x.reason})</span>
-                </li>
-              ))}
-            </ul>
-          ) : null}
-          <ul className="mt-3 space-y-1 text-xs leading-relaxed text-muted">
-            {[...new Set([...(r.validation?.notes ?? []), ...r.warnings])].map((n) => (
-              <li key={n}>{n}</li>
-            ))}
-            <li>Automated checks reduce the risk of errors but cannot guarantee that every claim or inference is right.</li>
-          </ul>
-          <p className="mt-3 font-mono text-[0.66rem] break-all text-muted">
-            {r.sample ? "sample · " : ""}
-            {r.request_id} · corpus {r.versions.corpus} · {r.versions.rubric}
-            {r.versions.jev_model ? ` · ${r.versions.jev_model}` : ""}
-            {r.versions.llm_model ? ` · ${r.versions.llm_model}` : ""}
-          </p>
+      {p ? (
+        <Disclosure title="How we read your decision">
+          <div className="grid gap-x-10 gap-y-6 sm:grid-cols-2">
+            {p.options.length ? (
+              <div>
+                <Label>Options</Label>
+                <BulletList items={p.options} className="font-light text-ink-soft" />
+              </div>
+            ) : null}
+            {stated.length ? (
+              <div>
+                <Label>What you told us</Label>
+                <BulletList items={stated} className="font-light text-ink-soft" />
+              </div>
+            ) : null}
+            {p.assumptions.length ? (
+              <div>
+                <Label>What we assumed</Label>
+                <BulletList items={p.assumptions} className="font-light text-ink-soft" />
+              </div>
+            ) : null}
+            {unknown.length ? (
+              <div>
+                <Label>Still unknown</Label>
+                <BulletList items={unknown} className="font-light text-ink-soft" />
+              </div>
+            ) : null}
+          </div>
+          <Button variant="secondary" className="mt-6" onClick={onEditContext}>
+            Correct an assumption or add context
+          </Button>
         </Disclosure>
-      </div>
+      ) : null}
+
+      <Disclosure title="How this answer was checked">
+        {r.validation ? (
+          <dl className="grid gap-x-10 text-sm sm:grid-cols-2">
+            {(
+              [
+                ["Evidence IDs", r.validation.evidence_ids],
+                ["Exact quotations", r.validation.quotations],
+                ["Claim support (model check)", r.validation.claim_support],
+                ["Consistency of advice", r.validation.consistency],
+              ] as [string, CheckState][]
+            ).map(([label, state]) => (
+              <div key={label} className="dots-b flex justify-between gap-3 py-3">
+                <dt className="font-light text-ink-soft">{label}</dt>
+                <dd className={cx("font-medium", state === "passed" || state === "repaired" || state === "not_applicable" ? "text-moss" : state === "skipped" ? "text-muted" : "text-amber")}>
+                  {CHECK_LABEL[state]}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        ) : (
+          <p className="text-sm font-light text-ink-soft">No written advice was produced, so there was nothing to check.</p>
+        )}
+        {r.validation?.removed.length ? (
+          <ul className="mt-4 space-y-1 text-sm font-light text-ink-soft">
+            {r.validation.removed.map((x, i) => (
+              <li key={i}>
+                Removed: {x.item} <span className="text-muted">({x.reason})</span>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+        <ul className="mt-4 space-y-1 text-xs leading-relaxed text-muted">
+          {[...new Set([...(r.validation?.notes ?? []), ...r.warnings])].map((n) => (
+            <li key={n}>{n}</li>
+          ))}
+          <li>Automated checks reduce the risk of errors but cannot guarantee that every claim or inference is right.</li>
+        </ul>
+        <p className="mt-4 font-mono text-[0.66rem] break-all text-muted">
+          {r.sample ? "sample · " : ""}
+          {r.request_id} · corpus {r.versions.corpus} · {r.versions.rubric}
+          {r.versions.jev_model ? ` · ${r.versions.jev_model}` : ""}
+          {r.versions.llm_model ? ` · ${r.versions.llm_model}` : ""}
+        </p>
+      </Disclosure>
     </article>
   );
 }

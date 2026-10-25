@@ -1,0 +1,9 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "historical-figure",
+  "version": "0.1.0",
+  "description": "Grounded advice for present-day decisions using sourced historical decision cases (以古为鉴 · Historical Figure).",
+  "author": { "name": "Historical Figure team" },
+  "homepage": "https://historical-figure-delta.vercel.app",
+  "keywords": ["decisions", "history", "advice"]
+}

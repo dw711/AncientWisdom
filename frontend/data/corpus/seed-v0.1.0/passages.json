@@ -1,0 +1,247 @@
+[
+  {
+    "passage_id": "PSG_A13_DATES",
+    "source_id": "SRC_NASA_A13",
+    "locator": "Mission facts panel",
+    "text": "Launch April 11, 1970; 1:13 p.m. CST",
+    "content_hash": "sha256:04e1ad55662f934273db712850764ae671a90e4e251154ed8c3fefeccca469e5"
+  },
+  {
+    "passage_id": "PSG_A13_LANDING_DATE",
+    "source_id": "SRC_NASA_A13",
+    "locator": "Mission facts panel",
+    "text": "Landing April 17, 1970 Pacific Ocean",
+    "content_hash": "sha256:98812fd58d788f64aac1b52bd8ee228a858fcf198df30cfbb2f4f71a6686b659"
+  },
+  {
+    "passage_id": "PSG_A13_SUCCESSFUL_FAILURE",
+    "source_id": "SRC_NASA_A13",
+    "locator": "Mission overview paragraph",
+    "text": "Apollo 13 was to be the third lunar landing attempt, but the mission was aborted after rupture of service module oxygen tank. Still, it was classified as a “successful failure” because of the experience gained in rescuing the crew.",
+    "content_hash": "sha256:e7458c1c4234d976317bb5931ad3ee67a54ea4cd3cba02b8a38ec64dbe9f202a"
+  },
+  {
+    "passage_id": "PSG_A13_EXPLOSION",
+    "source_id": "SRC_NASA_A13",
+    "locator": "Narrative, explosion",
+    "text": "Nine minutes later, oxygen tank No. 2 blew up, causing the No. 1 tank to also fail. The command module’s normal supply of electricity, light and water was lost, and they were about 200,000 miles from Earth.",
+    "content_hash": "sha256:bc2bc306e24d708cf9fd1033792010d853ecf155238cf7d6996d7e358cd2872f"
+  },
+  {
+    "passage_id": "PSG_A13_FUEL_CELLS",
+    "source_id": "SRC_NASA_A13",
+    "locator": "Narrative, warning lights",
+    "text": "Next, the warning lights indicated the loss of two of three fuel cells, which were the spacecraft’s prime source of electricity. With warning lights blinking, one oxygen tank appeared to be completely empty and there were indications that the oxygen in the second tank was rapidly depleting.",
+    "content_hash": "sha256:103a070af3cb29d4187b9bc7fd7b02e0f93c91ebba590c860502b53571303ffb"
+  },
+  {
+    "passage_id": "PSG_A13_LIFEBOAT",
+    "source_id": "SRC_NASA_A13",
+    "locator": "Narrative, LM lifeboat",
+    "text": "At one hour, 29 seconds after the bang, Lousma said after instructions from Flight Director Glynn Lunney, “It is slowly going to zero, and we are starting to think about the LM lifeboat.” Swigert replied, “That’s what we have been thinking about too.”",
+    "content_hash": "sha256:2f328c3e5f3fa424fbe297b3ee522459c6d7fb9b67ff2cd4507d1a9f3495552e"
+  },
+  {
+    "passage_id": "PSG_A13_PROCEDURES",
+    "source_id": "SRC_NASA_A13",
+    "locator": "Narrative, ground task",
+    "text": "Ground controllers in Houston faced a formidable task. Completely new procedures had to be written and tested in the simulator before being passed up to the crew. The navigation problem had to be solved; essentially how, when and in what attitude to burn the LM descent engine to provide a quick return home.",
+    "content_hash": "sha256:851dab2eeb028ad063f83c0b9c877e690c812c4a94a6363c77612bc0a04be2b0"
+  },
+  {
+    "passage_id": "PSG_A13_LM_LIFETIME",
+    "source_id": "SRC_NASA_A13",
+    "locator": "Narrative, consumables",
+    "text": "With only 15 minutes of power left in the CM, Lousma told the crew to make their way into the LM. Haise and Lovell quickly floated through the tunnel, leaving Swigert to perform the last chores in the command module. The first concern was to determine if there were enough consumables to get home. The LM was built for only a 45-hour lifetime and it needed to be stretch to 90.",
+    "content_hash": "sha256:b59184e19423a8356dc5692dbacd3eea1617177d1160fb93383e205046fabdc5"
+  },
+  {
+    "passage_id": "PSG_A13_POWER",
+    "source_id": "SRC_NASA_A13",
+    "locator": "Narrative, power",
+    "text": "Power also was a concern. There were 2,181 ampere hours in the LM batteries. Ground controllers carefully worked out a procedure where the CM batteries were charged with LM power. All noncritical systems were turned off and energy consumption was reduced to 1/5, which resulted in having 20 percent of LM electrical power left when Aquarius was jettisoned. There was one electrical close call during the mission. One of the CM batteries vented with such force that it momentarily dropped off the line. Had the battery failed, there would have been insufficient power to return the ship to Earth.",
+    "content_hash": "sha256:bf5949e8cf2d33c11f0ab7dbcc71a28a2f254e94e8f7d858efa7dc0e338df90e"
+  },
+  {
+    "passage_id": "PSG_A13_WATER",
+    "source_id": "SRC_NASA_A13",
+    "locator": "Narrative, water",
+    "text": "Water was the main consumable concern. It was estimated that the crew would run out of water about five hours before Earth re-entry, which was calculated at around 151 hours. However, data from Apollo 11, which had not sent its LM ascent stage crashing into the moon as in subsequent missions, showed that its mechanisms could survive seven or eight hours in space without water cooling. The crew conserved water. They cut down to six ounces each per day, 1/5 of normal intake, and used fruit juices; they ate hot dogs and other wet-pack foods when they ate at all. The crew became dehydrated throughout the flight and set a record that stood up throughout Apollo: Lovell lost 14 pounds and the crew lost a total of 31.5 pounds, nearly 50 percent more than any other crew. Those stringent measures resulted in the crew finishing with 28.2 pounds of water, about 9 percent of the total.",
+    "content_hash": "sha256:83787efaaf5e12fda8af1a1182c57245c42e21baf7f5131ba6483745134945e6"
+  },
+  {
+    "passage_id": "PSG_A13_CO2",
+    "source_id": "SRC_NASA_A13",
+    "locator": "Narrative, carbon dioxide",
+    "text": "Removal of carbon dioxide also was a concern. There were enough lithium hydroxide canisters, which remove carbon dioxide from the spacecraft, but the square canisters from the command module were not compatible with the round openings in the lunar module environmental system. There were four cartridges from the LM and four from the backpacks, counting backups. However, the LM was designed to support two men for two days and was being asked to care for three men for about four days. After a day and a half in the LM, a warning light showed that the carbon dioxide had built up to a dangerous level. Mission control devised a way to attach the CM canisters to the LM system by using plastic bags, cardboard and to tape all materials carried on board.",
+    "content_hash": "sha256:783858522b2257e4f0d24b17bcfc602d19ab53736dda73d8434b9852ef71d2e2"
+  },
+  {
+    "passage_id": "PSG_A13_COLD",
+    "source_id": "SRC_NASA_A13",
+    "locator": "Narrative, conditions",
+    "text": "Sleep was almost impossible because of the cold. When the electrical systems were turned off, the spacecraft lost an important source of heat. The temperature dropped to 38 degrees Fahrenheit and condensation formed on all the walls.",
+    "content_hash": "sha256:682397e419f9afa4fd99d41dc5722385f62844f4f94c37d8e1d79f4b49d988a4"
+  },
+  {
+    "passage_id": "PSG_A13_POWERUP",
+    "source_id": "SRC_NASA_A13",
+    "locator": "Narrative, CM power-up",
+    "text": "The most remarkable achievement of mission control was quickly developing procedures for powering up the CM after its long, cold sleep. Flight controllers wrote the documents for this innovation in three days, instead of the usual three months. The command module was cold and clammy at the start of power-up. The walls, ceiling, floor, wire harnesses and panels were all covered with droplets of water. It was suspected conditions were the same behind the panels. The chances of short circuits caused apprehension, but thanks to the safeguards built into the command module after the disastrous Apollo 1 fire in January 1967, no arcing took place.",
+    "content_hash": "sha256:33c2375ba4874c7da1908951f5b219aaeffef0354e6f0a451b370001e39ecd86"
+  },
+  {
+    "passage_id": "PSG_A13_SPLASHDOWN",
+    "source_id": "SRC_NASA_A13",
+    "locator": "Narrative, return",
+    "text": "Four hours before landing, the crew shed the service module; mission control had insisted on retaining it until then because everyone feared what the cold of space might do to the un-sheltered CM heat shield. Photos of the service module showed one whole panel missing and wreckage hanging out, it was a mess as it drifted away. Three hours later, the crew left the lunar module Aquarius and then splashed down gently in the Pacific Ocean near Samoa.",
+    "content_hash": "sha256:53bcfe0d7ef00760e1be42c3b85036ae32b5e80192852fdeba06595b8c3d4446"
+  },
+  {
+    "passage_id": "PSG_A13_CAUSE",
+    "source_id": "SRC_NASA_A13",
+    "locator": "Review board finding",
+    "text": "After an intensive investigation, the Apollo 13 Accident Review Board identified the cause of the explosion. In 1965, the CM had undergone many improvements that included raising the permissible voltage to the heaters in the oxygen tanks from 28 to 65 volts DC. Unfortunately, the thermostatic switches on these heaters weren’t modified to suit the change. During one final test on the launch pad, the heaters were on for a long period of time. This subjected the wiring in the vicinity of the heaters to very high temperatures (1000°F), which have been subsequently shown to severely degrade teflon insulation. The thermostatic switches started to open while powered by 65 volts DC and were probably welded shut. Furthermore, other warning signs during testing went unheeded and the tank, damaged from eight hours of overheating, was a potential bomb the next time it was filled with oxygen. That bomb exploded on April 13, 1970 – 200,000 miles from Earth.",
+    "content_hash": "sha256:d5896336d3cff342d25340832db484b06c6cb83af1e6ee20b395407781acbc63"
+  },
+  {
+    "passage_id": "PSG_A11_DATES",
+    "source_id": "SRC_NASA_A11_MISSION",
+    "locator": "Mission facts",
+    "text": "Launch July 16, 1969 SPLASHDOWN July 24, 1969",
+    "content_hash": "sha256:cea280a980f28627e1873619f255b82c634ce7ea2f199ddb02c4150070e6dc96"
+  },
+  {
+    "passage_id": "PSG_A11_EXPERIMENTAL",
+    "source_id": "SRC_ALSJ_A11",
+    "locator": "Introduction",
+    "text": "Still, the LM was an experimental craft and the vehicle that Neil Armstrong and Buzz Aldrin landed was only the fourth that had ever been flown.",
+    "content_hash": "sha256:2b0f6864940f93655e52e54228c83aa341d6e5a30be248412a12684f2b251b0c"
+  },
+  {
+    "passage_id": "PSG_A11_ALARMS",
+    "source_id": "SRC_ALSJ_A11",
+    "locator": "The Lunar First Landing, alarms",
+    "text": "Several times during the descent, the computer flashed alarms. The trajectory looked good but the \"1202\" message - like a later \"1201\" - wasn't one that the crew recognized and there were a few tense seconds until Houston radioed \"We're GO on that alarm.\" As it turned out, parts of the computer memory were being overloaded with extraneous data from the rendezvous radar and, fortunately, not only had the computer been programmed so that it could continue to handle high priority tasks but, also, the person who knew the computer best - engineer Steven Bales - needed only a few seconds to diagnose the problem and recommend that the landing continue.",
+    "content_hash": "sha256:ea5b0d9e5f12bec091352130b775547a9dd0e5a29d25d0e4c93fba5799dc0d06"
+  },
+  {
+    "passage_id": "PSG_A11_BOULDERS",
+    "source_id": "SRC_ALSJ_A11",
+    "locator": "The Lunar First Landing, approach",
+    "text": "However, once Aldrin had given him an initial target angle, Armstrong realized that, although the site selection team had picked a smooth patch of ground, the state of the guidance art at the time of Apollo 11 wasn't nearly as refined as it would be for the later missions, and fate and the computer were taking the LM into a field of boulders on the northeast shoulder of a crater the size of a football field.",
+    "content_hash": "sha256:af4ff027c5b382175444523cf4e5b4bd6456617ad92c57b0a24580e0d75c0d4b"
+  },
+  {
+    "passage_id": "PSG_A11_MANUAL",
+    "source_id": "SRC_ALSJ_A11",
+    "locator": "The Lunar First Landing, manual control",
+    "text": "Two minutes after pitchover and about two minutes prior to the landing, Armstrong took action. He decided to follow an old maxim: \"When in doubt, land long.\" To do that, he would have to overfly the crater and land well to the west of it; and there was clearly no point - nor really much time - to give the computer enough of an update via the handcontroller. The Landing Point Designator (LPD) was designed for fine tuning and what Armstrong needed was a big change. So he switched to manual control, pitched the LM forward, and began to fly it like a helicopter. Within seconds, he had slowed his rate of descent from about twenty feet per second down to about three and flew the LM about 1100 feet west beyond the craters and the boulders",
+    "content_hash": "sha256:937c13191b27a3f564b1e65fd1bc4bed07fc594a9784b20e04bc758626ec939f"
+  },
+  {
+    "passage_id": "PSG_A11_FUEL_UNCERTAINTY",
+    "source_id": "SRC_ALSJ_A11",
+    "locator": "The Lunar First Landing, fuel",
+    "text": "Back in Houston, Flight Director Gene Kranz and other members of the support team in the Mission Control Room were watching telemetry from the LM. They did not know about the crater yet - Armstrong wouldn't discuss it until well after the landing - but it was obvious that the landing was taking longer than planned. Indeed, with each passing second there was mounting concern about how much fuel remained. Because of uncertainties in both the gauges in the tanks and the estimates that could be made from telemetry data on the engine firing, the amount of time remaining until the fuel ran out was uncertain by about 20 seconds. If they got too low, Kranz would have to order an abort.",
+    "content_hash": "sha256:d0efd533015c9e3f0584070c7ef4a8313f1287a77abf5946958a95f9fb1c4e7f"
+  },
+  {
+    "passage_id": "PSG_A11_TOUCHDOWN",
+    "source_id": "SRC_ALSJ_A11",
+    "locator": "The Lunar First Landing, touchdown",
+    "text": "As they came down through 75 feet, Duke radioed that they had sixty seconds of fuel left and, in the cabin, Aldrin had already seen a warning light that was telling him the same thing. But they were close now and it was just a matter of easing themselves down. Armstrong had killed almost all of their forward velocity and now, as they began to kick up dust with the engine exhaust, he asked Aldrin to confirm that they were still moving forward a little. He wanted to land on the surface he could see in front of them, rather than on ground he couldn't see behind them. Aldrin gave him the confirmation that he wanted and, eight seconds later, they saw the contact light. The sixty-eight-inch-long probes that dangled from the landing gear had touched the Moon. A second or two later they were down and had the engine shut off. Forty seconds had passed since the sixty-second warning, but they were down.",
+    "content_hash": "sha256:5b484ff344c9fc41a302fc8264a019021626e29e4da2296428c3170f950f4148"
+  },
+  {
+    "passage_id": "PSG_A11_MARGIN",
+    "source_id": "SRC_ALSJ_A11",
+    "locator": "The Lunar First Landing, note",
+    "text": "(Post-mission analysis indicated that they actually had about 45 seconds of fuel left, rather than 20. Nonetheless, it was the smallest margin of all the Apollo landings. Note, also, that, in the interest of reducing uncertainty, the fuel gauging system was improved for Apollo 12.)",
+    "content_hash": "sha256:2dea0e0011c6f99ef2c5d4a637810f30f6a6fa483b23437e7ac6ac7d2b32b6ce"
+  },
+  {
+    "passage_id": "PSG_CH_FLAWED",
+    "source_id": "SRC_ROGERS_V1_CH5",
+    "locator": "Chapter V, opening",
+    "text": "The decision to launch the Challenger was flawed. Those who made that decision were unaware of the recent history of problems concerning the O-rings and the joint and were unaware of the initial written recommendation of the contractor advising against the launch at temperatures below 53 degrees Fahrenheit and the continuing opposition of the engineers at Thiokol after the management reversed its position. They did not have a clear understanding of Rockwell's concern that it was not safe to launch because of ice on the pad. If the decisionmakers had known all of the facts, it is highly unlikely that they would have decided to launch 51-L on January 28, 1986.",
+    "content_hash": "sha256:f2cb1a3654ded8d0f8dabcaee26c5715eafaee214303a398a2066a4bf82b5a16"
+  },
+  {
+    "passage_id": "PSG_CH_PROCESS",
+    "source_id": "SRC_ROGERS_V1_CH5",
+    "locator": "Flaws in the Decision Making Process",
+    "text": "That testimony reveals failures in communication that resulted in a decision to launch 51-L based on incomplete and sometimes misleading information, a conflict between engineering data and management judgments, and a NASA management structure that permitted internal flight safety problems to bypass key Shuttle managers.",
+    "content_hash": "sha256:6cfc2462c34f4d9d37eeeb7c80523ae44e310d142e8f7e74bc611aacdc03f930"
+  },
+  {
+    "passage_id": "PSG_CH_TELECON_DATE",
+    "source_id": "SRC_ROGERS_V1_CH5",
+    "locator": "Testimony of Mr. Hardy",
+    "text": "At the teleconference on the evening of January 27, 1986, Thiokol engineering personnel in Utah",
+    "content_hash": "sha256:304ae4abcd2dc76fbd51b96ff9a7bdc995934010fe3ba83d34d7db84e11adcd2"
+  },
+  {
+    "passage_id": "PSG_CH_LUND_INITIAL",
+    "source_id": "SRC_ROGERS_V1_CH5",
+    "locator": "Testimony of Mr. Mulloy",
+    "text": "The bottom line of that, though, initially was that Thiokol engineering, Bob Lund, who is the Vice President and Director of Engineering, who is here today, recommended that 51-L not be launched if the O-ring temperatures predicted at launch time would be lower than any previous launch, and that was 53 degrees.",
+    "content_hash": "sha256:4cfe0611f60e5291956f48f28ce43a5dc9b986d53d451d202261c82b1bcc87fa"
+  },
+  {
+    "passage_id": "PSG_CH_DATABASE",
+    "source_id": "SRC_ROGERS_V1_CH5",
+    "locator": "Testimony of Mr. Boisjoly",
+    "text": "Mr. Boisjoly: The conclusion was we should not fly outside of our data base, which was 53 degrees.",
+    "content_hash": "sha256:1dd17ae79639f2f780768e3ba7fcb31eab9da02f3e24227bf06e8929d4b77ff1"
+  },
+  {
+    "passage_id": "PSG_CH_MULLOY_APRIL",
+    "source_id": "SRC_ROGERS_V1_CH5",
+    "locator": "Testimony of Mr. Mulloy",
+    "text": "The total context I think in which those words may have been used is, there are currently no Launch Commit Criteria [LCC] for joint temperature. What you are proposing to do is to generate a new Launch Commit Criteria on the eve of launch, after we have successfully flown with the existing Launch Commit Criteria 24 previous times. With this LCC, i.e., do not launch with a temperature greater [sic] than 53 degrees, we may not be able to launch until next April. We need to consider this carefully before we jump to any conclusions.",
+    "content_hash": "sha256:f670733c14101d98c75a6d7521f2ae353efd3542ed25813609b667cb756d6dae"
+  },
+  {
+    "passage_id": "PSG_CH_MANAGEMENT_HAT",
+    "source_id": "SRC_ROGERS_V1_CH5",
+    "locator": "Testimony of Mr. Boisjoly",
+    "text": "Mr. Mason said we have to make a management decision. He turned to Bob Lund and asked him to take off his engineering hat and put on his management hat. From this point on, management formulated the points to base their decision on.",
+    "content_hash": "sha256:a7f22355b2427b4d5464d995df50333b57e1ab41d38eca76d3b6862a8da9aeec"
+  },
+  {
+    "passage_id": "PSG_CH_PRESSURE",
+    "source_id": "SRC_ROGERS_V1_CH5",
+    "locator": "Testimony of Mr. Boisjoly",
+    "text": "I left the room feeling badly defeated, but I felt I really did all I could to stop the launch. I felt personally that management was under a lot of pressure to launch and that they made a very tough decision, but I didn't agree with it. One of my colleagues that was in the meeting summed it up best. This was a meeting where the determination was to launch, and it was up to us to prove beyond a shadow of a doubt that it was not safe to do so.",
+    "content_hash": "sha256:5afa590e1582c6d4c82ab6e4b2b50e661f8b2878c250ba204cbb6e004797bd88"
+  },
+  {
+    "passage_id": "PSG_CH_REVERSAL",
+    "source_id": "SRC_ROGERS_V1_CH5",
+    "locator": "Chronology, morning after the teleconference",
+    "text": "Approximately 8:00 AM (EST) At Marshall Space Flight Center (1) Judson A. Lovingood, Deputy Manager, Shuttle Projects Office, MSFC; (2) Jack Lee, Deputy Director MSFC. Conversation. Lovingood informs Lee of previous night's discussions. He indicates that Thiokol had at first recommended not launching, and then after Wasatch conference recommended launching.",
+    "content_hash": "sha256:b4c4f64510fa2f0b72a2c6cdb87ff86f8c9ed90093067d08d9f321f2de89f8a2"
+  },
+  {
+    "passage_id": "PSG_CH_DELAY_PERCEPTION",
+    "source_id": "SRC_ROGERS_V1_CH5",
+    "locator": "Testimony of Dr. Lovingood and Mr. Reinartz",
+    "text": "Dr. Keel: So as early as after that first afternoon conference at 5:45, it appeared that Thiokol was basically saying delay. Is that right? Dr. Lovingood: That is the way it came across to me. I don't know how other people perceived it, but that's the way it came across to me. Dr. Keel: Mr. Reinartz, how did you perceive It? Mr. Reinartz: I did not perceive it that way. I perceived that they were raising some questions and issues which required looking into by all the right parties, but I did not perceive it as a recommendation delay.",
+    "content_hash": "sha256:6f74df9eb66c07e68a43eaad246ec39b2f2035d8126a890e20ff11aab6ad0068"
+  },
+  {
+    "passage_id": "PSG_CH_ICE",
+    "source_id": "SRC_ROGERS_V1_CH5",
+    "locator": "Rockwell and ice on the pad",
+    "text": "Two things are apparent from the Rockwell testimony. First, Rockwell did not feel it had sufficient time to research and resolve the ice on the pad problem.",
+    "content_hash": "sha256:58c84ea6c0ce172986e445781bfef234bbeef8bdcde7b4ab97fa3f7341fdca24"
+  },
+  {
+    "passage_id": "PSG_CH_BURDEN",
+    "source_id": "SRC_ROGERS_V1_CH5",
+    "locator": "Commission finding, ice",
+    "text": "In this situation, NASA appeared to be requiring a contractor to prove that it was not safe to launch, rather than proving it was safe.",
+    "content_hash": "sha256:1c783e736f16117f5ec1a54732c2f66d35da6e0adadcedc71aaa62fcc8a05a2c"
+  }
+]

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
 import type { CaseCard } from "@/lib/contracts/advice";
 import { brief, formatYear } from "@/lib/case-refs";
 import { ArrowRight, cx } from "../ui";
@@ -9,11 +9,17 @@ export type TimelineNode =
   | { kind: "case"; key: string; card: CaseCard; role: "supporting" | "challenging" | "unrated"; lesson: string | null; fit: number | null }
   | { kind: "today"; key: "today"; hint: string };
 
+// Comparisons and challenges get the same size and weight, so neither reads as the "right" one; only the mark differs.
 const ROLE = {
-  supporting: { label: "Comparison", dot: "size-3.5 rounded-full bg-ink" },
-  challenging: { label: "Challenge", dot: "size-3.5 rounded-full border-[2.5px] border-ink bg-paper" },
-  unrated: { label: "Related case", dot: "size-3 rounded-full bg-ink/35" },
+  supporting: { label: "Comparison", dot: "size-4 rounded-full bg-ink" },
+  challenging: { label: "Challenge", dot: "size-4 rounded-full border-2 border-slate bg-paper" },
+  unrated: { label: "Related case", dot: "size-3 rounded-full bg-muted/60" },
 } as const;
+
+/** Entrance timing (ms): the axis reaches each moment STEP after the last, and that moment rises as it arrives. */
+const START = 120;
+const STEP = 220;
+const at = (ms: number) => ({ "--d": ms }) as CSSProperties;
 
 function gapLabel(from: number | null, to: number | null): string | null {
   if (from === null || to === null) return null;
@@ -52,6 +58,8 @@ export function DecisionTimeline({
   const [hover, setHover] = useState<{ key: string; left: number; top: number; arrow: number } | null>(null);
   const [arrow, setArrow] = useState<number | null>(null);
   const [edges, setEdges] = useState({ left: false, right: false });
+  // After the entrance has played, anything that remounts (like the hint) appears without waiting for it again.
+  const [settled, setSettled] = useState(false);
   const tipId = useId();
   const panelId = useId();
   const TIP_WIDTH = 360;
@@ -86,6 +94,11 @@ export function DecisionTimeline({
       window.removeEventListener("resize", update);
     };
   }, [selected, centreOf]);
+
+  useEffect(() => {
+    const id = window.setTimeout(() => setSettled(true), START + (nodes.length + 2) * STEP);
+    return () => window.clearTimeout(id);
+  }, [nodes.length]);
 
   useEffect(() => {
     const el = scroller.current;
@@ -125,7 +138,7 @@ export function DecisionTimeline({
     <div ref={wrapper} className="relative" onKeyDown={onKeyDown}>
       <div
         ref={scroller}
-        className="snap-x snap-mandatory overflow-x-auto pb-3 [scrollbar-width:thin]"
+        className="snap-x snap-mandatory overflow-x-auto pb-4 [scrollbar-color:var(--c-rule)_transparent] [scrollbar-width:thin]"
         onScroll={() => {
           setHover(null);
           measureEdges();
@@ -139,16 +152,31 @@ export function DecisionTimeline({
             const gap = node.kind === "case" && next ? gapLabel(year, next.kind === "case" ? next.card.year_start : new Date().getFullYear()) : null;
             const intoToday = next?.kind === "today";
             const active = selected === node.key;
+            const t = START + i * STEP;
             return (
               <li key={node.key} className="relative flex min-w-[min(72vw,15rem)] flex-1 shrink-0 snap-center flex-col items-center px-3 text-center sm:min-w-[11rem]">
                 {/* The axis is drawn in halves inside each point, so it joins neighbours at any width. */}
                 {i > 0 ? (
-                  <span aria-hidden="true" className={cx("absolute right-1/2 left-0 h-px", isToday ? "bg-accent/70" : "bg-ink/20")} style={{ top: `calc(${AXIS} - 0.5px)` }} />
+                  <span
+                    aria-hidden="true"
+                    className={cx("tl-axis absolute right-1/2 left-0 h-px", isToday ? "bg-gradient-to-r from-accent/50 to-accent" : "bg-ink/30")}
+                    style={{ top: `calc(${AXIS} - 0.5px)`, animationDuration: `${STEP / 2}ms`, ...at(t - STEP / 2) }}
+                  />
                 ) : null}
                 {next ? (
-                  <span aria-hidden="true" className={cx("absolute right-0 left-1/2 h-px", intoToday ? "bg-accent/70" : "bg-ink/20")} style={{ top: `calc(${AXIS} - 0.5px)` }} />
+                  <span
+                    aria-hidden="true"
+                    className={cx("tl-axis absolute right-0 left-1/2 h-px", intoToday ? "bg-gradient-to-r from-ink/30 to-accent/50" : "bg-ink/30")}
+                    style={{ top: `calc(${AXIS} - 0.5px)`, animationDuration: `${STEP / 2}ms`, ...at(t) }}
+                  />
                 ) : null}
-                <span className="flex h-[5rem] items-end text-[clamp(2.1rem,3.7vw,3.6rem)] leading-[0.85] font-semibold tracking-[-0.055em] whitespace-nowrap text-ink">
+                <span
+                  className={cx(
+                    "tl-rise display flex h-[5rem] items-end text-[clamp(2.5rem,4.3vw,4.25rem)] leading-[0.85] tracking-[-0.04em] whitespace-nowrap",
+                    isToday ? "text-accent-ink italic" : "text-ink",
+                  )}
+                  style={at(t - 60)}
+                >
                   {isToday ? "Today" : formatYear(year)}
                 </span>
                 <button
@@ -168,33 +196,37 @@ export function DecisionTimeline({
                   onMouseLeave={() => setHover(null)}
                   onFocus={() => node.kind === "case" && showTip(node.key)}
                   onBlur={() => setHover(null)}
-                  className="group mt-6 flex flex-col items-center rounded-lg px-2 pb-2 outline-offset-4"
+                  className="group mt-6 flex flex-col items-center rounded-[4px] px-2 pb-2 outline-offset-4"
                 >
-                  <span className="flex size-6 items-center justify-center">
-                    <span
-                      data-dot
-                      aria-hidden="true"
-                      className={cx(
-                        "relative z-10 block ring-[6px] ring-paper transition-transform duration-300 group-hover:scale-[1.35] group-focus-visible:scale-[1.35]",
-                        isToday ? "size-3.5 rotate-45 rounded-[2px] bg-accent" : ROLE[node.role].dot,
-                        active && "scale-[1.35] outline outline-[1.5px] outline-offset-[5px] outline-ink",
-                      )}
-                    />
+                  <span className="relative flex size-6 items-center justify-center">
+                    {isToday ? <span aria-hidden="true" className="tl-halo absolute size-4 rotate-45 rounded-[2px] bg-accent" style={at(t + 380)} /> : null}
+                    <span className="tl-land relative z-10 block" style={at(t)}>
+                      <span
+                        data-dot
+                        aria-hidden="true"
+                        className={cx(
+                          "block ring-[7px] ring-paper transition-transform duration-300 ease-out-soft group-hover:scale-[1.3] group-focus-visible:scale-[1.3]",
+                          isToday ? "size-4 rotate-45 rounded-[2px] bg-accent" : ROLE[node.role].dot,
+                          active && "scale-[1.3] outline outline-[1.5px] outline-offset-[5px] outline-accent",
+                        )}
+                      />
+                    </span>
                   </span>
                   <span
                     className={cx(
-                      "mt-5 line-clamp-3 max-w-[15rem] text-[clamp(1rem,1.35vw,1.15rem)] leading-snug font-medium tracking-[-0.015em] text-ink underline decoration-[1.5px] underline-offset-[5px] transition-colors",
-                      active ? "decoration-ink" : "decoration-transparent group-hover:decoration-ink/30",
+                      "tl-rise display mt-5 line-clamp-3 max-w-[15rem] text-[clamp(1.1rem,1.45vw,1.3rem)] leading-[1.2] text-ink underline decoration-1 underline-offset-[6px] transition-[text-decoration-color] duration-200",
+                      active ? "decoration-accent" : "decoration-transparent group-hover:decoration-accent/60",
                     )}
+                    style={at(t + 60)}
                   >
                     {isToday ? "Your decision" : node.card.title}
                   </span>
-                  <span className="mt-2 text-[0.8125rem] font-light text-ink-soft">
+                  <span className="tl-rise mt-2.5 text-[0.78rem] tracking-[0.02em] text-muted" style={at(t + 120)}>
                     {isToday ? (
                       node.hint
                     ) : node.fit !== null ? (
                       <>
-                        {ROLE[node.role].label} · Fit <span className="font-medium text-ink">{node.fit}</span>/100
+                        {ROLE[node.role].label} · Fit <span className="font-semibold text-ink tabular-nums">{node.fit}</span>/100
                       </>
                     ) : (
                       ROLE[node.role].label
@@ -204,10 +236,12 @@ export function DecisionTimeline({
                 {gap ? (
                   <span
                     aria-hidden="true"
-                    className="absolute right-0 z-10 translate-x-1/2 -translate-y-1/2 bg-paper px-2 text-xs font-light whitespace-nowrap text-muted"
+                    className="absolute right-0 z-10 translate-x-1/2 -translate-y-1/2 bg-paper px-2.5 font-display text-[0.85rem] whitespace-nowrap text-muted italic"
                     style={{ top: AXIS }}
                   >
-                    {gap}
+                    <span className="tl-rise block" style={at(t + STEP / 2)}>
+                      {gap}
+                    </span>
                   </span>
                 ) : null}
               </li>
@@ -219,8 +253,8 @@ export function DecisionTimeline({
       {edges.right ? <span aria-hidden="true" className="pointer-events-none absolute top-0 right-0 h-[14rem] w-12 bg-gradient-to-l from-paper to-transparent" /> : null}
 
       {!selected ? (
-        <p className="mt-8 text-center text-sm font-light text-ink-soft">
-          {edges.right ? "Scroll sideways for more. " : ""}Select a moment to see what it teaches, or select <span className="font-medium text-ink">Your decision</span> for the advice.
+        <p className="tl-rise mt-10 text-center text-sm text-muted" style={at(settled ? 0 : START + nodes.length * STEP)}>
+          {edges.right ? "Scroll sideways for more. " : ""}Select a moment to see what it teaches, or select <span className="font-display text-[1.05em] text-ink italic">Your decision</span> for the advice.
         </p>
       ) : null}
 
@@ -228,13 +262,13 @@ export function DecisionTimeline({
         <div
           id={tipId}
           role="tooltip"
-          className="pointer-events-none absolute z-30 animate-rise rounded-xl border border-rule-soft bg-card text-left shadow-[0_28px_60px_-28px_rgb(0_0_0/0.4)]"
+          className="pointer-events-none absolute z-30 animate-rise rounded-[4px] border border-rule bg-card text-left shadow-[0_30px_70px_-30px_rgb(20_14_6/0.5)]"
           style={{ left: hover.left, top: hover.top, width: `min(${TIP_WIDTH}px, 100%)` }}
         >
-          <span aria-hidden="true" className="absolute -top-1.5 size-3 rotate-45 border-t border-l border-rule-soft bg-card" style={{ left: hover.arrow - 6 }} />
+          <span aria-hidden="true" className="absolute -top-1.5 size-3 rotate-45 border-t border-l border-rule bg-card" style={{ left: hover.arrow - 6 }} />
           <div className="px-5 pt-4 pb-3">
-            <p className="text-xs font-light text-muted">{hovered.card.display_date}</p>
-            <p className="mt-1 text-[1.05rem] leading-snug font-semibold tracking-[-0.02em] text-ink">{hovered.card.title}</p>
+            <p className="eyebrow text-accent-ink">{hovered.card.display_date}</p>
+            <p className="display mt-2 text-[1.3rem] leading-[1.15] text-ink">{hovered.card.title}</p>
           </div>
           <dl className="text-[0.8125rem]">
             <TipRow label="What they did">{brief(hovered.card.chosen_action.text, 150)}</TipRow>
@@ -245,8 +279,8 @@ export function DecisionTimeline({
               </TipRow>
             ) : null}
           </dl>
-          <p className="flex items-center justify-between rounded-b-xl border-t border-rule-soft px-5 py-3 text-[0.8125rem] font-medium text-ink">
-            Select for details <ArrowRight />
+          <p className="flex items-center justify-between rounded-b-[4px] border-t border-rule-soft px-5 py-3 text-[0.8125rem] font-semibold text-ink">
+            Select for details <ArrowRight className="text-accent-ink" />
           </p>
         </div>
       ) : null}
@@ -270,8 +304,8 @@ export function DecisionTimeline({
 function TipRow({ label, lesson, children }: { label: string; lesson?: boolean; children: ReactNode }) {
   return (
     <div className={cx("grid grid-cols-[5.75rem_1fr] gap-3 border-t border-rule-soft px-5 py-3", lesson && "bg-highlight-wash")}>
-      <dt className="font-semibold text-ink">{label}</dt>
-      <dd className={cx("leading-relaxed", lesson ? "text-ink" : "font-light text-ink-soft")}>{children}</dd>
+      <dt className="eyebrow pt-[0.2em] text-[0.62rem] text-muted">{label}</dt>
+      <dd className={cx("leading-relaxed", lesson ? "font-display text-[0.95rem] text-ink italic" : "text-ink-soft")}>{children}</dd>
     </div>
   );
 }

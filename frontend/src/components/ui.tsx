@@ -17,15 +17,15 @@ export function Button({
       type="button"
       {...props}
       className={cx(
-        "inline-flex items-center justify-center gap-2 font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50",
+        "group/btn inline-flex items-center justify-center gap-2 font-semibold tracking-[0.01em] transition-[background-color,color,border-color,transform] duration-200 ease-out-soft enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50",
         variant === "quiet" || size === "md" ? "text-sm" : "text-[0.95rem]",
-        variant !== "quiet" && "rounded-lg",
-        variant !== "quiet" && (size === "md" ? "h-[2.625rem] px-5" : "h-12 px-6"),
-        variant === "primary" && "bg-ink text-white enabled:hover:bg-black",
-        variant === "secondary" && "border border-ink/80 text-ink enabled:hover:bg-ink enabled:hover:text-white",
-        variant === "light" && "bg-white text-ink enabled:hover:bg-paper-deep",
-        variant === "outline-light" && "border border-white/35 text-white enabled:hover:border-white enabled:hover:bg-white/10",
-        variant === "quiet" && "-mx-0.5 px-0.5 py-1 text-ink underline decoration-ink/25 decoration-[1.5px] underline-offset-[5px] enabled:hover:decoration-ink",
+        variant !== "quiet" && "rounded-[3px]",
+        variant !== "quiet" && (size === "md" ? "h-11 px-5" : "h-[3.25rem] px-7"),
+        variant === "primary" && "bg-ink text-paper enabled:hover:bg-ink/80",
+        variant === "secondary" && "border border-ink/70 text-ink enabled:hover:border-ink enabled:hover:bg-ink enabled:hover:text-paper",
+        variant === "light" && "bg-white text-night enabled:hover:bg-white/80",
+        variant === "outline-light" && "border border-white/30 text-white enabled:hover:border-white enabled:hover:bg-white/10",
+        variant === "quiet" && "-mx-0.5 px-0.5 py-1 text-ink underline decoration-accent/50 decoration-1 underline-offset-[6px] enabled:hover:decoration-ink",
         className,
       )}
     />
@@ -64,8 +64,8 @@ export function CloseButton({ onClick, label = "Close details", tone = "light", 
       onClick={onClick}
       aria-label={label}
       className={cx(
-        "inline-flex size-10 items-center justify-center rounded-lg border transition-colors",
-        tone === "light" ? "border-rule bg-card text-ink hover:border-ink hover:bg-ink hover:text-white" : "border-white/20 text-white hover:bg-white hover:text-ink",
+        "inline-flex size-10 items-center justify-center rounded-full border transition-[background-color,color,border-color,transform] duration-300 ease-out-soft hover:rotate-90",
+        tone === "light" ? "border-rule bg-card text-ink hover:border-ink hover:bg-ink hover:text-paper" : "border-white/25 text-white hover:bg-white hover:text-night",
         className,
       )}
     >
@@ -78,8 +78,8 @@ export function CloseButton({ onClick, label = "Close details", tone = "light", 
 export function ArrowLabel({ children }: { children: ReactNode }) {
   return (
     <span className="group/arrow inline-flex items-center gap-2">
-      <ArrowRight className="transition-transform group-hover/arrow:translate-x-0.5" />
-      <span className="underline decoration-current/25 decoration-[1.5px] underline-offset-[5px] group-hover/arrow:decoration-current">{children}</span>
+      <ArrowRight className="transition-transform duration-300 ease-out-soft group-hover/arrow:translate-x-1" />
+      <span className="underline decoration-accent/60 decoration-1 underline-offset-[6px] transition-[text-decoration-color] duration-200 group-hover/arrow:decoration-current">{children}</span>
     </span>
   );
 }
@@ -87,9 +87,9 @@ export function ArrowLabel({ children }: { children: ReactNode }) {
 /** Section title with an index number and a dotted rule beneath. */
 export function SectionHeading({ index, title, aside, id }: { index?: string; title: string; aside?: ReactNode; id?: string }) {
   return (
-    <div className="dots-b mb-6 flex flex-wrap items-end justify-between gap-x-4 gap-y-2 pb-4">
-      <h2 id={id} className="flex items-baseline gap-3 text-[1.65rem] leading-tight font-semibold tracking-[-0.035em] text-ink sm:text-[2rem]">
-        {index ? <span className="text-sm font-normal tracking-normal text-muted tabular-nums">{index}</span> : null}
+    <div className="mb-8 flex flex-wrap items-end justify-between gap-x-4 gap-y-2 border-b border-rule pb-5">
+      <h2 id={id} className="display flex items-baseline gap-4 text-[clamp(1.9rem,3.2vw,2.75rem)] leading-[1.05] text-ink">
+        {index ? <span className="eyebrow translate-y-[-0.35em] text-accent-ink tabular-nums">{index}</span> : null}
         {title}
       </h2>
       {aside ? <div className="text-sm text-muted">{aside}</div> : null}
@@ -102,12 +102,12 @@ export function Tag({ tone = "outline", children, title }: { tone?: "outline" | 
     <span
       title={title}
       className={cx(
-        "inline-flex items-center rounded-[5px] px-1.5 py-[3px] text-[0.75rem] leading-none font-medium whitespace-nowrap",
-        tone === "outline" && "border border-ink/70 text-ink",
-        tone === "dark" && "border border-ink bg-ink text-white",
+        "inline-flex items-center rounded-[2px] px-2 py-[5px] text-[0.68rem] leading-none font-semibold tracking-[0.08em] whitespace-nowrap uppercase",
+        tone === "outline" && "border border-ink/40 text-ink",
+        tone === "dark" && "border border-slate bg-slate text-paper",
         tone === "moss" && "bg-moss-wash text-moss",
         tone === "amber" && "bg-amber-wash text-amber",
-        tone === "on-dark" && "border border-white/40 text-white/85",
+        tone === "on-dark" && "border border-accent/60 text-accent",
       )}
     >
       {children}
@@ -116,7 +116,7 @@ export function Tag({ tone = "outline", children, title }: { tone?: "outline" | 
 }
 
 export function Label({ children, className }: { children: ReactNode; className?: string }) {
-  return <p className={cx("mb-2 text-[0.8125rem] font-semibold text-ink", className)}>{children}</p>;
+  return <p className={cx("eyebrow mb-3 text-accent-ink", className)}>{children}</p>;
 }
 
 export function BulletList({ items, className }: { items: ReactNode[]; className?: string }) {
@@ -124,7 +124,7 @@ export function BulletList({ items, className }: { items: ReactNode[]; className
   return (
     <ul className={cx("space-y-2", className)}>
       {items.map((item, i) => (
-        <li key={i} className="relative pl-5 leading-relaxed before:absolute before:top-[0.78em] before:left-0 before:h-px before:w-2.5 before:bg-current before:opacity-40">
+        <li key={i} className="relative pl-5 leading-relaxed before:absolute before:top-[0.8em] before:left-0 before:h-px before:w-2.5 before:bg-accent">
           {item}
         </li>
       ))}
@@ -136,11 +136,11 @@ export function BulletList({ items, className }: { items: ReactNode[]; className
 export function Disclosure({ title, children, className }: { title: ReactNode; children: ReactNode; className?: string }) {
   return (
     <details className={cx("group border-t border-rule-soft", className)}>
-      <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-5 text-[0.95rem] font-medium text-ink transition-colors hover:bg-paper sm:px-10">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-5 text-[0.95rem] font-semibold text-ink transition-colors duration-200 hover:bg-paper-deep/50 sm:px-10">
         <span>{title}</span>
-        <PlusIcon className="transition-transform duration-300 group-open:rotate-45" />
+        <PlusIcon className="text-accent-ink transition-transform duration-300 ease-out-soft group-open:rotate-45" />
       </summary>
-      <div className="px-5 pb-8 sm:px-10">{children}</div>
+      <div className="px-5 pb-8 group-open:animate-rise sm:px-10">{children}</div>
     </details>
   );
 }

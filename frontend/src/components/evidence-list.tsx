@@ -22,7 +22,7 @@ const SOURCE_TYPE: Record<SourceView["source_type"], string> = {
   reference: "Reference work",
 };
 
-const link = "inline-flex items-center gap-1 font-medium text-ink underline decoration-ink/25 decoration-[1.5px] underline-offset-4 hover:decoration-ink";
+const link = "inline-flex items-center gap-1 font-semibold text-ink underline decoration-accent/50 decoration-1 underline-offset-[5px] transition-[text-decoration-color] hover:decoration-ink";
 
 /**
  * Disputes, claims with their exact passages, and source records for one
@@ -46,7 +46,7 @@ export function CaseEvidence({
   headingLevel?: "h2" | "h3";
 }) {
   const H = headingLevel;
-  const heading = "mb-2 text-lg font-semibold tracking-[-0.02em] text-ink";
+  const heading = "display mb-3 text-[1.5rem] leading-tight text-ink";
   const passageById = new Map(passages.map((p) => [p.passage_id, p]));
   const sourceById = new Map(sources.map((s) => [s.source_id, s]));
   const caseSources = card.source_ids.map((id) => sourceById.get(id)).filter((s): s is SourceView => Boolean(s));
@@ -58,12 +58,12 @@ export function CaseEvidence({
         <section>
           <H className={heading}>Accounts differ</H>
           {card.disputes.map((d) => (
-            <div key={d.dispute_id} className="mt-3 rounded-xl bg-amber-wash p-5 text-sm">
-              <p className="mb-2 font-medium text-ink">{d.summary}</p>
-              <ul className="space-y-1.5 font-light text-ink-soft">
+            <div key={d.dispute_id} className="mt-3 rounded-[4px] border-l-2 border-amber bg-amber-wash p-5 text-sm">
+              <p className="mb-2 font-semibold text-ink">{d.summary}</p>
+              <ul className="space-y-1.5 text-ink-soft">
                 {d.positions.map((pos) => (
                   <li key={pos.attribution}>
-                    <span className="font-medium text-ink">{pos.attribution}:</span> {pos.position}
+                    <span className="font-semibold text-ink">{pos.attribution}:</span> {pos.position}
                   </li>
                 ))}
               </ul>
@@ -73,7 +73,7 @@ export function CaseEvidence({
       ) : card.dispute_note ? (
         <section>
           <H className={heading}>How the accounts compare</H>
-          <p className="mt-3 rounded-xl bg-amber-wash p-5 text-sm leading-relaxed font-light text-ink-soft">{card.dispute_note}</p>
+          <p className="mt-3 rounded-[4px] border-l-2 border-amber bg-amber-wash p-5 text-sm leading-relaxed text-ink-soft">{card.dispute_note}</p>
         </section>
       ) : null}
 
@@ -89,10 +89,10 @@ export function CaseEvidence({
                   key={claim.claim_id}
                   id={`claim-${claim.claim_id}`}
                   tabIndex={-1}
-                  className={cx("dots-b -mx-3 scroll-mt-24 rounded-lg px-3 py-5 transition-colors", focusClaimId === claim.claim_id && "bg-highlight-wash")}
+                  className={cx("-mx-3 scroll-mt-24 rounded-[4px] border-b border-rule-soft px-3 py-5 transition-colors duration-500", focusClaimId === claim.claim_id && "bg-highlight-wash")}
                 >
                   <div className="mb-2 flex flex-wrap items-center gap-2">
-                    {refs?.[claim.claim_id] ? <span className="text-sm font-semibold text-ink tabular-nums">[{refs[claim.claim_id]}]</span> : null}
+                    {refs?.[claim.claim_id] ? <span className="display text-[1.05rem] text-accent-ink tabular-nums">[{refs[claim.claim_id]}]</span> : null}
                     <Tag tone={TYPE_LABEL[claim.type].tone}>{TYPE_LABEL[claim.type].label}</Tag>
                     <span className="font-mono text-[0.62rem] text-muted">{claim.claim_id}</span>
                   </div>
@@ -103,8 +103,8 @@ export function CaseEvidence({
                     if (!passage) return null;
                     const source = sourceById.get(passage.source_id);
                     return (
-                      <figure key={pid} className="mt-4 border-l-2 border-ink/80 pl-4">
-                        <blockquote className="leading-relaxed font-light text-ink-soft italic">{passage.text}</blockquote>
+                      <figure key={pid} className="mt-4 border-l border-accent pl-5">
+                        <blockquote className="font-display text-[1.08rem] leading-relaxed text-ink-soft italic">{passage.text}</blockquote>
                         <figcaption className="mt-2 text-xs text-muted">
                           {source ? source.title : passage.source_id}
                           {passage.locator ? ` · ${passage.locator}` : ""}
@@ -124,9 +124,9 @@ export function CaseEvidence({
           <H className={heading}>Source records</H>
           <ul className="mt-3 space-y-3">
             {caseSources.map((s) => (
-              <li key={s.source_id} className="rounded-xl border border-rule-soft bg-paper p-5 text-sm">
-                <p className="font-semibold text-ink">{s.title}</p>
-                <p className="mt-1 font-light text-ink-soft">{[s.institution, s.author, s.publication_date_display].filter(Boolean).join(" · ")}</p>
+              <li key={s.source_id} className="rounded-[4px] border border-rule-soft bg-paper p-5 text-sm transition-colors duration-200 hover:border-rule">
+                <p className="display text-[1.15rem] leading-snug text-ink">{s.title}</p>
+                <p className="mt-1 text-ink-soft">{[s.institution, s.author, s.publication_date_display].filter(Boolean).join(" · ")}</p>
                 <p className="mt-2 text-xs text-muted">
                   {SOURCE_TYPE[s.source_type]}
                   {s.retrieved_at ? ` · Retrieved ${s.retrieved_at}` : ""}

@@ -15,9 +15,9 @@ export function BackLink() {
     () => false,
   );
   return (
-    <Link href={hasResults ? "/#results" : "/"} className="group inline-flex items-center gap-2 text-sm font-medium text-ink">
-      <ArrowRight className="rotate-180 transition-transform group-hover:-translate-x-0.5" />
-      <span className="underline decoration-ink/25 decoration-[1.5px] underline-offset-[5px] group-hover:decoration-ink">
+    <Link href={hasResults ? "/#results" : "/"} className="group inline-flex items-center gap-2 text-sm font-semibold text-ink">
+      <ArrowRight className="rotate-180 text-accent-ink transition-transform duration-300 ease-out-soft group-hover:-translate-x-1" />
+      <span className="underline decoration-accent/50 decoration-1 underline-offset-[6px] transition-[text-decoration-color] group-hover:decoration-ink">
         {hasResults ? "Back to your results" : "Back to Historical Figure"}
       </span>
     </Link>

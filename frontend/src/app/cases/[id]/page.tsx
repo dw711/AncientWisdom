@@ -30,7 +30,7 @@ export default function CasePage({ params }: PageProps<"/cases/[id]">) {
 function Band({ children }: { children?: ReactNode }) {
   return (
     <div className="bg-band">
-      <div className="mx-auto max-w-[90rem] px-4 pt-4 pb-14 sm:px-10 sm:pt-8 sm:pb-20">
+      <div className="mx-auto max-w-[90rem] px-4 pt-6 pb-16 sm:px-10 sm:pt-10 sm:pb-24">
         <BackLink />
         {children}
       </div>
@@ -42,9 +42,9 @@ function StorySkeleton() {
   return (
     <Band>
       <div className="mt-10 animate-pulse space-y-5" aria-busy="true" aria-label="Loading the story">
-        <div className="h-5 w-48 rounded bg-paper-deep" />
-        <div className="h-16 w-3/4 rounded bg-paper-deep" />
-        <div className="h-5 w-2/3 rounded bg-paper-deep" />
+        <div className="h-4 w-40 rounded-[2px] bg-paper-deep" />
+        <div className="h-20 w-3/4 rounded-[2px] bg-paper-deep" />
+        <div className="h-5 w-2/3 rounded-[2px] bg-paper-deep" />
       </div>
     </Band>
   );
@@ -53,12 +53,12 @@ function StorySkeleton() {
 function Refs({ ids, refs, dark }: { ids: string[]; refs: Record<string, number>; dark?: boolean }) {
   if (!ids.length) return null;
   return (
-    <span className="ml-0.5 align-super text-[0.7rem] leading-none font-medium tracking-normal">
+    <span className="ml-0.5 align-super font-sans text-[0.7rem] leading-none font-semibold tracking-normal not-italic">
       {ids.map((id) => (
         <a
           key={id}
           href={`#claim-${id}`}
-          className={cx("rounded-sm px-0.5", dark ? "text-white/60 hover:bg-white hover:text-ink" : "text-ink/60 hover:bg-highlight hover:text-ink")}
+          className={cx("rounded-sm px-0.5", dark ? "text-accent hover:bg-white hover:text-night" : "text-accent-ink hover:bg-highlight hover:text-ink")}
           aria-label={`Source passage ${refs[id]}`}
         >
           [{refs[id]}]
@@ -87,7 +87,7 @@ async function Story({ id }: { id: string }) {
   } catch (err) {
     return (
       <Band>
-        <p role="alert" className="mt-10 text-lg text-accent-ink">
+        <p role="alert" className="mt-10 text-lg text-danger">
           {err instanceof CorpusError ? "The historical collection could not be loaded right now. Please try again." : "Something went wrong while loading this story."}
         </p>
       </Band>
@@ -96,10 +96,10 @@ async function Story({ id }: { id: string }) {
   if (!bundle) {
     return (
       <Band>
-        <h1 className="mt-10 text-[clamp(2.4rem,5vw,4rem)] leading-none font-semibold tracking-[-0.045em] text-ink">Story not found</h1>
-        <p className="mt-4 font-light text-ink-soft">
+        <h1 className="display mt-12 text-[clamp(3rem,7vw,5.5rem)] leading-none text-ink italic">Story not found</h1>
+        <p className="mt-5 text-ink-soft">
           There is no approved case with that reference.{" "}
-          <Link href="/" className="font-medium text-ink underline decoration-ink/25 decoration-[1.5px] underline-offset-4 hover:decoration-ink">
+          <Link href="/" className="font-semibold text-ink underline decoration-accent/50 decoration-1 underline-offset-[5px] hover:decoration-ink">
             Start a new analysis
           </Link>
           .
@@ -121,31 +121,31 @@ async function Story({ id }: { id: string }) {
   return (
     <>
       <Band>
-        <header className="mt-10 animate-rise sm:mt-14">
-          <p className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm font-light text-ink-soft">
+        <header className="mt-12 sm:mt-20">
+          <p className="stagger flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-muted">
             {when ? <Tag>{when}</Tag> : null}
             <span>
               {story.date_detail}
               {story.geography ? ` · ${story.geography}` : ""}
             </span>
           </p>
-          <h1 className="mt-5 max-w-6xl text-[clamp(2.4rem,6vw,5.5rem)] leading-[0.95] font-semibold tracking-[-0.05em] text-balance text-ink">{story.title}</h1>
-          <p className="mt-6 max-w-3xl text-[clamp(1.15rem,1.7vw,1.4rem)] leading-snug font-light text-ink">{story.decision_question}</p>
+          <h1 className="display stagger mt-7 max-w-6xl text-[clamp(2.8rem,7.4vw,7rem)] leading-[0.92] tracking-[-0.04em] text-balance text-ink [--d:100]">{story.title}</h1>
+          <p className="stagger mt-8 ml-auto max-w-2xl border-l border-accent pl-6 text-[clamp(1.15rem,1.7vw,1.45rem)] leading-snug text-ink-soft [--d:220] lg:mr-[8%]">{story.decision_question}</p>
         </header>
       </Band>
 
-      <main className="mx-auto w-full max-w-[90rem] flex-1 px-4 pt-12 pb-16 sm:px-10 sm:pt-16">
-        <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_21rem] lg:gap-16">
-          <div className="min-w-0 space-y-16">
+      <main className="mx-auto w-full max-w-[90rem] flex-1 px-4 pt-14 pb-16 sm:px-10 sm:pt-20">
+        <div className="grid gap-14 lg:grid-cols-12 lg:gap-16">
+          <div className="min-w-0 space-y-20 lg:col-span-8">
             <Section index={n()} title="The situation">
-              <p className="text-[1.1rem] leading-[1.75] font-light text-ink">
+              <p className="text-[1.125rem] leading-[1.8] text-ink">
                 {story.context.text}
                 <Refs ids={story.context.claim_ids} refs={refs} />
               </p>
               {story.available_information.length ? (
                 <div className="mt-6">
                   <Label>What they knew, and did not know</Label>
-                  <BulletList items={story.available_information} className="font-light text-ink-soft" />
+                  <BulletList items={story.available_information} className="text-ink-soft" />
                 </div>
               ) : null}
             </Section>
@@ -154,40 +154,40 @@ async function Story({ id }: { id: string }) {
               <Section index={n()} title="The choice" aside={story.options_are_editorial ? "Options framed by the editors" : null}>
                 <ol>
                   {story.options.map((o, i) => (
-                    <li key={o} className="dots-b flex gap-5 py-4">
-                      <span className="w-6 shrink-0 text-xl leading-none font-semibold tracking-[-0.03em]">{String.fromCharCode(65 + i)}</span>
-                      <span className="leading-relaxed font-light text-ink">{o}</span>
+                    <li key={o} className="flex gap-6 border-b border-rule-soft py-5">
+                      <span className="display w-7 shrink-0 text-[1.9rem] leading-[0.9] text-accent-ink italic">{String.fromCharCode(65 + i)}</span>
+                      <span className="text-[1.05rem] leading-relaxed text-ink">{o}</span>
                     </li>
                   ))}
                 </ol>
               </Section>
             ) : null}
 
-            <section aria-labelledby={sectionId("What they did")} className="rounded-2xl bg-night p-6 text-white sm:p-10">
-              <h2 id={sectionId("What they did")} className="flex items-baseline gap-3 text-sm font-light text-white/60">
+            <section aria-labelledby={sectionId("What they did")} className="rounded-[6px] bg-night p-7 text-white sm:p-14 lg:-mr-12">
+              <h2 id={sectionId("What they did")} className="eyebrow flex items-baseline gap-4 text-accent">
                 <span className="tabular-nums">{n()}</span>What they did
               </h2>
-              <p className="mt-5 text-[clamp(1.4rem,2.5vw,2.1rem)] leading-[1.18] font-semibold tracking-[-0.03em]">
+              <p className="display mt-7 text-[clamp(1.7rem,3vw,2.6rem)] leading-[1.15]">
                 {story.chosen_action.text}
                 <Refs ids={story.chosen_action.claim_ids} refs={refs} dark />
               </p>
             </section>
 
             <Section index={n()} title="What happened">
-              <p className="text-[1.1rem] leading-[1.75] font-light text-ink">
+              <p className="text-[1.125rem] leading-[1.8] text-ink">
                 {story.outcome.text}
                 <Refs ids={story.outcome.claim_ids} refs={refs} />
               </p>
-              {story.outcome.uncertainty ? <p className="mt-3 text-sm font-light text-muted">{story.outcome.uncertainty}</p> : null}
+              {story.outcome.uncertainty ? <p className="mt-4 text-sm text-muted italic">{story.outcome.uncertainty}</p> : null}
             </Section>
 
             {lesson ? (
               <Section index={n()} title="The lesson" aside={<Tag>Interpretation</Tag>}>
-                <p className="rounded-xl bg-highlight-wash px-6 py-5 text-[1.2rem] leading-relaxed font-medium tracking-[-0.015em] text-ink">{lesson}</p>
+                <p className="display border-l-2 border-accent bg-highlight-wash px-7 py-6 text-[clamp(1.4rem,2.2vw,1.8rem)] leading-[1.3] text-ink italic">{lesson}</p>
                 {story.lesson.conditions.length ? (
                   <div className="mt-6">
                     <Label>It holds when</Label>
-                    <BulletList items={story.lesson.conditions} className="font-light text-ink-soft" />
+                    <BulletList items={story.lesson.conditions} className="text-ink-soft" />
                   </div>
                 ) : null}
               </Section>
@@ -195,7 +195,7 @@ async function Story({ id }: { id: string }) {
 
             {story.analogy_limits.length ? (
               <Section index={n()} title="Where the comparison stops">
-                <BulletList items={story.analogy_limits} className="font-light text-ink-soft" />
+                <BulletList items={story.analogy_limits} className="text-ink-soft" />
               </Section>
             ) : null}
 
@@ -204,8 +204,8 @@ async function Story({ id }: { id: string }) {
             </Section>
           </div>
 
-          <aside className="self-start overflow-hidden rounded-2xl bg-card lg:sticky lg:top-6">
-            <p className="px-6 pt-6 pb-4 text-lg font-semibold tracking-[-0.02em]">At a glance</p>
+          <aside className="self-start overflow-hidden rounded-[6px] border border-rule-soft bg-card lg:sticky lg:top-8 lg:col-span-4 lg:ml-6">
+            <p className="display px-6 pt-7 pb-5 text-[1.6rem] leading-none italic">At a glance</p>
             <dl className="text-sm">
               <Fact label="When">{when}</Fact>
               {story.geography ? <Fact label="Where">{story.geography}</Fact> : null}
@@ -227,9 +227,9 @@ async function Story({ id }: { id: string }) {
 
 function Fact({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className="grid grid-cols-[6.75rem_1fr] gap-3 border-t border-rule-soft px-6 py-3.5">
-      <dt className="font-semibold text-ink">{label}</dt>
-      <dd className="leading-relaxed font-light text-ink-soft">{children}</dd>
+    <div className="grid grid-cols-[6.75rem_1fr] gap-3 border-t border-rule-soft px-6 py-4">
+      <dt className="eyebrow pt-[0.3em] text-[0.62rem] text-muted">{label}</dt>
+      <dd className="leading-relaxed text-ink">{children}</dd>
     </div>
   );
 }

@@ -8,10 +8,10 @@ export function Mark({ size = "md", tone = "ink" }: { size?: "sm" | "md" | "lg";
     <span
       aria-hidden="true"
       className={cx(
-        "seal inline-block shrink-0",
-        size === "sm" && "size-8",
-        size === "md" && "size-9",
-        size === "lg" && "size-10",
+        "seal inline-block aspect-[242/465] shrink-0",
+        size === "sm" && "h-9",
+        size === "md" && "h-10",
+        size === "lg" && "h-11",
         tone === "glass" && "brightness-125",
       )}
     />

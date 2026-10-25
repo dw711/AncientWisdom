@@ -164,7 +164,7 @@ export function HistoricalFigureApp() {
           <section className="relative mx-auto max-w-[90rem] overflow-hidden px-4 pt-12 pb-40 sm:px-10 sm:pt-20 sm:pb-52">
             <span
               aria-hidden="true"
-              className="stamp seal pointer-events-none absolute top-16 right-10 hidden size-[clamp(7rem,10vw,10rem)] [--d:520] [--r:-4deg] lg:block"
+              className="stamp seal pointer-events-none absolute top-16 right-10 hidden aspect-[242/465] h-[clamp(9rem,13vw,13rem)] [--d:520] [--r:-4deg] lg:block"
             />
             <p className="eyebrow relative flex stagger flex-wrap items-center gap-x-4 gap-y-2 text-ink-soft">
               <span>Decision support</span>

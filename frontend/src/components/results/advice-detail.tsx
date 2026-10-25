@@ -18,8 +18,8 @@ const lowerFirst = (s: string) => (/^[A-Z][a-z]/.test(s) ? s[0].toLowerCase() + 
 
 function Disclosure({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <details className="group border-t border-rule-soft pt-4">
-      <summary className="cursor-pointer list-none text-sm font-medium text-ink-soft hover:text-ink">
+    <details className="group border-t border-ink/35 pt-4">
+      <summary className="label cursor-pointer list-none text-ink-soft hover:text-ink">
         <span className="mr-1 inline-block transition-transform group-open:rotate-90">›</span> {title}
       </summary>
       <div className="mt-4">{children}</div>
@@ -28,22 +28,20 @@ function Disclosure({ title, children }: { title: string; children: ReactNode })
 }
 
 /**
- * The advice, shown when the person selects "Your decision" at the end of the
- * timeline. The recommendation leads; how we read the decision and how the
- * answer was checked are folded away.
+ * The editorial: the paper's view on the reader's decision. The
+ * recommendation leads as the leader; next steps and what would change it run
+ * alongside; how we read the letter and how the answer was checked are folded.
  */
 export function AdviceDetail({
   response,
   busy,
   onApplyChange,
   onEditContext,
-  onClose,
 }: {
   response: ReadyResponse | PartialResponse;
   busy: boolean;
   onApplyChange: (key: ConstraintKey, value: string | number | boolean, label: string) => void;
   onEditContext: () => void;
-  onClose: () => void;
 }) {
   const r = response;
   const partial = r.status === "partial" ? r : null;
@@ -51,100 +49,93 @@ export function AdviceDetail({
   const stated = p ? [...new Set([...p.known_constraints, ...p.known_facts])] : [];
 
   return (
-    <article className="animate-rise rounded-xl border border-burgundy/25 bg-card p-6 shadow-[0_18px_48px_-28px_rgb(29_26_22/0.35)] sm:p-8" aria-label="Your decision">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-xs font-semibold tracking-[0.14em] text-burgundy uppercase">Today · Your decision</p>
-          <p className="mt-2 max-w-3xl font-serif text-[1.15rem] leading-relaxed text-ink-soft">{r.decision_summary ?? p?.decision}</p>
-        </div>
-        <button type="button" onClick={onClose} className="shrink-0 rounded-md px-2 py-1 text-2xl leading-none text-muted hover:bg-paper-deep hover:text-ink" aria-label="Close details">
-          ×
-        </button>
+    <article aria-label="The editorial" className="grid gap-10 lg:grid-cols-12 lg:gap-0">
+      <div className="lg:col-span-7 lg:border-r lg:border-ink lg:pr-10">
+        <p className="label text-muted">The decision, as we read it</p>
+        <p className="mt-2 text-[1.1rem] leading-relaxed text-ink-soft italic">{r.decision_summary ?? p?.decision}</p>
+
+        {r.recommendation ? (
+          <div className="mt-8">
+            <div className="mb-3 flex flex-wrap items-center gap-3">
+              <p className="label text-burgundy">Our view</p>
+              <Tag tone="bronze">◇ Modern inference, not historical fact</Tag>
+            </div>
+            <p className="font-display text-[clamp(1.8rem,3vw,2.7rem)] leading-[1.1] font-black tracking-[-0.02em] text-ink">{r.recommendation.text}</p>
+            {r.recommendation.conditions.length ? (
+              <p className="mt-4 leading-relaxed text-ink-soft">
+                <span className="text-ink">Applies if </span>
+                {r.recommendation.conditions.map((c) => lowerFirst(c.replace(/\.$/, ""))).join("; ")}.
+              </p>
+            ) : null}
+          </div>
+        ) : partial ? (
+          <div className="mt-8 border-2 border-ink px-5 py-4">
+            <p className="label text-ink">{partial.preview ? "Preview edition" : "No editorial in this edition"}</p>
+            <p className="mt-2 leading-relaxed text-ink-soft">{partial.message}</p>
+          </div>
+        ) : null}
+
+        {r.alternatives.length || r.lesson_tension ? (
+          <div className="mt-8 space-y-3">
+            {r.alternatives.map((a, i) => (
+              <p key={i} className="border-l-2 border-burgundy py-1 pl-4 leading-relaxed">
+                <span className="text-ink">{a.condition}: </span>
+                <span className="text-ink-soft">{a.action}</span>
+              </p>
+            ))}
+            {r.lesson_tension ? (
+              <p className="leading-relaxed text-ink-soft">
+                <span className="text-ink">Where the editions disagree. </span>
+                {r.lesson_tension}
+              </p>
+            ) : null}
+          </div>
+        ) : null}
       </div>
 
-      {r.recommendation ? (
-        <div className="mt-7">
-          <div className="mb-3 flex flex-wrap items-center gap-3">
-            <p className="text-[0.68rem] font-semibold tracking-[0.14em] text-muted uppercase">Recommendation</p>
-            <Tag tone="bronze">Modern inference, not historical fact</Tag>
+      <div className="space-y-8 lg:col-span-5 lg:pl-10">
+        {r.next_steps.length ? (
+          <div>
+            <Label>Next steps</Label>
+            <ol className="space-y-4">
+              {r.next_steps.map((s, i) => (
+                <li key={i} className="flex gap-4 border-b border-ink/20 pb-3">
+                  <span className="font-display text-2xl leading-none font-black text-burgundy">{i + 1}</span>
+                  <span className="leading-relaxed text-ink">{s.text}</span>
+                </li>
+              ))}
+            </ol>
           </div>
-          <p className="border-l-2 border-burgundy pl-5 font-serif text-[clamp(1.3rem,2.2vw,1.65rem)] leading-snug text-ink">{r.recommendation.text}</p>
-          {r.recommendation.conditions.length ? (
-            <p className="mt-3 pl-5 text-sm leading-relaxed text-ink-soft">
-              <span className="font-medium text-ink">Applies if </span>
-              {r.recommendation.conditions.map((c) => lowerFirst(c.replace(/\.$/, ""))).join("; ")}.
-            </p>
-          ) : null}
-        </div>
-      ) : partial ? (
-        <div className="mt-6 rounded-md border border-amber/30 bg-amber-wash px-4 py-3 text-sm text-ink">
-          <p className="font-medium">{partial.preview ? "Preview mode" : "No advice this time"}</p>
-          <p className="mt-1 leading-relaxed text-ink-soft">{partial.message}</p>
-        </div>
-      ) : null}
+        ) : null}
+        {r.what_would_change.length ? (
+          <div>
+            <Label>What would change our view</Label>
+            <ul className="space-y-3">
+              {r.what_would_change.map((c, i) => (
+                <li key={i} className="border border-ink px-4 py-3">
+                  <p className="text-ink">{c.condition}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-ink-soft">{c.effect}</p>
+                  {c.suggested_update ? (
+                    <Button
+                      variant="secondary"
+                      className="mt-3 px-3 py-1.5"
+                      disabled={busy}
+                      onClick={() => onApplyChange(c.suggested_update!.key, c.suggested_update!.value, c.suggested_update!.label)}
+                    >
+                      Reprint with this change
+                    </Button>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+      </div>
 
-      {r.alternatives.length || r.lesson_tension ? (
-        <div className="mt-6 grid gap-3">
-          {r.alternatives.map((a, i) => (
-            <div key={i} className="rounded-md bg-paper-deep/60 px-4 py-3 text-[0.95rem]">
-              <span className="font-medium text-ink">{a.condition}: </span>
-              <span className="text-ink-soft">{a.action}</span>
-            </div>
-          ))}
-          {r.lesson_tension ? (
-            <p className="text-[0.95rem] leading-relaxed text-ink-soft">
-              <span className="font-medium text-ink">Where the cases disagree. </span>
-              {r.lesson_tension}
-            </p>
-          ) : null}
-        </div>
-      ) : null}
-
-      {r.next_steps.length || r.what_would_change.length ? (
-        <div className="mt-8 grid gap-8 md:grid-cols-2">
-          {r.next_steps.length ? (
-            <div>
-              <Label>Next steps</Label>
-              <ol className="space-y-3">
-                {r.next_steps.map((s, i) => (
-                  <li key={i} className="flex gap-3">
-                    <span className="font-serif text-xl leading-none text-bronze">{i + 1}</span>
-                    <span className="leading-relaxed text-ink">{s.text}</span>
-                  </li>
-                ))}
-              </ol>
-            </div>
-          ) : null}
-          {r.what_would_change.length ? (
-            <div>
-              <Label>What would change the advice</Label>
-              <ul className="space-y-3">
-                {r.what_would_change.map((c, i) => (
-                  <li key={i} className="rounded-md border border-rule-soft px-4 py-3">
-                    <p className="text-[0.95rem] font-medium text-ink">{c.condition}</p>
-                    <p className="mt-0.5 text-sm leading-relaxed text-ink-soft">{c.effect}</p>
-                    {c.suggested_update ? (
-                      <Button
-                        variant="quiet"
-                        className="mt-1 -ml-1.5 text-sm"
-                        disabled={busy}
-                        onClick={() => onApplyChange(c.suggested_update!.key, c.suggested_update!.value, c.suggested_update!.label)}
-                      >
-                        Re-run with this change
-                      </Button>
-                    ) : null}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-        </div>
-      ) : null}
-
-      <div className="mt-8 space-y-4">
+      <div className="space-y-4 lg:col-span-12 lg:mt-10">
         {p ? (
-          <Disclosure title="How we read your decision">
-            <div className="grid gap-6 sm:grid-cols-2">
+          <Disclosure title="How we read your letter">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {p.options.length ? (
                 <div>
                   <Label>Options</Label>
@@ -170,15 +161,15 @@ export function AdviceDetail({
                 </div>
               ) : null}
             </div>
-            <Button variant="quiet" className="mt-4 -ml-1.5" onClick={onEditContext}>
+            <Button variant="quiet" className="mt-4 -ml-1" onClick={onEditContext}>
               Correct an assumption or add context
             </Button>
           </Disclosure>
         ) : null}
 
-        <Disclosure title="How this answer was checked">
+        <Disclosure title="How this edition was checked">
           {r.validation ? (
-            <dl className="grid gap-x-6 gap-y-1.5 text-sm sm:grid-cols-2">
+            <dl className="grid gap-x-8 gap-y-1.5 text-sm sm:grid-cols-2">
               {(
                 [
                   ["Evidence IDs", r.validation.evidence_ids],
@@ -187,7 +178,7 @@ export function AdviceDetail({
                   ["Consistency of advice", r.validation.consistency],
                 ] as [string, CheckState][]
               ).map(([label, state]) => (
-                <div key={label} className="flex justify-between gap-3 border-b border-rule-soft/70 pb-1">
+                <div key={label} className="flex justify-between gap-3 border-b border-ink/20 pb-1">
                   <dt className="text-ink-soft">{label}</dt>
                   <dd className={cx(state === "passed" || state === "repaired" || state === "not_applicable" ? "text-moss" : state === "skipped" ? "text-muted" : "text-amber")}>
                     {CHECK_LABEL[state]}

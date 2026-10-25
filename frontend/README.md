@@ -90,19 +90,18 @@ All of them are server-only; none use the `NEXT_PUBLIC_` prefix. See [.env.examp
 
 The client streams NDJSON progress events (real stage names) and receives the answer only after validation. A newer request aborts and supersedes an older one.
 
-## Results timeline and story pages
+## Results: The Precedent
 
-- **After you submit:** the question collapses to one line ("Edit question" reopens the form), and the results show only one large left-to-right timeline. Points are the historical moments in date order, ending with **Today · Your decision**.
-  - Points are evenly spaced with the gap between them labelled, because a proportional scale would crush 1962 and 1969 next to 480 BCE.
-  - On phones the timeline scrolls sideways.
-- **Hover or focus** a point for a quick summary: what they did, what happened, and the lesson.
-- **Select a historical point** to open its details below the timeline:
-  - what they did, what happened, and the lesson for you;
-  - how it resembles your decision and where it differs;
-  - the analogy-fit breakdown;
-  - the sourced points (folded), sources and passages, and a link to the full story.
-- **Select Your decision** for the advice: the recommendation, next steps, and what would change it, with re-run buttons. "How we read your decision" and "How this answer was checked" are folded.
-- **Story pages** at `/cases/[id]` give a case's full story: the situation, the choice, what they did, what happened, the lesson or pattern, the limits of the comparison, and every claim with its exact passages and sources. "Back to your results" restores the analysis from memory; nothing is stored.
+The UI on this branch is "The Precedent", a newspaper front page (React + Tailwind + GSAP ScrollTrigger and Flip). The API, pipeline and response contract are unchanged; only the components in `src/components/`, the styles and the story page's markup changed.
+
+- **Masthead:** a dateline row ("Vol. I · OxHack edition", 以古为鉴, today's date) and the "The Precedent" nameplate, whose letters drop in on load. A floating section nav docks into a black pill once the masthead scrolls away.
+- **Reader's letter:** the dilemma form, written as a letter ("Dear Precedent,"), with an editor's note. After you submit, the letter shows as a pull quote, with the decision profile as tags and an initials collage of the cases (hover or press Shuffle to rearrange it).
+- **Editions:** one column per historical case, in date order. Each column prints story by story as it scrolls into view: No. 01 the situation, No. 02 what they did, No. 03 what happened, No. 04 the lesson. Each story has observation or interpretation chips and `[n]` source references that open the drawer.
+  - "How close is this to you?" shows the fit bars (overall plus each Jev dimension), which fill on scroll.
+  - Below that: how the case resembles your letter and where it differs, the sourced points, and the story link.
+- **The editorial:** the advice: the recommendation, alternatives, next steps, what would change it ("Reprint with this change" re-runs the analysis), how we read your letter and how the edition was checked.
+- **Verdict:** "Which edition do you want to wake up in?" shows that edition's lesson, then the sources.
+- **Fonts:** headlines use Editorial New if it is installed locally, otherwise Playfair Display. Body text is Source Serif 4 and datelines are Fragment Mono. `prefers-reduced-motion` turns off every animation.
 
 ## API
 

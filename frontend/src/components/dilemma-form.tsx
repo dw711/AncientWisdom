@@ -37,8 +37,8 @@ export function DilemmaForm(p: Props) {
   return (
     <form onSubmit={submit} noValidate className="space-y-5">
       <div>
-        <label htmlFor={ids.query} className="mb-2 block font-serif text-lg text-ink">
-          Describe your dilemma
+        <label htmlFor={ids.query} className="mb-3 block font-display text-[1.6rem] text-ink italic">
+          Dear Precedent,
         </label>
         <textarea
           id={ids.query}
@@ -53,11 +53,11 @@ export function DilemmaForm(p: Props) {
           aria-describedby={`${ids.help}${p.error ? ` ${ids.err}` : ""}`}
           aria-invalid={Boolean(p.error)}
           className={cx(
-            "block w-full resize-y rounded-md border bg-card px-4 py-3.5 text-[1.02rem] leading-relaxed text-ink shadow-[inset_0_1px_0_rgb(0_0_0/0.02)] placeholder:text-muted/75 focus:border-burgundy/60 focus:outline-none focus-visible:outline-none",
-            p.error ? "border-burgundy" : "border-rule",
+            "block w-full resize-y border-0 bg-[repeating-linear-gradient(transparent,transparent_calc(2.1rem-1px),rgb(17_17_17/0.18)_calc(2.1rem-1px),rgb(17_17_17/0.18)_2.1rem)] px-0 py-0 font-display text-[1.45rem] leading-[2.1rem] text-ink italic placeholder:text-muted/60 focus:outline-none focus-visible:outline-none",
+            p.error ? "outline-2 outline-burgundy" : "",
           )}
         />
-        <div className="mt-1.5 flex justify-between gap-4 text-xs text-muted">
+        <div className="mt-3 flex justify-between gap-4 font-mono text-[11px] text-muted">
           <span id={ids.help}>Say what the options are, who is involved and what makes it hard.</span>
           <span aria-hidden="true" className={cx(length > LIMITS.queryMax * 0.9 && "text-burgundy")}>
             {length}/{LIMITS.queryMax}
@@ -71,7 +71,7 @@ export function DilemmaForm(p: Props) {
       </div>
 
       <div>
-        <p className="mb-2 text-xs font-semibold tracking-[0.14em] text-muted uppercase">Or try an example</p>
+        <p className="label mb-2 text-muted">Or read a letter we have answered</p>
         <div className="flex flex-wrap gap-2">
           {PRESETS.map((preset) => (
             <button
@@ -81,8 +81,8 @@ export function DilemmaForm(p: Props) {
               onClick={() => p.onPreset(preset.query)}
               aria-pressed={p.query.trim() === preset.query}
               className={cx(
-                "rounded-full border px-3.5 py-1.5 text-sm transition-colors disabled:opacity-50",
-                p.query.trim() === preset.query ? "border-burgundy/50 bg-burgundy-wash text-burgundy" : "border-rule bg-card text-ink-soft hover:border-bronze/60 hover:text-ink",
+                "border px-3.5 py-1.5 text-sm italic transition-colors disabled:opacity-50",
+                p.query.trim() === preset.query ? "border-ink bg-ink text-paper" : "border-ink/40 text-ink-soft hover:border-ink hover:text-ink",
               )}
             >
               {preset.label}
@@ -91,26 +91,26 @@ export function DilemmaForm(p: Props) {
         </div>
       </div>
 
-      <div className="rounded-md border border-rule-soft bg-paper-deep/40">
+      <div className="border-y border-ink">
         <button
           type="button"
           aria-expanded={p.contextOpen}
           aria-controls={ids.ctx}
           onClick={() => p.onContextOpenChange(!p.contextOpen)}
-          className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-sm text-ink-soft hover:text-ink"
+          className="flex w-full items-center justify-between gap-3 py-3 text-left text-sm text-ink-soft hover:text-ink"
         >
           <span>
-            <span className="font-medium text-ink">Add context</span> <span className="text-muted">(optional) deadline, reversibility, fallback</span>
+            <span className="label text-ink">P.S. Add context</span> <span className="text-muted italic">(optional) deadline, reversibility, fallback</span>
           </span>
           <span className="flex items-center gap-2 text-xs text-muted">
-            {stated ? <span className="rounded-full bg-bronze-wash px-2 py-0.5 text-bronze">{stated} stated</span> : null}
+            {stated ? <span className="label border border-ink px-2 py-0.5 text-ink">{stated} stated</span> : null}
             <span aria-hidden="true" className={cx("transition-transform", p.contextOpen && "rotate-180")}>
               ⌄
             </span>
           </span>
         </button>
         {p.contextOpen ? (
-          <div id={ids.ctx} className="grid gap-4 border-t border-rule-soft px-4 py-4 sm:grid-cols-2">
+          <div id={ids.ctx} className="grid gap-4 border-t border-ink/30 py-4 sm:grid-cols-2">
             <Field label="Time until you must decide" group>
               <div className="flex gap-2">
                 <input
@@ -175,34 +175,34 @@ export function DilemmaForm(p: Props) {
 
       <div className="flex flex-wrap items-center gap-3">
         <Button type="submit" disabled={p.busy}>
-          {p.busy ? "Working…" : "Find historical comparisons"}
+          {p.busy ? "Going to press…" : "Send to the desk"}
         </Button>
         {p.busy ? (
           <Button variant="secondary" onClick={p.onCancel}>
             Cancel
           </Button>
         ) : (
-          <span className="text-xs text-muted">or press ⌘/Ctrl + Enter</span>
+          <span className="font-mono text-[11px] text-muted">or press ⌘/Ctrl + Enter</span>
         )}
       </div>
     </form>
   );
 }
 
-const inputClass = "rounded-md border border-rule bg-card px-3 py-2 text-sm text-ink focus:border-burgundy/60 focus:outline-none";
+const inputClass = "border border-ink/40 bg-paper px-3 py-2 text-sm text-ink focus:border-ink focus:outline-none";
 
 function Field({ label, children, wide, group }: { label: string; children: ReactNode; wide?: boolean; group?: boolean }) {
   if (group) {
     return (
       <div role="group" aria-label={label} className={cx("block text-sm", wide && "sm:col-span-2")}>
-        <span className="mb-1.5 block text-ink-soft">{label}</span>
+        <span className="label mb-1.5 block text-muted">{label}</span>
         {children}
       </div>
     );
   }
   return (
     <label className={cx("block text-sm", wide && "sm:col-span-2")}>
-      <span className="mb-1.5 block text-ink-soft">{label}</span>
+      <span className="label mb-1.5 block text-muted">{label}</span>
       {children}
     </label>
   );

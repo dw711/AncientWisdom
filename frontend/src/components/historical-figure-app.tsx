@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { AdviceRequestInput, AdviceResponse, ApiError, CaseCard, ConstraintKey, HealthResponse } from "@/lib/contracts/advice";
+import type { AdviceRequestInput, AdviceResponse, ApiError, CaseCard, ConstraintKey, DecisionProfile, HealthResponse } from "@/lib/contracts/advice";
 import { LIMITS } from "@/lib/contracts/advice";
 import { requestAdvice } from "@/lib/client/advice-client";
 import { applyUpdate, EMPTY_CONTEXT, toConstraints, type ContextForm } from "@/lib/client/context-form";
@@ -12,6 +12,9 @@ import { ResultsView } from "./results/results-view";
 import { SiteFooter, SiteHeader } from "./site-header";
 import { SourceDrawer } from "./source-drawer";
 import { Button } from "./ui";
+import { Collage } from "./precedent/collage";
+import { FloatingNav, type NavSection } from "./precedent/floating-nav";
+import { collectEntries, toEditions } from "./precedent/model";
 
 type Phase =
   | { kind: "idle" }
@@ -125,46 +128,51 @@ export function HistoricalFigureApp() {
   const response = phase.kind === "result" ? phase.response : null;
   const compact = phase.kind !== "idle" && !editing;
 
+  const profile = response && "profile" in response ? response.profile : null;
+  const shape = shapeOf(profile);
+  const editions = response && (response.status === "ready" || response.status === "partial") ? toEditions(collectEntries(response)) : [];
+  const sections: NavSection[] = [
+    { id: "letter", label: "Letter" },
+    ...editions.map((e) => ({ id: `edition-${e.letter.toLowerCase()}`, label: `Edition ${e.letter}` })),
+    ...(response && (response.status === "ready" || response.status === "partial") ? [{ id: "editorial", label: "Editorial" }, { id: "verdict", label: "Verdict" }] : []),
+  ];
+
   return (
-    <div className="flex min-h-full flex-col">
-      <SiteHeader>
+    <div className="flex min-h-full flex-col pt-12">
+      <FloatingNav sections={sections} />
+      <SiteHeader size="full">
         {health ? (
-          <span
-            className={
-              "rounded-full border px-2.5 py-1 text-xs " + (health.mode === "live" ? "border-moss/30 bg-moss-wash text-moss" : "border-bronze/30 bg-bronze-wash text-bronze")
-            }
-            title={health.mode === "live" ? "Live analysis with Jev and a language model" : "Preview: prewritten sample analyses for the example dilemmas"}
-          >
-            {health.mode === "live" ? "Live" : "Preview mode"}
+          <span title={health.mode === "live" ? "Live analysis with Jev and a language model" : "Preview: prewritten sample analyses for the example dilemmas"} className={health.mode === "live" ? "text-moss" : "text-burgundy"}>
+            {health.mode === "live" ? "● Live" : "Preview"}
           </span>
         ) : null}
       </SiteHeader>
 
-      <main className="mx-auto w-full max-w-6xl flex-1 px-5 pb-24 sm:px-8">
-        {compact ? (
-          <section className="flex flex-col gap-4 border-b border-rule-soft pt-8 pb-5 sm:flex-row sm:items-end sm:justify-between">
-            <div className="min-w-0">
-              <p className="text-[0.68rem] font-semibold tracking-[0.14em] text-muted uppercase">Your question</p>
-              <p className="mt-1 line-clamp-2 max-w-3xl font-serif text-lg leading-snug text-ink">{query}</p>
-            </div>
-            <Button variant="secondary" className="shrink-0 self-start sm:self-auto" disabled={busy} onClick={() => setEditing(true)}>
-              Edit question
-            </Button>
-          </section>
-        ) : (
-          <section className="grid gap-10 pt-12 pb-10 sm:pt-16 lg:grid-cols-[1fr_minmax(0,34rem)] lg:gap-14">
-            <div className="lg:pt-2">
-              <h1 className="font-serif text-[2.35rem] leading-[1.08] tracking-tight text-ink sm:text-[3.1rem]">What can history teach your next decision?</h1>
-              <p className="mt-5 max-w-md text-[1.05rem] leading-relaxed text-ink-soft">
-                Describe a choice you are facing. Historical Figure finds sourced decisions from the past with a similar structure, shows what they share with yours and where
-                they differ, and suggests what to do next, along with what would change that advice.
-              </p>
-              <p className="mt-6 max-w-md border-l-2 border-bronze/50 pl-4 text-sm leading-relaxed text-muted">
-                Historical comparisons have limits. Circumstances differ, sources disagree, and a past outcome does not predict yours. Treat the advice as one input to your own
-                judgement.
-              </p>
-            </div>
-            <div ref={formRef} className="scroll-mt-6">
+      <main className="mx-auto w-full max-w-[1280px] flex-1 px-4 pb-16 md:px-10">
+        <section id="letter" aria-labelledby="letter-h" className="grid scroll-mt-20 gap-10 border-b border-ink py-12 lg:grid-cols-12 lg:gap-8">
+          <div ref={formRef} className="min-w-0 scroll-mt-20 lg:col-span-8">
+            <h1 id="letter-h" className="label mb-5 text-burgundy">
+              Reader’s letter
+            </h1>
+            {compact ? (
+              <>
+                <blockquote className="font-display text-[28px] leading-[1.2] italic md:text-[40px]">
+                  <p className="line-clamp-6">
+                    <span aria-hidden="true" className="text-burgundy">
+                      “
+                    </span>
+                    {query.trim()}
+                    <span aria-hidden="true" className="text-burgundy">
+                      ”
+                    </span>
+                  </p>
+                  <footer className="label mt-5 text-muted not-italic">— Undecided, by letter</footer>
+                </blockquote>
+                <Button variant="secondary" className="mt-8" disabled={busy} onClick={() => setEditing(true)}>
+                  Edit your letter
+                </Button>
+              </>
+            ) : (
               <DilemmaForm
                 query={query}
                 onQueryChange={(q) => {
@@ -185,20 +193,51 @@ export function HistoricalFigureApp() {
                 busy={busy}
                 error={formError}
               />
-            </div>
-          </section>
-        )}
+            )}
+          </div>
+          <aside className="lg:col-span-4 lg:border-l lg:border-ink lg:pl-8">
+            <p className="label mb-2 text-muted">Editor’s note</p>
+            <p className="max-w-[34ch] text-[16px] leading-snug italic">Matched on decision structure, incentives, constraints and timing, not on topic.</p>
+            {shape.length ? (
+              <ul className="label mt-4 flex flex-wrap gap-1.5">
+                {shape.map((t) => (
+                  <li key={t} className="border border-ink/50 px-2 py-1">
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+            {compact ? (
+              <Collage editions={editions} />
+            ) : (
+              <div className="mt-6 space-y-3 text-[15px] leading-relaxed text-ink-soft">
+                <p>
+                  Write to us about a choice you are facing. We find sourced decisions from the past with a similar structure and print one edition for each: what
+                  happened, where it resembles yours and where it differs. Then the editorial says what we would do, and what would change our view.
+                </p>
+                <p className="border-l-2 border-burgundy pl-3 text-sm text-muted">
+                  Historical comparisons have limits. Circumstances differ, sources disagree, and a past outcome does not predict yours. Treat the advice as one input to
+                  your own judgement.
+                </p>
+              </div>
+            )}
+          </aside>
+        </section>
 
-        <div ref={resultsRef} id="results" className="scroll-mt-6 pt-8">
+        <div ref={resultsRef} id="results" className="scroll-mt-16">
           {phase.kind === "loading" ? (
-            <div className="mx-auto max-w-3xl">
+            <div className="mx-auto max-w-3xl py-10">
               <ProgressPanel entries={phase.entries} waitingFor={null} />
+              <Button variant="secondary" className="mt-6" onClick={cancel}>
+                Stop the press
+              </Button>
             </div>
           ) : null}
           {phase.kind === "error" ? (
-            <div role="alert" className="mx-auto max-w-3xl animate-rise rounded-lg border border-burgundy/30 bg-burgundy-wash/50 px-6 py-5">
-              <p className="font-serif text-lg text-ink">{phase.error.code === "rate_limited" ? "Please wait a moment" : "The analysis could not be completed"}</p>
-              <p className="mt-1 leading-relaxed text-ink-soft">{phase.error.message}</p>
+            <div role="alert" className="mx-auto my-10 max-w-3xl animate-rise border-2 border-burgundy px-6 py-5">
+              <p className="label text-burgundy">Correction</p>
+              <p className="mt-1 font-display text-2xl font-black text-ink">{phase.error.code === "rate_limited" ? "Please wait a moment" : "This edition could not be printed"}</p>
+              <p className="mt-2 leading-relaxed text-ink-soft">{phase.error.message}</p>
               {phase.error.details?.length ? (
                 <ul className="mt-2 list-disc pl-5 text-sm text-ink-soft">
                   {phase.error.details.map((d) => (
@@ -206,7 +245,7 @@ export function HistoricalFigureApp() {
                   ))}
                 </ul>
               ) : null}
-              <p className="mt-2 text-sm text-muted">Your description and context are unchanged. No advice was produced.</p>
+              <p className="mt-2 text-sm text-muted">Your letter and context are unchanged. No advice was produced.</p>
               <div className="mt-4 flex flex-wrap items-center gap-3">
                 <Button onClick={() => void run()}>Try again</Button>
                 {phase.requestId ? <span className="font-mono text-[0.68rem] text-muted">{phase.requestId}</span> : null}
@@ -240,4 +279,31 @@ export function HistoricalFigureApp() {
       />
     </div>
   );
+}
+
+const REVERSIBILITY: Record<DecisionProfile["reversibility"], string | null> = {
+  reversible: "Can be undone",
+  partly_reversible: "Partly reversible",
+  irreversible: "Hard to undo",
+  unknown: null,
+};
+const URGENCY: Record<DecisionProfile["urgency"], string | null> = {
+  immediate: "Has to be decided now",
+  days: "A deadline in days",
+  weeks: "A deadline in weeks",
+  months: "Months to decide",
+  years: "Years to decide",
+  unknown: null,
+};
+
+/** "The shape of it": the decision profile as a few plain tags. */
+function shapeOf(p: DecisionProfile | null): string[] {
+  if (!p) return [];
+  return [
+    p.options.length ? `${p.options.length} options on the table` : null,
+    p.stakes !== "unknown" ? `${p.stakes.charAt(0).toUpperCase()}${p.stakes.slice(1)} stakes` : null,
+    REVERSIBILITY[p.reversibility],
+    URGENCY[p.urgency],
+    p.relationship === "repeated" ? "You'll keep working with these people" : p.relationship === "one_off" ? "A one-off relationship" : null,
+  ].filter((t): t is string => Boolean(t));
 }

@@ -95,7 +95,7 @@ async function Story({ id }: { id: string }) {
           {story.date_detail}
           {story.geography ? ` · ${story.geography}` : ""}
         </p>
-        <h1 className="mt-2 font-serif text-[2.2rem] leading-[1.1] tracking-tight text-ink sm:text-[2.8rem]">{story.title}</h1>
+        <h1 className="mt-2 font-display text-[2.4rem] leading-[1.02] font-black tracking-[-0.02em] text-ink sm:text-[3.2rem]">{story.title}</h1>
         <p className="mt-4 font-serif text-[1.2rem] leading-relaxed text-ink-soft italic">{story.decision_question}</p>
       </header>
 

@@ -1,26 +1,47 @@
 @import "tailwindcss";
 
-@theme {
-  --color-paper: #f6f1e7;
-  --color-paper-deep: #efe7d8;
-  --color-card: #fbf8f2;
-  --color-ink: #1d1a16;
-  --color-ink-soft: #453f37;
-  --color-muted: #776d61;
-  --color-rule: #dcd1bf;
-  --color-rule-soft: #e8dfd0;
-  --color-burgundy: #7b2d26;
-  --color-burgundy-deep: #5e211b;
-  --color-burgundy-wash: #f3e4df;
-  --color-bronze: #946535;
-  --color-bronze-wash: #f2e8d8;
-  --color-moss: #4e6545;
-  --color-moss-wash: #e7ecdf;
-  --color-amber: #8a5b12;
-  --color-amber-wash: #f6ebd3;
+@font-face {
+  font-family: "Editorial New";
+  font-weight: 400;
+  src: local("PP Editorial New Regular"), local("PPEditorialNew-Regular");
+}
+@font-face {
+  font-family: "Editorial New";
+  font-weight: 400;
+  font-style: italic;
+  src: local("PP Editorial New Italic"), local("PPEditorialNew-Italic");
+}
+@font-face {
+  font-family: "Editorial New";
+  font-weight: 800 900;
+  src: local("PP Editorial New Ultrabold"), local("PPEditorialNew-Ultrabold");
+}
 
-  --font-serif: var(--font-newsreader), "Iowan Old Style", Georgia, serif;
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+@theme {
+  /* The Precedent: newsprint, press black and one red. Token names are shared
+     with the rest of the app so every screen picks up the palette. */
+  --color-paper: #edeae2;
+  --color-paper-deep: #e2ded3;
+  --color-card: #f2efe8;
+  --color-ink: #111111;
+  --color-ink-soft: #33302b;
+  --color-muted: #6b665d;
+  --color-rule: #111111;
+  --color-rule-soft: #c9c4b8;
+  --color-burgundy: #c1272d;
+  --color-burgundy-deep: #9b1d22;
+  --color-burgundy-wash: #f1d9d5;
+  --color-bronze: #111111;
+  --color-bronze-wash: #e2ded3;
+  --color-moss: #3f6b4e;
+  --color-moss-wash: #e1e8dc;
+  --color-amber: #8a5b12;
+  --color-amber-wash: #efe3c8;
+
+  --font-display: "Editorial New", var(--font-playfair), Georgia, serif;
+  --font-serif: var(--font-source-serif), Georgia, serif;
+  --font-sans: var(--font-source-serif), Georgia, serif;
+  --font-mono: var(--font-fragment), ui-monospace, monospace;
   --font-cjk: "Songti SC", "STSong", "Noto Serif SC", "Source Han Serif SC", serif;
 
   --animate-rise: rise 420ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
@@ -59,7 +80,31 @@ body {
   background: var(--color-paper);
   color: var(--color-ink);
   font-family: var(--font-sans);
-  font-feature-settings: "ss01", "cv11";
+}
+
+button {
+  text-transform: inherit;
+}
+
+/* Fragment Mono dateline label used throughout */
+.label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.35;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+/* Subtle paper grain over everything; never intercepts the pointer. */
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  pointer-events: none;
+  opacity: 0.11;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
 }
 
 ::selection {
@@ -68,9 +113,8 @@ body {
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-burgundy);
+  outline: 2px solid var(--color-ink);
   outline-offset: 2px;
-  border-radius: 2px;
 }
 
 /* Native dialog used for the source drawer. */
@@ -107,7 +151,7 @@ dialog.drawer[open] {
     margin-top: auto;
     border-left: 0;
     border-top: 1px solid var(--color-rule);
-    border-radius: 14px 14px 0 0;
+    border-radius: 0;
   }
   @keyframes drawer-in {
     from {

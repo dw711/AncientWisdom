@@ -23,3 +23,8 @@ export function brief(text: string, max = 220): string {
   if (sentence > max * 0.5) return cut.slice(0, sentence + 1);
   return cut.slice(0, cut.lastIndexOf(" ")).replace(/[,;:]$/, "") + "…";
 }
+
+/** View-transition name shared by a case's headline on the front page and its story page. */
+export function headlineTransition(caseId: string): string {
+  return `case-title-${caseId.replace(/[^a-zA-Z0-9_-]/g, "-")}`;
+}

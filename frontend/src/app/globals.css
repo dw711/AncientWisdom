@@ -114,6 +114,90 @@ button {
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
 }
 
+/* Typeset, not just styled: balanced headlines, no orphans in body copy. */
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+p,
+li,
+blockquote {
+  text-wrap: pretty;
+}
+html {
+  hanging-punctuation: first;
+}
+
+/* Newspaper column copy: hyphenated (the page is lang="en-GB"), and justified
+   once there are columns; one narrow phone column would open gaps between words. */
+.column-copy {
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+@media (min-width: 768px) {
+  .column-copy {
+    text-align: justify;
+  }
+}
+
+/* Placeholder sheen while the page is being set. */
+.shimmer {
+  background: linear-gradient(90deg, rgb(17 17 17 / 0.07) 0%, rgb(17 17 17 / 0.15) 50%, rgb(17 17 17 / 0.07) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+@keyframes shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+/* A newspaper clipping with a torn bottom edge. */
+.clipping {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 7px), 100.00% calc(100% - 7px), 95.83% 100%, 91.67% calc(100% - 7px), 87.50% 100%, 83.33% calc(100% - 7px), 79.17% 100%, 75.00% calc(100% - 7px), 70.83% 100%, 66.67% calc(100% - 7px), 62.50% 100%, 58.33% calc(100% - 7px), 54.17% 100%, 50.00% calc(100% - 7px), 45.83% 100%, 41.67% calc(100% - 7px), 37.50% 100%, 33.33% calc(100% - 7px), 29.17% 100%, 25.00% calc(100% - 7px), 20.83% 100%, 16.67% calc(100% - 7px), 12.50% 100%, 8.33% calc(100% - 7px), 4.17% 100%, 0.00% calc(100% - 7px));
+}
+
+/* Oversized outlined edition letter. */
+.outline-letter {
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--ed);
+}
+
+/* The case headline morphs between the front page and its story page. */
+::view-transition-group(.headline) {
+  animation-duration: 450ms;
+  animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+::view-transition-image-pair(.headline) {
+  animation-name: via-blur;
+}
+@keyframes via-blur {
+  30% {
+    filter: blur(2px);
+  }
+}
+::view-transition-old(root) {
+  animation: 180ms ease-out both page-out;
+}
+::view-transition-new(root) {
+  animation: 280ms ease-out 80ms both page-in;
+}
+@keyframes page-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
 ::selection {
   background: var(--color-burgundy-wash);
   color: var(--color-ink);
@@ -169,6 +253,11 @@ dialog.drawer[open] {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
   *,
   *::before,
   *::after {

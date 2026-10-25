@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import type { CheckState, ConstraintKey, PartialResponse, ReadyResponse } from "@/lib/contracts/advice";
-import { BulletList, Button, Label, Tag, cx } from "../ui";
+import { BulletList, Button, Label, cx } from "../ui";
 
 const CHECK_LABEL: Record<CheckState, string> = {
   passed: "passed",
@@ -12,9 +12,6 @@ const CHECK_LABEL: Record<CheckState, string> = {
   skipped: "not run",
   not_applicable: "nothing to check",
 };
-
-/** Lower-cases a leading capital unless the word is an acronym ("NASA"). */
-const lowerFirst = (s: string) => (/^[A-Z][a-z]/.test(s) ? s[0].toLowerCase() + s.slice(1) : s);
 
 function Disclosure({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -28,9 +25,10 @@ function Disclosure({ title, children }: { title: string; children: ReactNode })
 }
 
 /**
- * The editorial: the paper's view on the reader's decision. The
- * recommendation leads as the leader; next steps and what would change it run
- * alongside; how we read the letter and how the answer was checked are folded.
+ * The editorial: what to do next. The recommendation itself leads the front
+ * page and the paths ledger, so this holds how we read the decision, the next
+ * steps and what would change our view; how we read the letter and how the
+ * answer was checked are folded.
  */
 export function AdviceDetail({
   response,
@@ -44,7 +42,6 @@ export function AdviceDetail({
   onEditContext: () => void;
 }) {
   const r = response;
-  const partial = r.status === "partial" ? r : null;
   const p = r.profile;
   const stated = p ? [...new Set([...p.known_constraints, ...p.known_facts])] : [];
 
@@ -54,59 +51,29 @@ export function AdviceDetail({
         <p className="label text-muted">The decision, as we read it</p>
         <p className="mt-2 text-[1.1rem] leading-relaxed text-ink-soft italic">{r.decision_summary ?? p?.decision}</p>
 
-        {r.recommendation ? (
-          <div className="mt-8">
-            <div className="mb-3 flex flex-wrap items-center gap-3">
-              <p className="label text-burgundy">Our view</p>
-              <Tag tone="bronze">◇ Modern inference, not historical fact</Tag>
-            </div>
-            <p className="font-display text-[clamp(1.8rem,3vw,2.7rem)] leading-[1.1] font-black tracking-[-0.02em] text-ink">{r.recommendation.text}</p>
-            {r.recommendation.conditions.length ? (
-              <p className="mt-4 leading-relaxed text-ink-soft">
-                <span className="text-ink">Applies if </span>
-                {r.recommendation.conditions.map((c) => lowerFirst(c.replace(/\.$/, ""))).join("; ")}.
-              </p>
-            ) : null}
-          </div>
-        ) : partial ? (
-          <div className="mt-8 border-2 border-ink px-5 py-4">
-            <p className="label text-ink">{partial.preview ? "Preview edition" : "No editorial in this edition"}</p>
-            <p className="mt-2 leading-relaxed text-ink-soft">{partial.message}</p>
-          </div>
+        {r.lesson_tension ? (
+          <p className="mt-6 border-l-2 border-burgundy py-1 pl-4 leading-relaxed text-ink-soft">
+            <span className="text-ink">Where the editions disagree. </span>
+            {r.lesson_tension}
+          </p>
         ) : null}
 
-        {r.alternatives.length || r.lesson_tension ? (
-          <div className="mt-8 space-y-3">
-            {r.alternatives.map((a, i) => (
-              <p key={i} className="border-l-2 border-burgundy py-1 pl-4 leading-relaxed">
-                <span className="text-ink">{a.condition}: </span>
-                <span className="text-ink-soft">{a.action}</span>
-              </p>
-            ))}
-            {r.lesson_tension ? (
-              <p className="leading-relaxed text-ink-soft">
-                <span className="text-ink">Where the editions disagree. </span>
-                {r.lesson_tension}
-              </p>
-            ) : null}
-          </div>
-        ) : null}
-      </div>
-
-      <div className="space-y-8 lg:col-span-5 lg:pl-10">
         {r.next_steps.length ? (
-          <div>
+          <div className="mt-10">
             <Label>Next steps</Label>
             <ol className="space-y-4">
               {r.next_steps.map((s, i) => (
                 <li key={i} className="flex gap-4 border-b border-ink/20 pb-3">
                   <span className="font-display text-2xl leading-none font-black text-burgundy">{i + 1}</span>
-                  <span className="leading-relaxed text-ink">{s.text}</span>
+                  <span className="text-[1.05rem] leading-relaxed text-ink">{s.text}</span>
                 </li>
               ))}
             </ol>
           </div>
         ) : null}
+      </div>
+
+      <div className="space-y-8 lg:col-span-5 lg:pl-10">
         {r.what_would_change.length ? (
           <div>
             <Label>What would change our view</Label>

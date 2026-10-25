@@ -27,8 +27,12 @@ export function collectEntries(r: ReadyResponse | PartialResponse): Entry[] {
   ].sort((a, b) => (a.card.year_start ?? Infinity) - (b.card.year_start ?? Infinity));
 }
 
-/** Edition colours follow the newsprint palette: red, then three quieter inks. Not black, which is the body text and rules. */
-export const EDITION_COLORS = ["#C1272D", "#2F4A5C", "#6B5E4B", "#4F5D2F"];
+/**
+ * Edition inks: press red, blue, ochre and violet. Never black, which is the
+ * body text and rules. Checked with the dataviz palette validator against the
+ * paper (lightness band, chroma, colour-blind and normal-vision separation).
+ */
+export const EDITION_COLORS = ["#C1272D", "#24609A", "#9E6A12", "#6A4C93"];
 
 export const ROLE_KICKER = { supporting: "Supports the advice", challenging: "Challenges the advice", unrated: "Related case" } as const;
 

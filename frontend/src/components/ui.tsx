@@ -4,6 +4,9 @@ export function cx(...parts: (string | false | null | undefined)[]) {
   return parts.filter(Boolean).join(" ");
 }
 
+/** Lower-cases a leading capital unless the word is an acronym ("NASA"). */
+export const lowerFirst = (s: string) => (/^[A-Z][a-z]/.test(s) ? s[0]!.toLowerCase() + s.slice(1) : s);
+
 export function Button({
   variant = "primary",
   className,
@@ -24,10 +27,10 @@ export function Button({
   );
 }
 
-/** Section head in the newspaper style: thick rule, mono kicker, display title. */
-export function SectionHeading({ numeral, title, aside, id }: { numeral: string; title: string; aside?: ReactNode; id?: string }) {
+/** Section head in the newspaper style: thick rule, mono kicker, display title. `bare` drops the rule when the section draws its own. */
+export function SectionHeading({ numeral, title, aside, id, bare }: { numeral: string; title: string; aside?: ReactNode; id?: string; bare?: boolean }) {
   return (
-    <div className="mb-5 border-t-[3px] border-ink pt-2">
+    <div className={cx("mb-5", !bare && "border-t-[3px] border-ink pt-2")}>
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <p className="label text-burgundy">{numeral}</p>
         {aside ? <div className="label text-muted">{aside}</div> : null}

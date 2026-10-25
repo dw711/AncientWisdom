@@ -4,6 +4,7 @@ import { useRef } from "react";
 import type { PartialResponse, ReadyResponse } from "@/lib/contracts/advice";
 import { formatYear } from "@/lib/case-refs";
 import { Tag } from "../ui";
+import { ComparePlot } from "./compare-plot";
 import { gsap, MOTION_OK, useGSAP } from "../precedent/gsap";
 import type { Edition } from "../precedent/model";
 
@@ -14,9 +15,9 @@ function splitLead(text: string): [string, string] {
 }
 
 /**
- * Above the fold: the paper's view as the headline, an index of the editions
- * inside, and a wire ticker of their lessons. The advice leads; the history
- * that supports it follows below.
+ * Above the fold: the paper's view as the headline, a chart of how closely
+ * each edition matches (its legend is the index), and a wire ticker of their
+ * lessons. The advice leads; the history that supports it follows below.
  */
 export function LeadStory({ response: r, editions }: { response: ReadyResponse | PartialResponse; editions: Edition[] }) {
   const root = useRef<HTMLElement>(null);
@@ -34,7 +35,8 @@ export function LeadStory({ response: r, editions }: { response: ReadyResponse |
           .timeline({ scrollTrigger: { trigger: root.current, start: "top 85%" } })
           .from("[data-word]", { yPercent: 115, duration: 0.9, ease: "power4.out", stagger: 0.035 })
           .from("[data-stand]", { opacity: 0, y: 10, duration: 0.6 }, "-=0.5")
-          .from("[data-index-row]", { opacity: 0, x: -16, duration: 0.5, stagger: 0.08 }, "<");
+          .from("[data-index-row]", { opacity: 0, x: -16, duration: 0.5, stagger: 0.08 }, "<")
+          .from("[data-dot]", { scale: 0, duration: 0.5, ease: "back.out(2)", stagger: 0.03 }, "<0.1");
       });
     },
     { scope: root, dependencies: [r.request_id], revertOnUpdate: true },
@@ -43,7 +45,7 @@ export function LeadStory({ response: r, editions }: { response: ReadyResponse |
   return (
     <section ref={root} id="front" aria-labelledby="front-h" className="scroll-mt-20 border-b border-ink">
       <div className="grid gap-10 py-10 lg:grid-cols-12 lg:gap-0">
-        <div className="lg:col-span-8 lg:border-r lg:border-ink lg:pr-10">
+        <div className="lg:col-span-7 lg:border-r lg:border-ink lg:pr-10">
           <div className="mb-4 flex flex-wrap items-center gap-3">
             <p className="label text-burgundy">Front page · {r.recommendation ? "Our view" : "No editorial"}</p>
             {r.recommendation ? <Tag tone="bronze">◇ Modern inference, not historical fact</Tag> : null}
@@ -65,34 +67,33 @@ export function LeadStory({ response: r, editions }: { response: ReadyResponse |
             </p>
           ) : null}
           <a href="#editorial" className="label mt-6 inline-flex items-center gap-2 text-ink underline decoration-ink/30 underline-offset-4 hover:decoration-ink">
-            The full editorial <span aria-hidden="true">↓</span>
+            What to do next <span aria-hidden="true">↓</span>
           </a>
         </div>
 
         {editions.length ? (
-          <nav aria-labelledby="front-index-h" className="lg:col-span-4 lg:pl-8">
-            <p id="front-index-h" className="label mb-3 text-muted">
-              Inside this edition
-            </p>
+          <div className="space-y-8 lg:col-span-5 lg:pl-10">
+            <ComparePlot editions={editions} />
+            <nav aria-label="Editions in this issue">
             <ol className="border-t border-ink">
               {editions.map((e) => (
                 <li key={e.id} data-index-row className="border-b border-ink">
                   <a
                     href={`#edition-${e.letter.toLowerCase()}`}
                     style={{ ["--ed" as string]: e.color }}
-                    className="group relative flex items-baseline gap-4 overflow-hidden px-2 py-3.5 transition-colors duration-300 hover:text-paper focus-visible:text-paper"
+                    className="group relative flex items-baseline gap-4 overflow-hidden px-2 py-2.5 transition-colors duration-300 hover:text-paper focus-visible:text-paper"
                   >
                     {/* The edition's ink wipes in from the left on hover. */}
                     <span
                       aria-hidden="true"
                       className="absolute inset-0 origin-left scale-x-0 bg-[var(--ed)] transition-transform duration-500 ease-[cubic-bezier(0.2,0.7,0.2,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100"
                     />
-                    <span className="relative font-mono text-[13px] text-[var(--ed)] transition-colors group-hover:text-paper group-focus-visible:text-paper">{e.letter}</span>
-                    <span className="relative min-w-0 flex-1 font-display text-[22px] leading-tight">{e.short}</span>
-                    <span className="label relative shrink-0 opacity-70">
-                      {formatYear(e.card.year_start)}
-                      {e.rating ? ` · fit ${e.rating.analogy_fit}` : ""}
+                    {/* Same lettered dot as the chart: this list is its legend. */}
+                    <span className="relative grid size-[22px] shrink-0 place-items-center self-center rounded-full bg-[var(--ed)] font-mono text-[11px] text-paper ring-paper transition-shadow group-hover:ring-2 group-focus-visible:ring-2">
+                      {e.letter}
                     </span>
+                    <span className="relative min-w-0 flex-1 font-display text-[20px] leading-tight">{e.short}</span>
+                    <span className="label relative shrink-0 opacity-70">{formatYear(e.card.year_start)}</span>
                     <span aria-hidden="true" className="relative -translate-x-2 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100">
                       →
                     </span>
@@ -100,7 +101,8 @@ export function LeadStory({ response: r, editions }: { response: ReadyResponse |
                 </li>
               ))}
             </ol>
-          </nav>
+            </nav>
+          </div>
         ) : null}
       </div>
 

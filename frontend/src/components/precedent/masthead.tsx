@@ -31,7 +31,8 @@ export function Dateline({ children }: { children?: React.ReactNode }) {
 
 /**
  * The nameplate: thick rule, "The Precedent" letter by letter, thin rule and
- * the strap. On the front page the letters drop in on load.
+ * the strap. On the front page the letters drop in on load, and on scroll the
+ * nameplate shrinks up into the docked nav's wordmark.
  */
 export function Masthead({ size = "full" }: { size?: "full" | "compact" }) {
   const root = useRef<HTMLElement>(null);
@@ -41,6 +42,14 @@ export function Masthead({ size = "full" }: { size?: "full" | "compact" }) {
       if (size !== "full") return;
       gsap.matchMedia().add(MOTION_OK, () => {
         gsap.from("[data-mast-letter]", { yPercent: -115, rotate: () => gsap.utils.random(-8, 8), duration: 0.9, stagger: 0.045, ease: "power4.out" });
+        // Ends where the nav docks (see FloatingNav), so the wordmark takes over.
+        gsap.to("[data-mast-title]", {
+          scale: 0.3,
+          opacity: 0,
+          ease: "none",
+          transformOrigin: "50% 0%",
+          scrollTrigger: { trigger: root.current, start: "top top+=56", end: "bottom top+=40", scrub: 0.3 },
+        });
       });
     },
     { scope: root },
@@ -52,6 +61,7 @@ export function Masthead({ size = "full" }: { size?: "full" | "compact" }) {
       <Link href="/" aria-label={TITLE} className="block">
         <p
           aria-hidden="true"
+          data-mast-title
           className={
             "overflow-hidden text-center font-display leading-[0.95] font-black tracking-[-0.045em] text-ink " +
             (size === "full" ? "py-2 text-[clamp(52px,11.7vw,168px)]" : "py-1 text-[clamp(40px,6vw,72px)]")

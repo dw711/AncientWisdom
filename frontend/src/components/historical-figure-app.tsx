@@ -130,14 +130,17 @@ export function HistoricalFigureApp() {
 
   const profile = response && "profile" in response ? response.profile : null;
   const shape = shapeOf(profile);
-  const editions = response && (response.status === "ready" || response.status === "partial") ? toEditions(collectEntries(response)) : [];
-  const printed = response && (response.status === "ready" || response.status === "partial");
-  const sections: NavSection[] = [
-    { id: "letter", label: "Letter" },
-    ...(printed ? [{ id: "front", label: "Front page" }] : []),
-    ...editions.map((e) => ({ id: `edition-${e.letter.toLowerCase()}`, label: `Edition ${e.letter}` })),
-    ...(printed ? [{ id: "editorial", label: "Editorial" }, { id: "verdict", label: "Verdict" }] : []),
-  ];
+  const printed = response && (response.status === "ready" || response.status === "partial") ? response : null;
+  const editions = printed ? toEditions(collectEntries(printed)) : [];
+  const sections: NavSection[] = printed
+    ? [
+        { id: "letter", label: "Letter" },
+        { id: "front", label: "Front page" },
+        ...editions.map((e) => ({ id: `edition-${e.letter.toLowerCase()}`, label: `Edition ${e.letter}` })),
+        ...(printed.recommendation || printed.alternatives.length ? [{ id: "paths", label: "Paths" }] : []),
+        { id: "editorial", label: "Next steps" },
+      ]
+    : [{ id: "letter", label: "Letter" }];
 
   return (
     <div className="flex min-h-full flex-col pt-12">
@@ -158,8 +161,8 @@ export function HistoricalFigureApp() {
             </h1>
             {compact ? (
               <>
-                <blockquote className="font-display text-[28px] leading-[1.2] italic md:text-[40px]">
-                  <p className="line-clamp-6">
+                <blockquote className="font-display text-[24px] leading-[1.25] italic md:text-[30px]">
+                  <p className="line-clamp-4">
                     <span aria-hidden="true" className="text-burgundy">
                       “
                     </span>
@@ -227,7 +230,7 @@ export function HistoricalFigureApp() {
 
         <div ref={resultsRef} id="results" className="scroll-mt-16">
           {phase.kind === "loading" ? (
-            <div className="mx-auto max-w-3xl py-10">
+            <div className="py-6">
               <ProgressPanel entries={phase.entries} waitingFor={null} />
               <Button variant="secondary" className="mt-6" onClick={cancel}>
                 Stop the press

@@ -1,10 +1,13 @@
 "use client";
 
-import { useId, type FormEvent, type ReactNode } from "react";
+import { useId, type CSSProperties, type FormEvent, type ReactNode } from "react";
 import { LIMITS } from "@/lib/contracts/advice";
 import { countStated, type ContextForm } from "@/lib/client/context-form";
 import { PRESETS } from "@/lib/demo/presets";
 import { Button, cx } from "./ui";
+
+/** Clippings lie slightly askew and straighten on hover. */
+const TILT = [-1.4, 0.9, -0.6];
 
 const PLACEHOLDER =
   "For example: My co-founder wants to accept a large client who is asking for a discount we can barely afford. Turning them down could cost us months of runway; accepting could fix a price we can't sustain. What should we weigh?";
@@ -71,24 +74,31 @@ export function DilemmaForm(p: Props) {
       </div>
 
       <div>
-        <p className="label mb-2 text-muted">Or read a letter we have answered</p>
-        <div className="flex flex-wrap gap-2">
-          {PRESETS.map((preset) => (
-            <button
-              key={preset.id}
-              type="button"
-              disabled={p.busy}
-              onClick={() => p.onPreset(preset.query)}
-              aria-pressed={p.query.trim() === preset.query}
-              className={cx(
-                "border px-3.5 py-1.5 text-sm italic transition-colors disabled:opacity-50",
-                p.query.trim() === preset.query ? "border-ink bg-ink text-paper" : "border-ink/40 text-ink-soft hover:border-ink hover:text-ink",
-              )}
-            >
-              {preset.label}
-            </button>
-          ))}
-        </div>
+        <p className="label mb-3 text-muted">Or start from a letter we have answered</p>
+        <ul className="grid gap-4 sm:grid-cols-3">
+          {PRESETS.map((preset, i) => {
+            const on = p.query.trim() === preset.query;
+            return (
+              <li key={preset.id} className="drop-shadow-[0_6px_10px_rgba(0,0,0,0.12)]">
+                <button
+                  type="button"
+                  disabled={p.busy}
+                  onClick={() => p.onPreset(preset.query)}
+                  aria-pressed={on}
+                  style={{ "--tilt": `${TILT[i % TILT.length]}deg` } as CSSProperties}
+                  className={cx(
+                    "clipping group block h-full w-full px-4 pt-3 pb-6 text-left transition-[rotate,translate,background-color] duration-300 [rotate:var(--tilt)] hover:-translate-y-1 hover:[rotate:0deg] disabled:opacity-50",
+                    on ? "bg-ink text-paper" : "bg-card text-ink",
+                  )}
+                >
+                  <span className="label block text-[10px] opacity-60">Letter No. {i + 1}</span>
+                  <span className="mt-2 block font-display text-[19px] leading-tight font-black tracking-[-0.01em]">{preset.label}</span>
+                  <span className={cx("label mt-3 block", on ? "text-paper/70" : "text-burgundy")}>{on ? "In your letter ✓" : "Use this letter →"}</span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
       </div>
 
       <div className="border-y border-ink">

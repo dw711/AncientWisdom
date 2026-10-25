@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Suspense, type ReactNode } from "react";
+import { Suspense, ViewTransition, type ReactNode } from "react";
 import { BackLink } from "@/components/back-link";
 import { CaseEvidence } from "@/components/evidence-list";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 import { BulletList, Label, SectionHeading, Tag } from "@/components/ui";
-import { claimNumbers, formatYear } from "@/lib/case-refs";
+import { claimNumbers, formatYear, headlineTransition } from "@/lib/case-refs";
 import { CorpusError, getCaseRepository } from "@/lib/server/corpus";
 import { evidenceViews, toCaseStory } from "@/lib/server/corpus/views";
 
@@ -95,7 +95,10 @@ async function Story({ id }: { id: string }) {
           {story.date_detail}
           {story.geography ? ` · ${story.geography}` : ""}
         </p>
-        <h1 className="mt-2 font-display text-[2.4rem] leading-[1.02] font-black tracking-[-0.02em] text-ink sm:text-[3.2rem]">{story.title}</h1>
+        {/* Morphs from the edition column's headline on the front page. */}
+        <ViewTransition name={headlineTransition(story.case_id)} share="headline" default="none">
+          <h1 className="mt-2 font-display text-[2.4rem] leading-[1.02] font-black tracking-[-0.02em] text-ink sm:text-[3.2rem]">{story.title}</h1>
+        </ViewTransition>
         <p className="mt-4 font-display text-[1.4rem] leading-snug text-ink-soft italic">“{story.decision_question}”</p>
       </header>
 

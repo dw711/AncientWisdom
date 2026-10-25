@@ -6,6 +6,7 @@ import { BulletList, Button, Label, SectionHeading, Tag } from "../ui";
 import { AdviceDetail } from "./advice-detail";
 import { EditionColumn, type OpenSources } from "./edition-column";
 import { LeadStory } from "./lead-story";
+import { PathsLedger } from "./paths-ledger";
 import { collectEntries, toEditions } from "../precedent/model";
 
 interface Props {
@@ -32,12 +33,10 @@ const GRID: Record<number, string> = {
   4: "md:grid-cols-2 md:[&>*:nth-child(odd)]:border-l-0",
 };
 
-/** Ready and partial results: the lead story, one edition column per case, the editorial, then the verdict. */
+/** Ready and partial results: the lead story, one edition column per case, the paths, the editorial, then the sources. */
 function FrontPage(p: Props & { response: ReadyResponse | PartialResponse }) {
   const r = p.response;
   const editions = useMemo(() => toEditions(collectEntries(r)), [r]);
-  const [choice, setChoice] = useState<number | null>(null);
-  const picked = choice !== null ? editions[choice] : null;
   const n = Math.min(editions.length, 4);
 
   return (
@@ -49,63 +48,35 @@ function FrontPage(p: Props & { response: ReadyResponse | PartialResponse }) {
         <div className={`grid gap-y-14 py-10 ${GRID[n] ?? GRID[3]}`}>
           {editions.map((e, i) => (
             <div key={e.id} className={n > 1 ? "min-w-0 md:border-l md:border-ink md:px-8" : "min-w-0"}>
-              <EditionColumn edition={e} passages={r.passages} sources={r.sources} onOpen={p.onOpenSources} delay={(i % 3) * 0.25} />
+              <EditionColumn edition={e} claims={r.claims} passages={r.passages} sources={r.sources} onOpen={p.onOpenSources} delay={(i % 3) * 0.25} />
             </div>
           ))}
         </div>
       ) : null}
 
+      <PathsLedger response={r} editions={editions} />
+
       <section id="editorial" aria-labelledby="editorial-h" className="scroll-mt-20 border-t-[6px] border-ink py-12">
-        <SectionHeading id="editorial-h" numeral="The editorial" title="What we would do in your place" />
+        <SectionHeading id="editorial-h" numeral="The editorial" title="What to do next" bare />
         <AdviceDetail response={r} busy={p.busy} onApplyChange={p.onApplyChange} onEditContext={p.onEditContext} />
       </section>
 
-      <section id="verdict" aria-labelledby="verdict-h" className="scroll-mt-20 border-t-[6px] border-ink py-16 text-center">
-        <h2 id="verdict-h" className="mx-auto max-w-[18ch] font-display text-[40px] leading-[1.05] italic md:text-[64px]">
-          Which edition do you want to wake up in?
-        </h2>
-        {editions.length ? (
-          <>
-            <div role="group" aria-label="Choose an edition" className="mt-8 flex flex-wrap justify-center gap-3">
-              {editions.map((e, i) => {
-                const on = choice === i;
-                return (
-                  <button
-                    key={e.id}
-                    type="button"
-                    aria-pressed={on}
-                    onClick={() => setChoice(i)}
-                    className="label border-2 px-7 py-3 transition-colors"
-                    style={{ borderColor: e.color, background: on ? e.color : "transparent", color: on ? "#EDEAE2" : e.color }}
-                  >
-                    Edition {e.letter} · {e.short}
-                  </button>
-                );
-              })}
-            </div>
-            <p aria-live="polite" className="mx-auto mt-8 min-h-[3em] max-w-[56ch] text-[19px] leading-relaxed italic">
-              {picked ? (
-                <span key={picked.id} className="inline-block animate-rise">
-                  {picked.lesson ?? picked.card.decision_question}
-                </span>
-              ) : null}
-            </p>
-          </>
-        ) : null}
-        {r.sources.length ? (
-          <p className="mx-auto mt-12 max-w-[900px] border-t border-ink pt-4 font-mono text-[11px] leading-relaxed text-ink/70">
-            <span className="label mr-2">Sources</span>
-            {r.sources.map((s, i) => (
-              <span key={s.source_id}>
-                <a href={s.url} target="_blank" rel="noopener noreferrer" className="break-words underline decoration-1 underline-offset-2 hover:opacity-70">
+      {r.sources.length ? (
+        <footer aria-labelledby="sources-h" className="border-t border-ink pt-4 pb-6">
+          <h2 id="sources-h" className="label mb-3 text-ink">
+            Sources
+          </h2>
+          <ol className="list-inside list-decimal gap-8 font-mono text-[12px] leading-relaxed text-ink/75 marker:text-muted md:columns-2 lg:columns-3">
+            {r.sources.map((s) => (
+              <li key={s.source_id} className="mb-1.5 break-inside-avoid">
+                <a href={s.url} target="_blank" rel="noopener noreferrer" className="break-words underline decoration-ink/25 underline-offset-2 hover:decoration-ink">
                   {s.title}
                 </a>
-                {i < r.sources.length - 1 ? " · " : ""}
-              </span>
+              </li>
             ))}
-          </p>
-        ) : null}
-      </section>
+          </ol>
+        </footer>
+      ) : null}
     </div>
   );
 }
